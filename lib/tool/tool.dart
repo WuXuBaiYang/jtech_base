@@ -4,6 +4,10 @@ import 'dart:io';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'date.dart';
 
 /*
@@ -22,6 +26,18 @@ class Tool {
   // 获取状态栏高度
   static double getStatusBarHeight(BuildContext context) =>
       MediaQuery.of(context).padding.top;
+
+  // 获取版本号
+  static Future<int> get buildNumber async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    return int.tryParse(packageInfo.buildNumber) ?? 0;
+  }
+
+  // 获取版本名
+  static Future<String> get version async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.version;
+  }
 
   // 设置屏幕竖向
   static void setScreenPortrait() =>
@@ -81,6 +97,37 @@ class Tool {
       if (minutes == null || seconds == null) return null;
     }
     return Duration(hours: hours, minutes: minutes, seconds: seconds);
+  }
+
+  // 压缩图片
+  static Future<File?> compressImage(
+    String path, {
+    String? output,
+    int quality = 85,
+    int minWidth = 1920,
+    int minHeight = 1080,
+  }) async {
+    if (output == null) {
+      final dir = await getApplicationCacheDirectory();
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      output = join(dir.path, 'compressed_$timestamp.jpg');
+    }
+    final result = await FlutterImageCompress.compressAndGetFile(
+      path,
+      output,
+      quality: quality,
+      minWidth: minWidth,
+      minHeight: minHeight,
+    );
+    if (result == null) return null;
+    return File(result.path);
+  }
+
+  // 压缩图片并返回bytes
+  static Future<dynamic> compressImageWithList(Uint8List image,
+      {int quality = 85, int minWidth = 1920, int minHeight = 1080}) {
+    return FlutterImageCompress.compressWithList(image,
+        quality: quality, minWidth: minWidth, minHeight: minHeight);
   }
 
   // 文件大小对照表

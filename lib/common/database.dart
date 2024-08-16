@@ -20,11 +20,11 @@ abstract class BaseDatabase {
   // 初始化
   Future<void> initialize(String databaseName) async {
     final dir = await getApplicationDocumentsDirectory();
-    _store = createStore(join(dir.path, databaseName));
+    _store = await createStore(join(dir.path, databaseName));
   }
 
   // 创建数据库对象
-  Store createStore(String directory);
+  Future<Store> createStore(String directory);
 
   // 创建指定数据对象的box
   Box<T> getBox<T>() => Box<T>(store);

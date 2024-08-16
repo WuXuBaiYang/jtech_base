@@ -4,10 +4,12 @@ export 'package:dio/dio.dart';
 export 'package:provider/provider.dart';
 export 'package:objectbox/objectbox.dart';
 export 'package:go_router/go_router.dart';
+export 'package:path_provider/path_provider.dart';
 export 'package:provider/single_child_widget.dart';
 export 'package:permission_handler/permission_handler.dart';
 export 'package:font_awesome_flutter/font_awesome_flutter.dart';
 export 'package:cached_network_image/cached_network_image.dart';
+export 'package:path/path.dart' show join, joinAll, split, basename;
 
 export 'common/api/request.dart';
 export 'common/api/response.dart';
