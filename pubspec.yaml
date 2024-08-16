@@ -25,6 +25,8 @@ dependencies:
   shimmer_animation: ^2.2.1
   shared_preferences: ^2.3.2
   permission_handler: ^11.3.1
+  cached_network_image: ^3.4.1
+  font_awesome_flutter: ^10.7.0
   objectbox_flutter_libs: ^4.0.2
   loading_animation_widget: ^1.2.1
 

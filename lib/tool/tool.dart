@@ -111,4 +111,8 @@ class Tool {
     final bytes = await file.readAsBytes();
     return crypto.sha256.convert(bytes).toString();
   }
+
+  // 计算md5
+  static String md5(String data) =>
+      crypto.md5.convert(utf8.encode(data)).toString();
 }
