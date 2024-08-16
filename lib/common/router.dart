@@ -26,7 +26,7 @@ abstract class BaseRouter {
     List<RouteBase> extensions = const [],
     String initialLocation = '/',
   }) =>
-      _routerConfig = GoRouter(
+      _routerConfig ??= GoRouter(
         routes: routes + extensions,
         initialLocation: initialLocation,
       );
