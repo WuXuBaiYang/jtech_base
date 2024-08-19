@@ -13,6 +13,9 @@ class OptionItem<T> extends BaseModel {
   // 副标签
   final String? subLabel;
 
+  // 提示
+  final String? hint;
+
   // 图标
   final Widget? icon;
 
@@ -22,14 +25,19 @@ class OptionItem<T> extends BaseModel {
   // 子元素
   final Widget? child;
 
+  // 点击事件
+  final VoidCallback? onTap;
+
   // 值
   final T? value;
 
   OptionItem({
     required this.label,
     this.icon,
+    this.hint,
     this.value,
     this.child,
+    this.onTap,
     this.subLabel,
     this.activeIcon,
   });
