@@ -24,6 +24,8 @@ export 'common/provider/page.dart';
 export 'common/provider/provider.dart';
 export 'common/provider/view.dart';
 
+export 'model/option.dart';
+
 export 'tool/cache.dart';
 export 'tool/date.dart';
 export 'tool/debounce.dart';
