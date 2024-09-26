@@ -9,8 +9,8 @@ import 'package:jtech_base/widget/loading.dart';
 * @Time 2023/7/19 16:43
 */
 class Loading {
-  // 加载弹窗dialog缓存
-  static Future? _loading;
+  // 弹层缓存(全局同时有且只有一个)
+  static OverlayEntry? _loading;
 
   // 展示加载弹窗
   static Future<T?> show<T>(
@@ -18,43 +18,46 @@ class Loading {
     required Future<T?> loadFuture,
     bool dismissible = true,
   }) async {
-    final buildFlag = Completer<bool>();
-    final navigator = Navigator.of(context);
     try {
-      if (_loading != null) navigator.maybePop();
-      _loading = showDialog<void>(
-          context: context,
-          barrierDismissible: dismissible,
-          builder: (_) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!buildFlag.isCompleted) buildFlag.complete(false);
-            });
-            return _buildLoading(context);
-          })
-        ..whenComplete(() => _loading = null);
+      _loading?.remove();
+      Overlay.of(context).insert(_loading = OverlayEntry(builder: (_) {
+        return _buildLoading(context, dismissible);
+      }));
       return await loadFuture;
     } catch (e) {
       rethrow;
     } finally {
-      await buildFlag.future;
-      if (_loading != null) await navigator.maybePop();
+      _loading?.remove();
+      _loading = null;
     }
   }
 
   // 构建加载视图
-  static Widget _buildLoading(BuildContext context) {
+  static Widget _buildLoading(BuildContext context, [bool dismissible = true]) {
     final constraints = BoxConstraints.tight(const Size.square(80));
     final decoration = BoxDecoration(
       color: Theme.of(context).cardColor,
       borderRadius: BorderRadius.circular(14),
     );
     final loadingSize = constraints.minWidth * 0.6;
-    return Center(
-      child: Container(
-        decoration: decoration,
-        constraints: constraints,
-        alignment: Alignment.center,
-        child: LoadingView.random(size: loadingSize),
+    return GestureDetector(
+      onTap: () {
+        if (!dismissible) return;
+        _loading?.remove();
+        _loading = null;
+      },
+      child: AbsorbPointer(
+        child: Material(
+          color: Colors.black38,
+          child: Center(
+            child: Container(
+              decoration: decoration,
+              constraints: constraints,
+              alignment: Alignment.center,
+              child: LoadingView.random(size: loadingSize),
+            ),
+          ),
+        ),
       ),
     );
   }
