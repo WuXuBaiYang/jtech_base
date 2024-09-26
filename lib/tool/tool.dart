@@ -39,6 +39,12 @@ class Tool {
     return packageInfo.version;
   }
 
+  // 获取app名称
+  static Future<String> get packageName async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.packageName;
+  }
+
   // 设置屏幕竖向
   static void setScreenPortrait() =>
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
