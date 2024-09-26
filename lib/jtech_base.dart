@@ -1,4 +1,4 @@
-library jtech_base;
+library;
 
 export 'package:dio/dio.dart';
 export 'package:provider/provider.dart';
