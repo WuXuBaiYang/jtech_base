@@ -1,4 +1,4 @@
-library jtech_base;
+library;
 
 export 'package:dio/dio.dart';
 export 'package:provider/provider.dart';
@@ -23,6 +23,8 @@ export 'common/model.dart';
 export 'common/provider/page.dart';
 export 'common/provider/provider.dart';
 export 'common/provider/view.dart';
+
+export 'model/option.dart';
 
 export 'tool/cache.dart';
 export 'tool/date.dart';

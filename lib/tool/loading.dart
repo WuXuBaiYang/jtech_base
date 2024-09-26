@@ -14,10 +14,10 @@ class Loading {
 
   // 展示加载弹窗
   static Future<T?> show<T>(
-    BuildContext context, {
-    required Future<T?> loadFuture,
-    bool dismissible = true,
-  }) async {
+      BuildContext context, {
+        required Future<T?> loadFuture,
+        bool dismissible = true,
+      }) async {
     try {
       _loading?.remove();
       Overlay.of(context).insert(_loading = OverlayEntry(builder: (_) {
