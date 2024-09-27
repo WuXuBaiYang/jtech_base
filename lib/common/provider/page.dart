@@ -75,31 +75,4 @@ abstract class PageProvider extends BaseProvider {
 
   // 获取extra
   T? getExtra<T>() => state?.extra as T?;
-
-  // 展示toast
-  void showToast(String message) => Toast.show(message);
-
-  // 展示notice
-  void showNoticeInfo(String message) {
-    if (!context.mounted) return;
-    Notice.showInfo(context, message: message);
-  }
-
-  // 展示notice
-  void showNoticeError(String message) {
-    if (!context.mounted) return;
-    Notice.showError(context, message: message);
-  }
-
-  // 展示notice
-  void showNoticeWarning(String message) {
-    if (!context.mounted) return;
-    Notice.showWarning(context, message: message);
-  }
-
-  // 展示notice
-  void showNoticeSuccess(String message) {
-    if (!context.mounted) return;
-    Notice.showSuccess(context, message: message);
-  }
 }
