@@ -33,6 +33,7 @@ export 'tool/event.dart';
 export 'tool/list.dart';
 export 'tool/loading.dart';
 export 'tool/log.dart';
+export 'tool/notice.dart';
 export 'tool/throttle.dart';
 export 'tool/toast.dart';
 export 'tool/tool.dart';
