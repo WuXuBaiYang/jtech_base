@@ -9,4 +9,8 @@ abstract class BaseModel {
   BaseModel.from(obj);
 
   Map<String, dynamic> to() => {};
+
+  BaseModel copyWith() {
+    return this;
+  }
 }
