@@ -130,7 +130,7 @@ class Tool {
   }
 
   // 压缩图片并返回bytes
-  static Future<dynamic> compressImageWithList(Uint8List image,
+  static Future<Uint8List> compressImageWithList(Uint8List image,
       {int quality = 85, int minWidth = 1920, int minHeight = 1080}) {
     return FlutterImageCompress.compressWithList(image,
         quality: quality, minWidth: minWidth, minHeight: minHeight);
