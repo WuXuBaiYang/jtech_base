@@ -24,7 +24,7 @@ abstract class BaseConfigProvider<T extends BaseConfig> extends BaseProvider {
   }
 
   // 配置缓存key
-  String get configCacheKey;
+  String get configCacheKey => 'app_config_cache_key';
 
   // 保存配置信息
   Future<bool> updateConfig(T config) async {
