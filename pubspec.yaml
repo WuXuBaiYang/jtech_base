@@ -1,6 +1,6 @@
 name: jtech_base
 description: "jtech project base library"
-version: 0.0.14
+version: 0.0.15
 homepage: https://www.jtech.com
 
 environment:
@@ -23,6 +23,7 @@ dependencies:
   fluttertoast: ^8.2.8
   easy_refresh: ^3.4.0
   path_provider: ^2.1.4
+  flex_color_scheme: ^7.3.1
   shimmer_animation: ^2.2.1
   package_info_plus: ^8.0.3
   shared_preferences: ^2.3.2

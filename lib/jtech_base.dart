@@ -17,11 +17,12 @@ export 'common/api/api.dart';
 
 export 'common/database.dart';
 export 'common/router.dart';
-export 'common/config.dart';
 export 'common/model.dart';
 
+export 'common/provider/config.dart';
 export 'common/provider/page.dart';
 export 'common/provider/provider.dart';
+export 'common/provider/theme.dart';
 export 'common/provider/view.dart';
 
 export 'model/option.dart';
@@ -38,6 +39,7 @@ export 'tool/throttle.dart';
 export 'tool/toast.dart';
 export 'tool/tool.dart';
 
+export 'widget/dialog.dart';
 export 'widget/keep_alive.dart';
 export 'widget/load_status.dart';
 export 'widget/loading.dart';

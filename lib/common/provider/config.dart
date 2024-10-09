@@ -1,7 +1,6 @@
+import 'package:jtech_base/common/model.dart';
 import 'package:jtech_base/tool/cache.dart';
-
-import 'model.dart';
-import 'provider/provider.dart';
+import 'provider.dart';
 
 // 配置信息初始化回调
 typedef ConfigValueCreator<T extends BaseConfig> = T Function(dynamic obj);
