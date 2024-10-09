@@ -17,4 +17,13 @@ extension ListExtension<T> on List<T> {
     }
     return map;
   }
+
+  // 交换集合中两个位置的元素
+  List<T> swap(int oldIndex, int newIndex) {
+    if (oldIndex == newIndex) return this;
+    newIndex = newIndex > oldIndex ? newIndex - 1 : newIndex;
+    final T item = removeAt(oldIndex);
+    insert(newIndex, item);
+    return this;
+  }
 }

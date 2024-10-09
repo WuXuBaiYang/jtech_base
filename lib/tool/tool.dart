@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
@@ -9,6 +12,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'date.dart';
+import 'file.dart';
 
 /*
 * 工具方法
@@ -16,12 +20,38 @@ import 'date.dart';
 * @Time 2022/9/8 15:09
 */
 class Tool {
+  // 获取零点时间戳
+  static DateTime getDayZero({int dayOffset = 0}) {
+    if (dayOffset < 0) return DateTime.now();
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day)
+        .add(Duration(days: dayOffset));
+  }
+
+  // 获取距离零点的duration
+  static Duration toDayZeroDuration({int dayOffset = 1}) {
+    if (dayOffset < 1) return Duration.zero;
+    return getDayZero(dayOffset: dayOffset).difference(DateTime.now());
+  }
+
+  // 缓存目标文件到缓存目录
+  static Future<String?> cacheFile(String filePath) async {
+    final file = File(filePath);
+    if (!file.existsSync()) return null;
+    final baseDir = await getCacheFilePath();
+    if (baseDir == null) return null;
+    final outputPath = join(baseDir, '${genDateSign()}${file.suffixes}');
+    return (await file.copy(outputPath)).path;
+  }
+
+  // 获取文件缓存目录
+  static Future<String?> getCacheFilePath(
+          [String cacheFilePath = 'cache_file']) =>
+      FileTool.getDirPath(cacheFilePath, root: FileDir.temporary);
+
   // 图片转base64
   static String image2Base64(File image) =>
       base64Encode(image.readAsBytesSync());
-
-  // 生成时间戳签名
-  static String genDateSign() => DateTime.now().format(DatePattern.dateSign);
 
   // 获取状态栏高度
   static double getStatusBarHeight(BuildContext context) =>
@@ -165,7 +195,95 @@ class Tool {
     return crypto.sha256.convert(bytes).toString();
   }
 
-  // 计算md5
-  static String md5(String data) =>
-      crypto.md5.convert(utf8.encode(data)).toString();
+  // 选择文件集合
+  static Future<List<String>> pickFiles({
+    String? dialogTitle,
+    String? initialDirectory,
+    FileType type = FileType.any,
+  }) async {
+    if (kIsWeb) return [];
+    final result = await FilePicker.platform.pickFiles(
+      type: type,
+      lockParentWindow: true,
+      dialogTitle: dialogTitle,
+      initialDirectory: initialDirectory,
+    );
+    if (result == null || result.files.isEmpty) return [];
+    return result.files.map((e) => e.path!).toList();
+  }
+
+  // 选择单文件
+  static Future<String?> pickFile({
+    String? dialogTitle,
+    String? initialDirectory,
+    FileType type = FileType.any,
+  }) async {
+    final result = await pickFiles(
+      dialogTitle: dialogTitle,
+      initialDirectory: initialDirectory,
+      type: type,
+    );
+    return result.firstOrNull;
+  }
+
+  // 选择图片集合
+  static Future<List<String>> pickImages({
+    String? dialogTitle,
+    String? initialDirectory,
+  }) {
+    return pickFiles(
+      dialogTitle: dialogTitle,
+      initialDirectory: initialDirectory,
+      type: FileType.image,
+    );
+  }
+
+  // 选择单文件
+  static Future<String?> pickImage({
+    String? dialogTitle,
+    String? initialDirectory,
+  }) {
+    return pickFile(
+      dialogTitle: dialogTitle,
+      initialDirectory: initialDirectory,
+      type: FileType.image,
+    );
+  }
+
+  // 选择目录
+  static Future<String?> pickDirectory({
+    String? dialogTitle,
+    String? initialDirectory,
+  }) async {
+    return FilePicker.platform.getDirectoryPath(
+      lockParentWindow: true,
+      dialogTitle: dialogTitle,
+    );
+  }
+}
+
+// 生成id
+String genID({int? seed}) {
+  final time = DateTime.now().millisecondsSinceEpoch;
+  return genMd5('${time}_${Random(seed ?? time).nextDouble()}');
+}
+
+// 生成时间戳签名
+String genDateSign() => DateTime.now().format(DatePattern.dateSign);
+
+// 生成md5
+String genMd5(String data) => crypto.md5.convert(utf8.encode(data)).toString();
+
+// 区间计算
+T range<T extends num>(T value, T begin, T end) => max(begin, min(end, value));
+
+// 扩展字符串
+extension StringExtension on String {
+  // 正则匹配第一个分组
+  String regFirstGroup(String source, [int index = 0, bool trim = true]) {
+    final match = RegExp(source).firstMatch(this);
+    final result = match?.group(index) ?? '';
+    if (!trim) return result;
+    return result.trim();
+  }
 }
