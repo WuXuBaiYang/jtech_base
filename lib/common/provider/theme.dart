@@ -163,7 +163,7 @@ abstract class BaseThemeProvider extends BaseProvider {
 
   // 自定义主题样式
   ThemeData customTheme(
-      ThemeData current, Brightness brightness, bool useMaterial3);
+      ThemeData themeData, Brightness brightness, bool useMaterial3);
 }
 
 /*
