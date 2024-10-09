@@ -42,7 +42,6 @@ class LoadingView extends StatelessWidget {
       3 => LoadingAnimationWidget.staggeredDotsWave(color: color, size: size),
       4 => LoadingAnimationWidget.fourRotatingDots(color: color, size: size),
       5 => LoadingAnimationWidget.fallingDot(color: color, size: size),
-      6 => LoadingAnimationWidget.prograssiveDots(color: color, size: size),
       7 => LoadingAnimationWidget.threeArchedCircle(color: color, size: size),
       8 => LoadingAnimationWidget.bouncingBall(color: color, size: size),
       9 => LoadingAnimationWidget.hexagonDots(color: color, size: size),
