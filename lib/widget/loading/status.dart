@@ -67,7 +67,10 @@ class LoadingStatus extends StatelessWidget {
   Widget _buildEmpty(BuildContext context) {
     return _buildStatus(context, (_) {
       if (emptyBuilder != null) return emptyBuilder!(context);
-      return const Text('空数据占位');
+      final hintColor = Colors.grey[400];
+      final hintStyle =
+          Theme.of(context).textTheme.bodySmall?.copyWith(color: hintColor);
+      return Text('暂无数据', style: hintStyle);
     });
   }
 
@@ -75,9 +78,9 @@ class LoadingStatus extends StatelessWidget {
   Widget _buildFail(BuildContext context) {
     return _buildStatus(context, (_) {
       if (failBuilder != null) return failBuilder!(context);
-      return GestureDetector(
-        onTap: onRetry,
-        child: const Text('失败占位,点击重试'),
+      return TextButton(
+        onPressed: onRetry,
+        child: Text('点击重试'),
       );
     });
   }
