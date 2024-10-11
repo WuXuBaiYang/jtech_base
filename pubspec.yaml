@@ -1,6 +1,6 @@
 name: jtech_base
 description: "jtech project base library"
-version: 0.0.19
+version: 0.1.1
 homepage: https://www.jtech.com
 
 environment:
@@ -45,6 +45,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  uses-material-design: true
 
 # To add assets to your package, add an assets section, like this:
 # assets:
