@@ -10,6 +10,7 @@ export 'package:provider/single_child_widget.dart';
 export 'package:permission_handler/permission_handler.dart';
 export 'package:font_awesome_flutter/font_awesome_flutter.dart';
 export 'package:cached_network_image/cached_network_image.dart';
+export 'package:fluttertoast/fluttertoast.dart' show ToastGravity;
 export 'package:path/path.dart' show join, joinAll, split, basename, separator;
 
 export 'common/api/request.dart';

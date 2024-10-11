@@ -8,7 +8,10 @@ import 'package:provider/single_child_widget.dart';
 * @Time 2023/11/20 15:30
 */
 abstract class ProviderView extends StatelessWidget {
-  const ProviderView({super.key});
+  // 页面context
+  final BuildContext context;
+
+  const ProviderView({super.key, required this.context});
 
   List<SingleChildWidget> get providers => [];
 

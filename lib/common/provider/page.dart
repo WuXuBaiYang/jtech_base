@@ -13,22 +13,28 @@ import 'view.dart';
 */
 abstract class ProviderPage<T extends PageProvider> extends ProviderView {
   // 路由状态管理
-  final GoRouterState? state;
+  final GoRouterState? _state;
 
-  const ProviderPage({super.key, this.state});
+  const ProviderPage({
+    super.key,
+    required super.context,
+    GoRouterState? state,
+  }) : _state = state;
 
   @override
   List<SingleChildWidget> get providers => [
         ChangeNotifierProvider(
-            create: (context) => createProvider(context, state), lazy: lazy),
+          lazy: lazyLoadPageProvider,
+          create: (context) => createProvider(context, _state),
+        ),
         ...extensionProviders(),
       ];
 
-  // 获取页面provider
-  T getProvider(BuildContext context) => context.read<T>();
-
   // 页面provider是否懒加载
-  bool get lazy => true;
+  bool get lazyLoadPageProvider => true;
+
+  // 页面provider
+  T get pageProvider => context.read<T>();
 
   // 创建页面provider
   T createProvider(BuildContext context, GoRouterState? state);
