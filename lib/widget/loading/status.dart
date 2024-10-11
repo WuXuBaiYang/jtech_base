@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'loading.dart';
+import 'view.dart';
 
 /*
 * 加载状态组件

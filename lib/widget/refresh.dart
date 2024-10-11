@@ -1,7 +1,7 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 
-import 'load_status.dart';
+import 'loading/status.dart';
 
 // 刷新控件构造器
 typedef CustomRefreshWidgetBuilder<T> = Widget Function(

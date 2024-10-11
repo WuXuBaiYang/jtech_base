@@ -44,8 +44,9 @@ export 'tool/tool.dart';
 
 export 'widget/dialog.dart';
 export 'widget/keep_alive.dart';
-export 'widget/load_status.dart';
+export 'widget/loading/future.dart';
+export 'widget/loading/status.dart';
+export 'widget/loading/view.dart';
 export 'widget/scheme_picker.dart';
-export 'widget/loading.dart';
 export 'widget/refresh.dart';
 export 'widget/shimmer.dart';
