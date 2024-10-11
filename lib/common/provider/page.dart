@@ -15,9 +15,12 @@ abstract class ProviderPage<T extends PageProvider> extends ProviderView {
   // 路由状态管理
   final GoRouterState? _state;
 
+  // 页面上下文
+  final BuildContext context;
+
   const ProviderPage({
     super.key,
-    required super.context,
+    required this.context,
     GoRouterState? state,
   }) : _state = state;
 
