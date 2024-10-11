@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jtech_base/tool/loading.dart';
+import 'package:jtech_base/jtech_base.dart';
 
 void main() {
   runApp(const MyApp());
@@ -37,6 +37,12 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+      ),
+      body: LoadingStatus(
+        status: LoadStatus.loading,
+        builder: (_, __) {
+          return const SizedBox();
+        },
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'debug',
