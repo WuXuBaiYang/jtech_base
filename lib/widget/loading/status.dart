@@ -58,7 +58,7 @@ class LoadingStatus extends StatelessWidget {
   Widget _buildLoading(BuildContext context) {
     return _buildStatus(context, (_) {
       if (loadingBuilder != null) return loadingBuilder!(context);
-      final size = loadingSize ?? MediaQuery.of(context).size.width * 0.2;
+      final size = loadingSize ?? 80;
       return Center(child: LoadingView.random(size: size));
     });
   }
