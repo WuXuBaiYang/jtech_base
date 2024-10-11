@@ -15,21 +15,16 @@ abstract class ProviderPage<T extends PageProvider> extends ProviderView {
   // 路由状态管理
   final GoRouterState? _state;
 
-  // 页面上下文
-  final PageContext _pageContext;
-
   ProviderPage({
     super.key,
     GoRouterState? state,
-  })  : _state = state,
-        _pageContext = PageContext();
+  }) : _state = state;
 
   @override
   List<SingleChildWidget> get providers => [
         ChangeNotifierProvider(
           lazy: lazyLoadPageProvider,
           create: (context) {
-            _pageContext.update(context);
             return createProvider(context, _state);
           },
         ),
@@ -40,31 +35,13 @@ abstract class ProviderPage<T extends PageProvider> extends ProviderView {
   bool get lazyLoadPageProvider => true;
 
   // 页面provider
-  T get pageProvider => _pageContext.context.read<T>();
-
-  // 获取上下文
-  BuildContext get context => _pageContext.context;
+  T get pageProvider => context.read<T>();
 
   // 创建页面provider
   T createProvider(BuildContext context, GoRouterState? state);
 
   // 扩展provider
   List<SingleChildWidget> extensionProviders() => [];
-}
-
-// 页面上下文管理
-class PageContext {
-  // 页面上下文
-  BuildContext? _context;
-
-  // 更新
-  void update(BuildContext context) => _context = context;
-
-  // 使用
-  BuildContext get context {
-    assert(_context != null, 'context is null');
-    return _context!;
-  }
 }
 
 /*
