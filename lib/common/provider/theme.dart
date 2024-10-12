@@ -85,7 +85,7 @@ abstract class BaseThemeProvider extends BaseProvider {
   }
 
   // 切换主题配色
-  Future<ThemeScheme?> showSchemeChangePicker() async {
+  Future<ThemeScheme?> showSchemeChangePicker(BuildContext context) async {
     final result = await showSchemePicker(
       context,
       current: themeScheme,
@@ -127,8 +127,8 @@ abstract class BaseThemeProvider extends BaseProvider {
     }).map((scheme) {
       final schemeColor = getSchemeColor(scheme);
       return ThemeScheme(
-        scheme: _scheme,
-        label: _scheme.label,
+        scheme: scheme,
+        label: scheme.label,
         primary: schemeColor.primary,
         secondary: schemeColor.secondary,
       );
