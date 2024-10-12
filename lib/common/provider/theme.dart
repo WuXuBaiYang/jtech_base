@@ -157,13 +157,11 @@ abstract class BaseThemeProvider extends BaseProvider {
 
   // 根据主题亮度生成不同的主题数据
   ThemeData _genThemeData(Brightness brightness, [bool useMaterial3 = true]) {
-    final currentTheme = _getThemeData(brightness, useMaterial3);
-    return customTheme(currentTheme, brightness, useMaterial3);
+    return customTheme(_getThemeData(brightness, useMaterial3), brightness);
   }
 
   // 自定义主题样式
-  ThemeData customTheme(
-      ThemeData themeData, Brightness brightness, bool useMaterial3);
+  ThemeData customTheme(ThemeData themeData, Brightness brightness);
 }
 
 /*
