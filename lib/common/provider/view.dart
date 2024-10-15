@@ -14,16 +14,18 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
 
   ProviderView({super.key});
 
-  List<SingleChildWidget> get providers => [
-        ChangeNotifierProvider(
-          lazy: lazyLoadProvider,
-          create: (context) => createProvider(context),
-        ),
-        ...extensionProviders(),
-      ];
+  List<SingleChildWidget> get providers {
+    return [
+      ChangeNotifierProvider<T?>(
+        lazy: lazyLoadProvider,
+        create: createProvider,
+      ),
+      ...extensionProviders(),
+    ];
+  }
 
   // 创建provider
-  T createProvider(BuildContext context);
+  T? createProvider(BuildContext context) => null;
 
   // provider是否懒加载
   bool get lazyLoadProvider => true;
@@ -35,7 +37,11 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
   BuildContext get context => _pageContext.context;
 
   // 页面provider
-  T get provider => context.read<T>();
+  T get provider {
+    final provider = context.read<T?>();
+    assert(provider != null, '使用provider之前请先调用create(Page)Provider');
+    return provider!;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +69,7 @@ class PageContext {
 
   // 使用
   BuildContext get context {
-    assert(_context != null, 'context is null');
+    assert(_context != null, '请在build方法之后使用context');
     return _context!;
   }
 }
