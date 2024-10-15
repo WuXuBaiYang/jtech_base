@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:provider/single_child_widget.dart';
 import 'provider.dart';
 import 'view.dart';
 
@@ -11,7 +9,7 @@ import 'view.dart';
 * @author wuxubaiyang
 * @Time 2023/11/20 15:30
 */
-abstract class ProviderPage<T extends PageProvider> extends ProviderView {
+abstract class ProviderPage<T extends PageProvider> extends ProviderView<T> {
   // 路由状态管理
   final GoRouterState? _state;
 
@@ -21,27 +19,10 @@ abstract class ProviderPage<T extends PageProvider> extends ProviderView {
   }) : _state = state;
 
   @override
-  List<SingleChildWidget> get providers => [
-        ChangeNotifierProvider(
-          lazy: lazyLoadPageProvider,
-          create: (context) {
-            return createProvider(context, _state);
-          },
-        ),
-        ...extensionProviders(),
-      ];
-
-  // 页面provider是否懒加载
-  bool get lazyLoadPageProvider => true;
-
-  // 页面provider
-  T get pageProvider => context.read<T>();
+  T createProvider(BuildContext context) => createPageProvider(context, _state);
 
   // 创建页面provider
-  T createProvider(BuildContext context, GoRouterState? state);
-
-  // 扩展provider
-  List<SingleChildWidget> extensionProviders() => [];
+  T createPageProvider(BuildContext context, GoRouterState? state);
 }
 
 /*
