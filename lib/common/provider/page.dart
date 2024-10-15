@@ -19,7 +19,8 @@ abstract class ProviderPage<T extends PageProvider> extends ProviderView<T> {
   }) : _state = state;
 
   @override
-  T createProvider(BuildContext context) => createPageProvider(context, _state);
+  T? createProvider(BuildContext context) =>
+      createPageProvider(context, _state);
 
   // 创建页面provider
   T createPageProvider(BuildContext context, GoRouterState? state);
