@@ -38,9 +38,7 @@ abstract class BaseProvider extends ChangeNotifier {
   }
 
   // 取消toast
-  void cancelToast() {
-    Toast.cancel();
-  }
+  void cancelToast() => Toast.cancel();
 
   // 展示notice
   void showNoticeInfo(
@@ -48,10 +46,17 @@ abstract class BaseProvider extends ChangeNotifier {
     String? title,
     bool onGoing = false,
     List<Widget> actions = const [],
+    NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     if (!context.mounted) return;
-    _noticeOverlay = Notice.showInfo(context,
-        title: title, message: message, onGoing: onGoing, actions: actions);
+    _noticeOverlay = Notice.showInfo(
+      context,
+      title: title,
+      message: message,
+      onGoing: onGoing,
+      actions: actions,
+      decoration: decoration,
+    );
   }
 
   // 展示notice
@@ -60,10 +65,17 @@ abstract class BaseProvider extends ChangeNotifier {
     String? title,
     bool onGoing = false,
     List<Widget> actions = const [],
+    NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     if (!context.mounted) return;
-    _noticeOverlay = Notice.showError(context,
-        title: title, message: message, onGoing: onGoing, actions: actions);
+    _noticeOverlay = Notice.showError(
+      context,
+      title: title,
+      message: message,
+      onGoing: onGoing,
+      actions: actions,
+      decoration: decoration,
+    );
   }
 
   // 展示notice
@@ -72,10 +84,17 @@ abstract class BaseProvider extends ChangeNotifier {
     String? title,
     bool onGoing = false,
     List<Widget> actions = const [],
+    NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     if (!context.mounted) return;
-    _noticeOverlay = Notice.showWarning(context,
-        title: title, message: message, onGoing: onGoing, actions: actions);
+    _noticeOverlay = Notice.showWarning(
+      context,
+      title: title,
+      message: message,
+      onGoing: onGoing,
+      actions: actions,
+      decoration: decoration,
+    );
   }
 
   // 展示notice
@@ -84,10 +103,17 @@ abstract class BaseProvider extends ChangeNotifier {
     String? title,
     bool onGoing = false,
     List<Widget> actions = const [],
+    NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     if (!context.mounted) return;
-    _noticeOverlay = Notice.showSuccess(context,
-        title: title, message: message, onGoing: onGoing, actions: actions);
+    _noticeOverlay = Notice.showSuccess(
+      context,
+      title: title,
+      message: message,
+      onGoing: onGoing,
+      actions: actions,
+      decoration: decoration,
+    );
   }
 
   // 取消notice
