@@ -2,18 +2,25 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import 'overlay.dart';
+
 /*
 * 消息通知工具
 * @author wuxubaiyang
 * @Time 2024/4/30 10:37
 */
 class Notice {
+  // 弹层管理
+  static final _customOverlay = CustomOverlay();
+
   // 显示提示信息
-  static OverlayEntry? show(
+  static Future<T?> show<T>(
     BuildContext context, {
     required String message,
+    String? key,
     String? title,
     bool onGoing = false,
+    CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
     Curve curve = Curves.easeInOutBack,
     NoticeStatus status = NoticeStatus.info,
@@ -21,53 +28,67 @@ class Notice {
     NoticeDecoration decoration = const NoticeDecoration(),
     Duration animeDuration = const Duration(milliseconds: 400),
   }) {
-    OverlayEntry? overlayEntry;
-    final overlayState = Overlay.maybeOf(context);
-    if (overlayState == null) return overlayEntry;
-    final c = AnimationController(
-      vsync: overlayState,
+    token ??= CustomOverlayToken<T>();
+    // 动画控制器
+    final controller = AnimationController(
+      vsync: Overlay.of(context),
       duration: animeDuration,
     )..forward();
-    dispose(bool isAnime) async {
-      if (isAnime) await c.reverse();
-      overlayEntry?.remove();
-      c.dispose();
-    }
-
-    overlayEntry = OverlayEntry(builder: (_) {
-      return SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, -1),
-          end: const Offset(0, 0),
-        ).animate(CurvedAnimation(parent: c, curve: curve)),
-        child: NoticeView(
-          title: title,
-          status: status,
-          message: message,
-          actions: actions,
-          onDismiss: dispose,
-          decoration: decoration,
-        ),
-      );
-    });
-    overlayState.insert(overlayEntry);
     // 一定时间后移除
-    if (!onGoing) Timer(duration, () => dispose(overlayState.mounted));
-    return overlayEntry;
+    if (!onGoing) Timer(duration, token.cancel);
+    final animation = CurvedAnimation(
+      parent: controller,
+      curve: curve,
+    );
+    return _customOverlay.insert<T>(
+      context,
+      token: token,
+      onBeforeCancel: () async {
+        if (controller.isDismissed) return;
+        return controller.reverse();
+      },
+      builder: (_) {
+        return Dismissible(
+          direction: DismissDirection.up,
+          onDismissed: (_) {
+            controller.dispose();
+            token?.cancel();
+          },
+          key: ValueKey(DateTime.now().microsecondsSinceEpoch),
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0, -1),
+              end: const Offset(0, 0),
+            ).animate(animation),
+            child: NoticeView(
+              title: title,
+              status: status,
+              message: message,
+              actions: actions,
+              decoration: decoration,
+            ),
+          ),
+        );
+      },
+    ).whenComplete(controller.dispose);
   }
 
   // 显示成功提示信息
-  static OverlayEntry? showSuccess(
+  static Future<T?> showSuccess<T>(
     BuildContext context, {
     required String message,
+    String? key,
     String? title,
     bool onGoing = false,
+    CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
     NoticeDecoration decoration = const NoticeDecoration(),
   }) {
-    return show(
+    return show<T>(
       context,
+      key: key,
       title: title,
+      token: token,
       message: message,
       actions: actions,
       onGoing: onGoing,
@@ -77,17 +98,21 @@ class Notice {
   }
 
   // 显示错误提示信息
-  static OverlayEntry? showError(
+  static Future<T?> showError<T>(
     BuildContext context, {
     required String message,
+    String? key,
     String? title,
     bool onGoing = false,
+    CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
     NoticeDecoration decoration = const NoticeDecoration(),
   }) {
-    return show(
+    return show<T>(
       context,
+      key: key,
       title: title,
+      token: token,
       message: message,
       actions: actions,
       onGoing: onGoing,
@@ -97,17 +122,21 @@ class Notice {
   }
 
   // 显示警告提示信息
-  static OverlayEntry? showWarning(
+  static Future<T?> showWarning<T>(
     BuildContext context, {
     required String message,
+    String? key,
     String? title,
     bool onGoing = false,
+    CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
     NoticeDecoration decoration = const NoticeDecoration(),
   }) {
-    return show(
+    return show<T>(
       context,
+      key: key,
       title: title,
+      token: token,
       message: message,
       actions: actions,
       onGoing: onGoing,
@@ -117,17 +146,21 @@ class Notice {
   }
 
   // 显示普通提示信息
-  static OverlayEntry? showInfo(
+  static Future<T?> showInfo<T>(
     BuildContext context, {
     required String message,
+    String? key,
     String? title,
     bool onGoing = false,
+    CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
     NoticeDecoration decoration = const NoticeDecoration(),
   }) {
-    return show(
+    return show<T>(
       context,
+      key: key,
       title: title,
+      token: token,
       message: message,
       actions: actions,
       onGoing: onGoing,
@@ -163,9 +196,6 @@ class NoticeView extends StatelessWidget {
   // 消息状态
   final NoticeStatus status;
 
-  // 主动撤销回调
-  final ValueChanged<bool>? onDismiss;
-
   // 装饰器
   final NoticeDecoration decoration;
 
@@ -175,30 +205,11 @@ class NoticeView extends StatelessWidget {
     required this.message,
     required this.actions,
     required this.status,
-    this.onDismiss,
     this.decoration = const NoticeDecoration(),
   });
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Material(
-        type: MaterialType.transparency,
-        child: Align(
-          alignment: Alignment.topCenter,
-          child: Dismissible(
-            key: ValueKey(message),
-            direction: DismissDirection.up,
-            onDismissed: (_) => onDismiss?.call(false),
-            child: _buildContent(context),
-          ),
-        ),
-      ),
-    );
-  }
-
-  // 构建内容
-  Widget _buildContent(BuildContext context) {
     final shape = RoundedRectangleBorder(
       borderRadius: decoration.borderRadius,
     );

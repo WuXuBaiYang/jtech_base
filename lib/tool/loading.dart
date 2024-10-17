@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:jtech_base/tool/overlay.dart';
 import 'package:jtech_base/widget/loading/overlay.dart';
 
 /*
@@ -8,39 +9,32 @@ import 'package:jtech_base/widget/loading/overlay.dart';
 * @Time 2023/7/19 16:43
 */
 class Loading {
-  // 弹层缓存(全局同时有且只有一个)
-  static OverlayEntry? _loading;
+  // 弹层管理
+  static final _customOverlay = CustomOverlay.single();
 
   // 展示加载弹窗
   static Future<T?> show<T>(
     BuildContext context, {
     required Future<T?> loadFuture,
-    Color? loadingColor,
-    int loadingIndex = -1,
-    Color? backgroundColor,
     bool dismissible = true,
-    double loadingSize = 48,
     Stream<double>? progressStream,
     Color barrierColor = Colors.black38,
-    BoxConstraints constraints =
-        const BoxConstraints.tightFor(width: 80, height: 80),
+    LoadingOverlayDecoration decoration = const LoadingOverlayDecoration(),
   }) async {
     cancel();
     try {
-      Overlay.of(context).insert(_loading = OverlayEntry(builder: (_) {
-        return FutureLoadingOverlay(
-          onCancel: () {
-            if (dismissible) cancel();
-          },
-          constraints: constraints,
-          loadingSize: loadingSize,
-          barrierColor: barrierColor,
-          loadingIndex: loadingIndex,
-          loadingColor: loadingColor,
-          progressStream: progressStream,
-          backgroundColor: backgroundColor,
-        );
-      }));
+      _customOverlay.insert(
+        context,
+        dismissible: dismissible,
+        barrierColor: barrierColor,
+        alignment: Alignment.center,
+        builder: (_) {
+          return LoadingOverlay(
+            decoration: decoration,
+            progressStream: progressStream,
+          );
+        },
+      );
       return await loadFuture;
     } catch (e) {
       rethrow;
@@ -50,36 +44,24 @@ class Loading {
   }
 
   // 取消加载弹窗
-  static void cancel() {
-    _loading?.remove();
-    _loading = null;
-  }
+  static void cancel() => _customOverlay.cancelAll();
 }
 
 // 扩展future方法实现loading
 extension FutureLoading<T> on Future<T> {
   Future<T?> loading(
     BuildContext context, {
-    Color? loadingColor,
-    int loadingIndex = -1,
-    Color? backgroundColor,
     bool dismissible = true,
-    double loadingSize = 48,
     Stream<double>? progressStream,
     Color barrierColor = Colors.black38,
-    BoxConstraints constraints =
-        const BoxConstraints.tightFor(width: 80, height: 80),
+    LoadingOverlayDecoration decoration = const LoadingOverlayDecoration(),
   }) =>
       Loading.show(
         context,
         loadFuture: this,
-        constraints: constraints,
+        decoration: decoration,
         dismissible: dismissible,
-        loadingSize: loadingSize,
-        loadingIndex: loadingIndex,
         barrierColor: barrierColor,
-        loadingColor: loadingColor,
         progressStream: progressStream,
-        backgroundColor: backgroundColor,
       );
 }

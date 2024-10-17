@@ -12,18 +12,19 @@ class Toast {
     String msg, {
     Color? textColor,
     double? fontSize,
-    double? fontAsset,
     bool longToast = false,
     Color? backgroundColor,
     ft.ToastGravity? gravity,
   }) {
+    final toastLength =
+        longToast ? ft.Toast.LENGTH_LONG : ft.Toast.LENGTH_SHORT;
     return ft.Fluttertoast.showToast(
       msg: msg,
       gravity: gravity,
       fontSize: fontSize,
       textColor: textColor,
+      toastLength: toastLength,
       backgroundColor: backgroundColor,
-      toastLength: longToast ? ft.Toast.LENGTH_LONG : ft.Toast.LENGTH_SHORT,
     );
   }
 

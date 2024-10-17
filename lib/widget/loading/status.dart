@@ -7,7 +7,7 @@ import 'view.dart';
 * @author wuxubaiyang
 * @Time 2024/8/8 11:07
 */
-class LoadingStatus extends StatelessWidget {
+class LoadingStatusBuilder extends StatelessWidget {
   // 状态
   final LoadStatus status;
 
@@ -32,7 +32,7 @@ class LoadingStatus extends StatelessWidget {
   // 子元素
   final Widget? child;
 
-  const LoadingStatus({
+  const LoadingStatusBuilder({
     super.key,
     required this.builder,
     this.child,

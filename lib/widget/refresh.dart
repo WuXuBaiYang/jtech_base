@@ -68,7 +68,7 @@ class CustomRefreshView<T> extends StatelessWidget {
     return ValueListenableBuilder<CustomRefreshControllerValue<T>>(
       valueListenable: controller,
       builder: (_, value, __) {
-        return LoadingStatus(
+        return LoadingStatusBuilder(
           status: value.loadStatus,
           builder: (_, __) {
             return builder(context, value.data);

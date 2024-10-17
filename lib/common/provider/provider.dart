@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart' as ft;
 import 'package:jtech_base/tool/notice.dart';
+import 'package:jtech_base/tool/overlay.dart';
 import 'package:jtech_base/tool/toast.dart';
 
 /*
@@ -13,15 +14,14 @@ abstract class BaseProvider extends ChangeNotifier {
 
   BaseProvider(this.context);
 
-  // notice的弹层对象持有(同时只能有一个)
-  OverlayEntry? _noticeOverlay;
+  // notice单一token管理
+  CustomOverlayToken? _overlayToken;
 
   // 展示toast
   void showToast(
     String message, {
     Color? textColor,
     double? fontSize,
-    double? fontAsset,
     bool longToast = false,
     Color? backgroundColor,
     ft.ToastGravity? gravity,
@@ -31,7 +31,6 @@ abstract class BaseProvider extends ChangeNotifier {
       gravity: gravity,
       fontSize: fontSize,
       textColor: textColor,
-      fontAsset: fontAsset,
       longToast: longToast,
       backgroundColor: backgroundColor,
     );
@@ -41,17 +40,23 @@ abstract class BaseProvider extends ChangeNotifier {
   void cancelToast() => Toast.cancel();
 
   // 展示notice
-  void showNoticeInfo(
+  Future<T?> showNoticeInfo<T>(
     String message, {
+    String? key,
     String? title,
     bool onGoing = false,
+    CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
     NoticeDecoration decoration = const NoticeDecoration(),
-  }) {
-    if (!context.mounted) return;
-    _noticeOverlay = Notice.showInfo(
+  }) async {
+    cancelNotice();
+    if (!context.mounted) return null;
+    _overlayToken = token ??= CustomOverlayToken<T>();
+    return Notice.showInfo<T>(
       context,
+      key: key,
       title: title,
+      token: token,
       message: message,
       onGoing: onGoing,
       actions: actions,
@@ -60,17 +65,23 @@ abstract class BaseProvider extends ChangeNotifier {
   }
 
   // 展示notice
-  void showNoticeError(
+  Future<T?> showNoticeError<T>(
     String message, {
+    String? key,
     String? title,
     bool onGoing = false,
+    CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
     NoticeDecoration decoration = const NoticeDecoration(),
-  }) {
-    if (!context.mounted) return;
-    _noticeOverlay = Notice.showError(
+  }) async {
+    cancelNotice();
+    if (!context.mounted) return null;
+    _overlayToken = token ??= CustomOverlayToken<T>();
+    return Notice.showError<T>(
       context,
+      key: key,
       title: title,
+      token: token,
       message: message,
       onGoing: onGoing,
       actions: actions,
@@ -79,17 +90,23 @@ abstract class BaseProvider extends ChangeNotifier {
   }
 
   // 展示notice
-  void showNoticeWarning(
+  Future<T?> showNoticeWarning<T>(
     String message, {
+    String? key,
     String? title,
     bool onGoing = false,
+    CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
     NoticeDecoration decoration = const NoticeDecoration(),
-  }) {
-    if (!context.mounted) return;
-    _noticeOverlay = Notice.showWarning(
+  }) async {
+    cancelNotice();
+    if (!context.mounted) return null;
+    _overlayToken = token ??= CustomOverlayToken<T>();
+    return Notice.showWarning(
       context,
+      key: key,
       title: title,
+      token: token,
       message: message,
       onGoing: onGoing,
       actions: actions,
@@ -98,17 +115,23 @@ abstract class BaseProvider extends ChangeNotifier {
   }
 
   // 展示notice
-  void showNoticeSuccess(
+  Future<T?> showNoticeSuccess<T>(
     String message, {
+    String? key,
     String? title,
     bool onGoing = false,
+    CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
     NoticeDecoration decoration = const NoticeDecoration(),
-  }) {
-    if (!context.mounted) return;
-    _noticeOverlay = Notice.showSuccess(
+  }) async {
+    cancelNotice();
+    if (!context.mounted) return null;
+    _overlayToken = token ??= CustomOverlayToken<T>();
+    return Notice.showSuccess<T>(
       context,
+      key: key,
       title: title,
+      token: token,
       message: message,
       onGoing: onGoing,
       actions: actions,
@@ -118,7 +141,7 @@ abstract class BaseProvider extends ChangeNotifier {
 
   // 取消notice
   void cancelNotice() {
-    _noticeOverlay?.remove();
-    _noticeOverlay = null;
+    _overlayToken?.cancel();
+    _overlayToken = null;
   }
 }

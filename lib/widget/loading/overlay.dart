@@ -6,64 +6,30 @@ import 'view.dart';
 * @author wuxubaiyang
 * @Time 2024/10/11 13:52
 */
-class FutureLoadingOverlay extends StatelessWidget {
-  // 加载动画颜色
-  final Color? loadingColor;
-
-  // 加载动画大小
-  final double loadingSize;
-
-  // 加载动画索引
-  final int loadingIndex;
-
-  // 背景颜色
-  final Color? backgroundColor;
-
+class LoadingOverlay extends StatelessWidget {
   // 进度流
   final Stream<double>? progressStream;
 
-  // 遮罩颜色
-  final Color barrierColor;
+  // 装饰器
+  final LoadingOverlayDecoration decoration;
 
-  // 约束
-  final BoxConstraints constraints;
-
-  // 点击背景取消回调
-  final VoidCallback? onCancel;
-
-  const FutureLoadingOverlay({
+  const LoadingOverlay({
     super.key,
-    this.onCancel,
-    this.loadingColor,
     this.progressStream,
-    this.backgroundColor,
-    this.loadingSize = 48,
-    this.loadingIndex = -1,
-    this.barrierColor = Colors.black38,
-    this.constraints = const BoxConstraints.tightFor(width: 80, height: 80),
+    this.decoration = const LoadingOverlayDecoration(),
   });
 
   @override
   Widget build(BuildContext context) {
-    final decoration = BoxDecoration(
-      color: backgroundColor ?? Theme.of(context).cardColor,
-      borderRadius: BorderRadius.circular(14),
+    final boxDecoration = BoxDecoration(
+      borderRadius: decoration.borderRadius,
+      color: decoration.backgroundColor ?? Theme.of(context).cardColor,
     );
-    return GestureDetector(
-      onTap: onCancel,
-      child: AbsorbPointer(
-        child: Material(
-          color: barrierColor,
-          child: Center(
-            child: Container(
-              decoration: decoration,
-              constraints: constraints,
-              alignment: Alignment.center,
-              child: _buildLoading(context),
-            ),
-          ),
-        ),
-      ),
+    return Container(
+      decoration: boxDecoration,
+      alignment: Alignment.center,
+      constraints: decoration.constraints,
+      child: _buildLoading(context),
     );
   }
 
@@ -71,9 +37,9 @@ class FutureLoadingOverlay extends StatelessWidget {
   Widget _buildLoading(BuildContext context) {
     if (progressStream == null) {
       return LoadingView(
-        size: loadingSize,
-        index: loadingIndex,
-        color: loadingColor,
+        size: decoration.loadingSize,
+        index: decoration.loadingIndex,
+        color: decoration.loadingColor,
       );
     }
     return StreamBuilder<double>(
@@ -81,13 +47,47 @@ class FutureLoadingOverlay extends StatelessWidget {
       builder: (_, snap) {
         final progress = snap.data ?? 0;
         return SizedBox.fromSize(
-          size: Size.square(loadingSize),
+          size: Size.square(decoration.loadingSize),
           child: CircularProgressIndicator(
             value: progress,
-            color: loadingColor,
+            color: decoration.loadingColor,
           ),
         );
       },
     );
   }
+}
+
+/*
+* 加载组件装饰器
+* @author wuxubaiyang
+* @Time 2024/10/17 9:52
+*/
+class LoadingOverlayDecoration {
+  // 加载颜色
+  final Color? loadingColor;
+
+  // 加载大小
+  final double loadingSize;
+
+  // 加载索引
+  final int loadingIndex;
+
+  // 背景颜色
+  final Color? backgroundColor;
+
+  // 约束
+  final BoxConstraints constraints;
+
+  // 圆角
+  final BorderRadius borderRadius;
+
+  const LoadingOverlayDecoration({
+    this.loadingColor,
+    this.backgroundColor,
+    this.loadingSize = 48,
+    this.loadingIndex = -1,
+    this.borderRadius = const BorderRadius.all(Radius.circular(14)),
+    this.constraints = const BoxConstraints.tightFor(width: 80, height: 80),
+  });
 }

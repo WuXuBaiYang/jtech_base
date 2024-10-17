@@ -54,7 +54,7 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
       initialData: initialData,
       future: onFuture(),
       builder: (_, snap) {
-        return LoadingStatus(
+        return LoadingStatusBuilder(
           onRetry: onRetry,
           status: _getStatus(snap),
           loadingSize: loadingSize,
