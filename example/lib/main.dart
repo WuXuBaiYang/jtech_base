@@ -30,11 +30,16 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
       appBar: AppBar(
         title: const Text('TestDemo'),
       ),
+      backgroundColor: Colors.grey[200],
+      body: Center(
+        child: TextButton(onPressed: () {}, child: Text('xxx')),
+      ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'debug',
         child: const Icon(Icons.bug_report),
         onPressed: () {
-          Notice.showInfo(context, message: '消息提示',title: '错误');
+          Future.delayed(Duration(seconds: 10)).loading(context);
+          // Notice.showInfo(context, message: '消息提示', title: '错误', onGoing: true);
         },
       ),
     );

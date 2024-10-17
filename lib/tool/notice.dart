@@ -43,6 +43,7 @@ class Notice {
     return _customOverlay.insert<T>(
       context,
       token: token,
+      alignment: Alignment.topCenter,
       onBeforeCancel: () async {
         if (controller.isDismissed) return;
         return controller.reverse();

@@ -61,12 +61,12 @@ class CustomOverlay {
             onOutsideTap ?? (dismissible ? () => dispose(null) : null);
         return GestureDetector(
           onTap: onTap,
-          child: AbsorbPointer(
-            child: Material(
-              color: barrierColor,
-              type: MaterialType.transparency,
-              child: Align(
-                alignment: alignment,
+          child: Material(
+            color: barrierColor ?? Colors.transparent,
+            child: Align(
+              alignment: alignment,
+              child: GestureDetector(
+                onTap: () {},
                 child: builder(context),
               ),
             ),
