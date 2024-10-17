@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:jtech_base/jtech_base.dart';
 
 /*
 * 自定义覆盖物
@@ -24,8 +24,9 @@ class CustomOverlay {
   // 插入弹层
   Future<T?> insert<T>(
     BuildContext context, {
-    required WidgetBuilder builder,
+    required AnimatedTransitionBuilder builder,
     String? key,
+    Widget? child,
     bool opaque = false,
     bool replace = true, // 如果数量超过限制，是否替换最早的弹层,false则不弹出
     Color? barrierColor,
@@ -34,48 +35,62 @@ class CustomOverlay {
     bool maintainState = false,
     bool canSizeOverlay = false,
     CustomOverlayToken<T>? token,
-    AsyncCallback? onBeforeCancel,
     AlignmentGeometry alignment = Alignment.center,
+    Duration animationDuration = const Duration(milliseconds: 130),
   }) async {
     OverlayEntry? overlayEntry;
     if (_overlayTokens.length >= _maxCount) {
       if (!replace) return null;
       cancel(_overlayTokens.keys.first);
     }
-    // 销毁弹层方法
-    Future<T?> dispose(T? result) async {
-      await onBeforeCancel?.call();
-      _overlayTokens.remove(key);
-      overlayEntry?.remove();
-      return result;
-    }
-
     token ??= CustomOverlayToken<T>();
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
-    Overlay.of(context).insert(overlayEntry = OverlayEntry(
+    final overlayState = Overlay.of(context);
+    // 创建动画控制器并装载动画
+    final tween = Tween<double>(begin: 0, end: 1);
+    final barrierController = AnimationController(
+            vsync: overlayState, duration: animationDuration),
+        overlayController = AnimationController(
+            vsync: overlayState, duration: animationDuration);
+    // 插入覆盖层
+    overlayState.insert(overlayEntry = OverlayEntry(
       opaque: opaque,
       maintainState: maintainState,
       canSizeOverlay: canSizeOverlay,
       builder: (context) {
-        final onTap =
-            onOutsideTap ?? (dismissible ? () => dispose(null) : null);
-        return GestureDetector(
-          onTap: onTap,
-          child: Material(
-            color: barrierColor ?? Colors.transparent,
-            child: Align(
-              alignment: alignment,
-              child: GestureDetector(
-                onTap: () {},
-                child: builder(context),
-              ),
-            ),
-          ),
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          barrierController.forward();
+          overlayController.forward();
+        });
+        return CustomOverlayView(
+          alignment: alignment,
+          barrierColor: barrierColor,
+          barrierAnimation: tween.animate(barrierController),
+          overlayAnimation: tween.animate(overlayController),
+          onOutsideTap: () {
+            if (onOutsideTap != null) return onOutsideTap();
+            if (dismissible) token?.cancel();
+          },
+          builder: (_, child) =>
+              builder(context, overlayController.view, child),
+          child: child,
         );
       },
     ));
     _overlayTokens[key] = token;
-    return token.whenCancel.then(dispose);
+    return token.whenCancel.then((result) async {
+      if (token?.withAnime != true) return result;
+      await Future.wait([
+        barrierController.reverse(),
+        overlayController.reverse(),
+      ]);
+      return result;
+    }).whenComplete(() {
+      barrierController.dispose();
+      overlayController.dispose();
+      _overlayTokens.remove(key);
+      overlayEntry?.remove();
+    });
   }
 
   // 根据key取消弹层
@@ -107,11 +122,16 @@ class CustomOverlayToken<T> {
 
   T? get data => _data;
 
+  bool _withAnime = true;
+
+  bool get withAnime => _withAnime;
+
   bool get isFinish => _completer.isCompleted;
 
   Future<T?> get whenCancel => _completer.future;
 
-  void cancel([T? data]) {
+  void cancel([T? data, bool withAnime = true]) {
+    _withAnime = withAnime;
     if (!_completer.isCompleted) _completer.complete(data);
     _data = data;
   }

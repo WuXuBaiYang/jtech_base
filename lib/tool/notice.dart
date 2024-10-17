@@ -22,45 +22,37 @@ class Notice {
     bool onGoing = false,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
-    Curve curve = Curves.easeInOutBack,
+    Curve curve = Curves.bounceInOut,
     NoticeStatus status = NoticeStatus.info,
+    Curve reverseCurve = Curves.easeInOutBack,
     Duration duration = const Duration(milliseconds: 1800),
     NoticeDecoration decoration = const NoticeDecoration(),
-    Duration animeDuration = const Duration(milliseconds: 400),
+    Duration animeDuration = const Duration(milliseconds: 240),
   }) {
     token ??= CustomOverlayToken<T>();
-    // 动画控制器
-    final controller = AnimationController(
-      vsync: Overlay.of(context),
-      duration: animeDuration,
-    )..forward();
     // 一定时间后移除
     if (!onGoing) Timer(duration, token.cancel);
-    final animation = CurvedAnimation(
-      parent: controller,
-      curve: curve,
-    );
     return _customOverlay.insert<T>(
       context,
+      key: key,
       token: token,
+      dismissible: false,
       alignment: Alignment.topCenter,
-      onBeforeCancel: () async {
-        if (controller.isDismissed) return;
-        return controller.reverse();
-      },
-      builder: (_) {
+      animationDuration: animeDuration,
+      builder: (_, animation, __) {
         return Dismissible(
           direction: DismissDirection.up,
-          onDismissed: (_) {
-            controller.dispose();
-            token?.cancel();
-          },
+          onDismissed: (_) => token?.cancel(null, false),
           key: ValueKey(DateTime.now().microsecondsSinceEpoch),
           child: SlideTransition(
             position: Tween<Offset>(
               begin: const Offset(0, -1),
               end: const Offset(0, 0),
-            ).animate(animation),
+            ).animate(CurvedAnimation(
+              curve: curve,
+              parent: animation,
+              reverseCurve: reverseCurve,
+            )),
             child: NoticeView(
               title: title,
               status: status,
@@ -71,7 +63,7 @@ class Notice {
           ),
         );
       },
-    ).whenComplete(controller.dispose);
+    );
   }
 
   // 显示成功提示信息
@@ -83,17 +75,21 @@ class Notice {
     bool onGoing = false,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
+    Curve curve = Curves.bounceInOut,
+    Curve reverseCurve = Curves.easeInOutBack,
     NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     return show<T>(
       context,
       key: key,
+      curve: curve,
       title: title,
       token: token,
       message: message,
       actions: actions,
       onGoing: onGoing,
       decoration: decoration,
+      reverseCurve: reverseCurve,
       status: NoticeStatus.success,
     );
   }
@@ -107,11 +103,14 @@ class Notice {
     bool onGoing = false,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
+    Curve curve = Curves.bounceInOut,
+    Curve reverseCurve = Curves.easeInOutBack,
     NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     return show<T>(
       context,
       key: key,
+      curve: curve,
       title: title,
       token: token,
       message: message,
@@ -119,6 +118,7 @@ class Notice {
       onGoing: onGoing,
       decoration: decoration,
       status: NoticeStatus.error,
+      reverseCurve: reverseCurve,
     );
   }
 
@@ -131,6 +131,8 @@ class Notice {
     bool onGoing = false,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
+    Curve curve = Curves.bounceInOut,
+    Curve reverseCurve = Curves.easeInOutBack,
     NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     return show<T>(
@@ -138,10 +140,12 @@ class Notice {
       key: key,
       title: title,
       token: token,
+      curve: curve,
       message: message,
       actions: actions,
       onGoing: onGoing,
       decoration: decoration,
+      reverseCurve: reverseCurve,
       status: NoticeStatus.warning,
     );
   }
@@ -155,11 +159,14 @@ class Notice {
     bool onGoing = false,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
+    Curve curve = Curves.bounceInOut,
+    Curve reverseCurve = Curves.easeInOutBack,
     NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     return show<T>(
       context,
       key: key,
+      curve: curve,
       title: title,
       token: token,
       message: message,
@@ -167,6 +174,7 @@ class Notice {
       onGoing: onGoing,
       decoration: decoration,
       status: NoticeStatus.info,
+      reverseCurve: reverseCurve,
     );
   }
 }

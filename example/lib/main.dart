@@ -32,15 +32,25 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
       ),
       backgroundColor: Colors.grey[200],
       body: Center(
-        child: TextButton(onPressed: () {}, child: Text('xxx')),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          TextButton(
+            onPressed: () {
+              Future.delayed(const Duration(seconds: 3)).loading(context);
+            },
+            child: const Text('Loading'),
+          ),
+          TextButton(
+            onPressed: () {
+              Future.delayed(const Duration(seconds: 3)).loading(context);
+            },
+            child: const Text('Notify'),
+          ),
+        ]),
       ),
       floatingActionButton: FloatingActionButton(
         tooltip: 'debug',
         child: const Icon(Icons.bug_report),
-        onPressed: () {
-          Future.delayed(Duration(seconds: 10)).loading(context);
-          // Notice.showInfo(context, message: '消息提示', title: '错误', onGoing: true);
-        },
+        onPressed: () {},
       ),
     );
   }

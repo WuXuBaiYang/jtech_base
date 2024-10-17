@@ -48,6 +48,8 @@ abstract class BaseProvider extends ChangeNotifier {
     bool onGoing = false,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
+    Curve curve = Curves.bounceInOut,
+    Curve reverseCurve = Curves.easeInOutBack,
     NoticeDecoration decoration = const NoticeDecoration(),
   }) async {
     cancelNotice();
@@ -56,12 +58,14 @@ abstract class BaseProvider extends ChangeNotifier {
     return Notice.showInfo<T>(
       context,
       key: key,
+      curve: curve,
       title: title,
       token: token,
       message: message,
       onGoing: onGoing,
       actions: actions,
       decoration: decoration,
+      reverseCurve: reverseCurve,
     );
   }
 
@@ -73,6 +77,8 @@ abstract class BaseProvider extends ChangeNotifier {
     bool onGoing = false,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
+    Curve curve = Curves.bounceInOut,
+    Curve reverseCurve = Curves.easeInOutBack,
     NoticeDecoration decoration = const NoticeDecoration(),
   }) async {
     cancelNotice();
@@ -81,12 +87,14 @@ abstract class BaseProvider extends ChangeNotifier {
     return Notice.showError<T>(
       context,
       key: key,
+      curve: curve,
       title: title,
       token: token,
       message: message,
       onGoing: onGoing,
       actions: actions,
       decoration: decoration,
+      reverseCurve: reverseCurve,
     );
   }
 
@@ -98,6 +106,8 @@ abstract class BaseProvider extends ChangeNotifier {
     bool onGoing = false,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
+    Curve curve = Curves.bounceInOut,
+    Curve reverseCurve = Curves.easeInOutBack,
     NoticeDecoration decoration = const NoticeDecoration(),
   }) async {
     cancelNotice();
@@ -106,12 +116,14 @@ abstract class BaseProvider extends ChangeNotifier {
     return Notice.showWarning(
       context,
       key: key,
+      curve: curve,
       title: title,
       token: token,
       message: message,
       onGoing: onGoing,
       actions: actions,
       decoration: decoration,
+      reverseCurve: reverseCurve,
     );
   }
 
@@ -123,6 +135,8 @@ abstract class BaseProvider extends ChangeNotifier {
     bool onGoing = false,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
+    Curve curve = Curves.bounceInOut,
+    Curve reverseCurve = Curves.easeInOutBack,
     NoticeDecoration decoration = const NoticeDecoration(),
   }) async {
     cancelNotice();
@@ -131,12 +145,14 @@ abstract class BaseProvider extends ChangeNotifier {
     return Notice.showSuccess<T>(
       context,
       key: key,
+      curve: curve,
       title: title,
       token: token,
       message: message,
       onGoing: onGoing,
       actions: actions,
       decoration: decoration,
+      reverseCurve: reverseCurve,
     );
   }
 

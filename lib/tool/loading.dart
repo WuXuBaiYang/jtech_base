@@ -16,30 +16,43 @@ class Loading {
   static Future<T?> show<T>(
     BuildContext context, {
     required Future<T?> loadFuture,
+    String? key,
     bool dismissible = true,
     Stream<double>? progressStream,
+    Curve curve = Curves.easeInOut,
     Color barrierColor = Colors.black38,
+    Curve reverseCurve = Curves.easeInOutBack,
     LoadingOverlayDecoration decoration = const LoadingOverlayDecoration(),
   }) async {
-    cancel();
+    _customOverlay.cancelAll();
+    key ??= DateTime.now().microsecondsSinceEpoch.toString();
     try {
       _customOverlay.insert(
         context,
+        key: key,
         dismissible: dismissible,
         barrierColor: barrierColor,
         alignment: Alignment.center,
-        builder: (_) {
-          return LoadingOverlay(
-            decoration: decoration,
-            progressStream: progressStream,
+        builder: (_, animation, child) {
+          return ScaleTransition(
+            scale: CurvedAnimation(
+              curve: curve,
+              parent: animation,
+              reverseCurve: reverseCurve,
+            ),
+            child: child,
           );
         },
+        child: LoadingOverlay(
+          progressStream: progressStream,
+          decoration: decoration,
+        ),
       );
       return await loadFuture;
     } catch (e) {
       rethrow;
     } finally {
-      cancel();
+      _customOverlay.cancel(key);
     }
   }
 
@@ -53,14 +66,18 @@ extension FutureLoading<T> on Future<T> {
     BuildContext context, {
     bool dismissible = true,
     Stream<double>? progressStream,
+    Curve curve = Curves.easeInOut,
     Color barrierColor = Colors.black38,
+    Curve reverseCurve = Curves.easeInOutBack,
     LoadingOverlayDecoration decoration = const LoadingOverlayDecoration(),
   }) =>
       Loading.show(
         context,
+        curve: curve,
         loadFuture: this,
         decoration: decoration,
         dismissible: dismissible,
+        reverseCurve: reverseCurve,
         barrierColor: barrierColor,
         progressStream: progressStream,
       );
