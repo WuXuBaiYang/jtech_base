@@ -56,11 +56,15 @@ class CustomOverlay {
             vsync: overlayState, duration: animationDuration);
     // 拦截路由pop
     final popEntry = _OverlayPopEntry<T>(
-      canPop: false,
-      onPopWithResult: (didPop, result) {
-        if (!didPop) cancel(key!, result);
-      },
-    );
+        canPop: false,
+        onPopWithResult: (didPop, result) {
+          if (didPop) {
+            barrierController.dispose();
+            overlayController.dispose();
+          } else {
+            cancel(key!, result);
+          }
+        });
     try {
       modalRoute?.registerPopEntry(popEntry);
       // 插入覆盖层
@@ -80,7 +84,7 @@ class CustomOverlay {
             overlayAnimation: tween.animate(overlayController),
             onOutsideTap: () {
               if (onOutsideTap != null) return onOutsideTap();
-              if (dismissible) token?.cancel();
+              if (dismissible) cancel(key!);
             },
             builder: (_, child) =>
                 builder(context, overlayController.view, child),
@@ -90,7 +94,9 @@ class CustomOverlay {
       ));
       // 处理弹层后续事件
       final result = await (_overlayTokens[key] = token).whenCancel;
-      if (token.withAnime) {
+      if (token.withAnime &&
+          barrierController.isCompleted &&
+          overlayController.isCompleted) {
         await Future.wait([
           barrierController.reverse(),
           overlayController.reverse(),

@@ -36,13 +36,19 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           TextButton(
             onPressed: () {
-              Future.delayed(const Duration(seconds: 3)).loading(context);
+              fu() async {
+                await Future.delayed(const Duration(seconds: 3));
+                Navigator.pop(context);
+                return 'xxxx';
+              }
+
+              fu().loading(context);
             },
             child: const Text('Loading'),
           ),
           TextButton(
             onPressed: () {
-              Notice.showSuccess(context, message: 'xxxx');
+              Notice.showSuccess(context, message: 'xxxx' * 10);
             },
             child: const Text('Notify'),
           ),
@@ -57,7 +63,7 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
                     actions: [
                       TextButton(
                         onPressed: () {
-                          Navigator.maybePop(context,'xxxxxx');
+                          Navigator.maybePop(context, 'xxxxxx');
                           // CustomDialog.cancel(context, '1');
                         },
                         child: const Text('取消'),

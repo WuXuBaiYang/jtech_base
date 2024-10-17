@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jtech_base/tool/notice.dart';
+
 /*
 * 消息通知组件
 * @author wuxubaiyang
@@ -63,13 +64,15 @@ class NoticeView extends StatelessWidget {
       child: Row(mainAxisSize: MainAxisSize.min, children: [
         decoration.noticeIcon.getStatusIcon(status),
         SizedBox(width: decoration.space),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (title != null) Text(title!, style: titleStyle),
-            Text(message, style: messageStyle),
-          ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (title != null) Text(title!, style: titleStyle),
+              Text(message, style: messageStyle),
+            ],
+          ),
         ),
         if (actions.isNotEmpty) ...[
           SizedBox(width: decoration.space),
