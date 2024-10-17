@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:jtech_base/jtech_base.dart';
 
@@ -39,6 +40,7 @@ class CustomOverlay {
     Duration animationDuration = const Duration(milliseconds: 130),
   }) async {
     OverlayEntry? overlayEntry;
+    final overlayState = Overlay.of(context);
     final modalRoute = ModalRoute.of(context);
     if (_overlayTokens.length >= _maxCount) {
       if (!replace) return null;
@@ -46,7 +48,6 @@ class CustomOverlay {
     }
     token ??= CustomOverlayToken<T>();
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
-    final overlayState = Overlay.of(context);
     // 创建动画控制器并装载动画
     final tween = Tween<double>(begin: 0, end: 1);
     final barrierController = AnimationController(
@@ -55,53 +56,57 @@ class CustomOverlay {
             vsync: overlayState, duration: animationDuration);
     // 拦截路由pop
     final popEntry = _OverlayPopEntry<T>(
-      canPop: dismissible,
+      canPop: false,
       onPopWithResult: (didPop, result) {
-        if (dismissible && didPop) token?.cancel(result);
+        if (!didPop) cancel(key!, result);
       },
     );
-    modalRoute?.registerPopEntry(popEntry);
-    // 插入覆盖层
-    overlayState.insert(overlayEntry = OverlayEntry(
-      opaque: opaque,
-      maintainState: maintainState,
-      canSizeOverlay: canSizeOverlay,
-      builder: (context) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          barrierController.forward();
-          overlayController.forward();
-        });
-        return CustomOverlayView(
-          alignment: alignment,
-          barrierColor: barrierColor,
-          barrierAnimation: tween.animate(barrierController),
-          overlayAnimation: tween.animate(overlayController),
-          onOutsideTap: () {
-            if (onOutsideTap != null) return onOutsideTap();
-            if (dismissible) token?.cancel();
-          },
-          builder: (_, child) =>
-              builder(context, overlayController.view, child),
-          child: child,
-        );
-      },
-    ));
-    // 处理弹层后续事件
-    _overlayTokens[key] = token;
-    return token.whenCancel.then((result) async {
-      if (token?.withAnime != true) return result;
-      await Future.wait([
-        barrierController.reverse(),
-        overlayController.reverse(),
-      ]);
+    try {
+      modalRoute?.registerPopEntry(popEntry);
+      // 插入覆盖层
+      overlayState.insert(overlayEntry = OverlayEntry(
+        opaque: opaque,
+        maintainState: maintainState,
+        canSizeOverlay: canSizeOverlay,
+        builder: (context) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            barrierController.forward();
+            overlayController.forward();
+          });
+          return CustomOverlayView(
+            alignment: alignment,
+            barrierColor: barrierColor,
+            barrierAnimation: tween.animate(barrierController),
+            overlayAnimation: tween.animate(overlayController),
+            onOutsideTap: () {
+              if (onOutsideTap != null) return onOutsideTap();
+              if (dismissible) token?.cancel();
+            },
+            builder: (_, child) =>
+                builder(context, overlayController.view, child),
+            child: child,
+          );
+        },
+      ));
+      // 处理弹层后续事件
+      final result = await (_overlayTokens[key] = token).whenCancel;
+      if (token.withAnime) {
+        await Future.wait([
+          barrierController.reverse(),
+          overlayController.reverse(),
+        ]);
+      }
       return result;
-    }).whenComplete(() {
-      modalRoute?.unregisterPopEntry(popEntry);
+    } catch (e) {
+      if (kDebugMode) print('弹窗异常：${e.toString()}');
+    } finally {
+      overlayEntry?.remove();
+      _overlayTokens.remove(key);
       barrierController.dispose();
       overlayController.dispose();
-      _overlayTokens.remove(key);
-      overlayEntry?.remove();
-    });
+      modalRoute?.unregisterPopEntry(popEntry);
+    }
+    return null;
   }
 
   // 根据key取消弹层

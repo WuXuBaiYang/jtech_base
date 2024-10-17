@@ -42,7 +42,7 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
           ),
           TextButton(
             onPressed: () {
-              Future.delayed(const Duration(seconds: 3)).loading(context);
+              Notice.showSuccess(context, message: 'xxxx');
             },
             child: const Text('Notify'),
           ),
@@ -50,7 +50,6 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
             onPressed: () async {
               final result = await showCustomDialog(
                 context,
-                dismissible: false,
                 builder: (context) {
                   return CustomDialog(
                     title: const Text('自定义弹窗标题'),
@@ -58,7 +57,8 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
                     actions: [
                       TextButton(
                         onPressed: () {
-                          CustomDialog.cancel(context, '1');
+                          Navigator.maybePop(context,'xxxxxx');
+                          // CustomDialog.cancel(context, '1');
                         },
                         child: const Text('取消'),
                       ),
