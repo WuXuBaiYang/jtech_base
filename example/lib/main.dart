@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:jtech_base/jtech_base.dart';
 
@@ -44,6 +45,36 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
               Future.delayed(const Duration(seconds: 3)).loading(context);
             },
             child: const Text('Notify'),
+          ),
+          TextButton(
+            onPressed: () async {
+              final result = await showCustomDialog(
+                context,
+                dismissible: false,
+                builder: (context) {
+                  return CustomDialog(
+                    title: const Text('自定义弹窗标题'),
+                    content: const Text('自定义弹窗内容'),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          CustomDialog.cancel(context, '1');
+                        },
+                        child: const Text('取消'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          CustomDialog.cancel(context, 1);
+                        },
+                        child: const Text('确定'),
+                      ),
+                    ],
+                  );
+                },
+              );
+              if (kDebugMode) print(result);
+            },
+            child: const Text('Dialog'),
           ),
         ]),
       ),

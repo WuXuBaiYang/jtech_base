@@ -39,6 +39,7 @@ class CustomOverlay {
     Duration animationDuration = const Duration(milliseconds: 130),
   }) async {
     OverlayEntry? overlayEntry;
+    final modalRoute = ModalRoute.of(context);
     if (_overlayTokens.length >= _maxCount) {
       if (!replace) return null;
       cancel(_overlayTokens.keys.first);
@@ -52,6 +53,14 @@ class CustomOverlay {
             vsync: overlayState, duration: animationDuration),
         overlayController = AnimationController(
             vsync: overlayState, duration: animationDuration);
+    // 拦截路由pop
+    final popEntry = _OverlayPopEntry<T>(
+      canPop: dismissible,
+      onPopWithResult: (didPop, result) {
+        if (dismissible && didPop) token?.cancel(result);
+      },
+    );
+    modalRoute?.registerPopEntry(popEntry);
     // 插入覆盖层
     overlayState.insert(overlayEntry = OverlayEntry(
       opaque: opaque,
@@ -77,6 +86,7 @@ class CustomOverlay {
         );
       },
     ));
+    // 处理弹层后续事件
     _overlayTokens[key] = token;
     return token.whenCancel.then((result) async {
       if (token?.withAnime != true) return result;
@@ -86,6 +96,7 @@ class CustomOverlay {
       ]);
       return result;
     }).whenComplete(() {
+      modalRoute?.unregisterPopEntry(popEntry);
       barrierController.dispose();
       overlayController.dispose();
       _overlayTokens.remove(key);
@@ -106,6 +117,34 @@ class CustomOverlay {
     _overlayTokens.forEach((_, v) => v.cancel());
     _overlayTokens.clear();
   }
+}
+
+/*
+* 路由pop拦截
+* @author wuxubaiyang
+* @Time 2024/10/17 17:30
+*/
+class _OverlayPopEntry<T> implements PopEntry<T> {
+  // 是否可以pop
+  final bool canPop;
+
+  // pop回调
+  final PopInvokedWithResultCallback<T>? onPopWithResult;
+
+  _OverlayPopEntry({
+    this.canPop = false,
+    this.onPopWithResult,
+  });
+
+  @override
+  void onPopInvoked(bool didPop) => throw UnimplementedError();
+
+  @override
+  void onPopInvokedWithResult(bool didPop, T? result) =>
+      onPopWithResult?.call(didPop, result);
+
+  @override
+  late final ValueNotifier<bool> canPopNotifier = ValueNotifier(false);
 }
 
 /*
