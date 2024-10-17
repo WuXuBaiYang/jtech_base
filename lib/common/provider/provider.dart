@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart' as ft;
 import 'package:jtech_base/tool/notice.dart';
 import 'package:jtech_base/tool/overlay.dart';
 import 'package:jtech_base/tool/toast.dart';
+import 'package:jtech_base/widget/notice.dart';
 
 /*
 * 代理基类
