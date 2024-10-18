@@ -12,19 +12,30 @@ class Toast {
     String msg, {
     Color? textColor,
     double? fontSize,
+    Alignment? gravity,
     bool longToast = false,
     Color? backgroundColor,
-    ft.ToastGravity? gravity,
   }) {
     final toastLength =
         longToast ? ft.Toast.LENGTH_LONG : ft.Toast.LENGTH_SHORT;
     return ft.Fluttertoast.showToast(
       msg: msg,
-      gravity: gravity,
       fontSize: fontSize,
       textColor: textColor,
       toastLength: toastLength,
       backgroundColor: backgroundColor,
+      gravity: switch (gravity) {
+        Alignment.topCenter => ft.ToastGravity.TOP,
+        Alignment.topLeft => ft.ToastGravity.TOP_LEFT,
+        Alignment.topRight => ft.ToastGravity.TOP_RIGHT,
+        Alignment.center => ft.ToastGravity.CENTER,
+        Alignment.centerLeft => ft.ToastGravity.CENTER_LEFT,
+        Alignment.centerRight => ft.ToastGravity.CENTER_RIGHT,
+        Alignment.bottomCenter => ft.ToastGravity.BOTTOM,
+        Alignment.bottomLeft => ft.ToastGravity.BOTTOM_LEFT,
+        Alignment.bottomRight => ft.ToastGravity.BOTTOM_RIGHT,
+        _ => ft.ToastGravity.BOTTOM,
+      },
     );
   }
 

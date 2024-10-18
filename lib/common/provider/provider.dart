@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart' as ft;
 import 'package:jtech_base/tool/notice.dart';
 import 'package:jtech_base/tool/overlay.dart';
 import 'package:jtech_base/tool/toast.dart';
@@ -25,7 +24,7 @@ abstract class BaseProvider extends ChangeNotifier {
     double? fontSize,
     bool longToast = false,
     Color? backgroundColor,
-    ft.ToastGravity? gravity,
+    Alignment? gravity,
   }) {
     Toast.show(
       message,
