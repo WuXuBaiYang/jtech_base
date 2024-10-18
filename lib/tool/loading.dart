@@ -30,6 +30,7 @@ class Loading {
       _customOverlay.insert(
         context,
         key: key,
+        interceptPop: false,
         dismissible: dismissible,
         barrierColor: barrierColor,
         alignment: Alignment.center,

@@ -49,14 +49,12 @@ class CustomOverlay {
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
     final animation =
         _OverlayAnimation(vsync: overlayState, duration: animationDuration);
-    final overlayPop = interceptPop
-        ? _OverlayPop<T>(context,
-            canPop: false,
-            overlayKey: key,
-            autoRegister: true,
-            onPop: (v) => cancel(key!, v),
-            onDidPop: () => animation.dispose())
-        : null;
+    final overlayPop = _OverlayPop<T>(context,
+        canPop: true,
+        overlayKey: key,
+        autoRegister: interceptPop,
+        onPop: (v) => cancel(key!, v),
+        onDidPop: () => animation.dispose());
     try {
       // 插入覆盖层
       overlayState.insert(overlayEntry = OverlayEntry(
@@ -91,7 +89,7 @@ class CustomOverlay {
     } finally {
       animation.dispose();
       overlayEntry?.remove();
-      overlayPop?.unregister();
+      overlayPop.unregister();
       _overlayTokens.remove(key);
     }
     return null;
@@ -207,25 +205,25 @@ class _OverlayPop<T> implements PopEntry<T> {
   // pop回调
   final ValueChanged<T?>? onPop;
 
+  // 是否自动注册
+  final bool autoRegister;
+
   _OverlayPop(
     this.context, {
     required this.overlayKey,
     this.onPop,
     this.onDidPop,
     this.canPop = false,
-    bool autoRegister = true,
+    this.autoRegister = true,
   }) {
-    if (autoRegister) register();
-  }
-
-  // 注册拦截
-  void register() {
+    if (!autoRegister) return;
     final modalRoute = ModalRoute.of(context);
     modalRoute?.registerPopEntry(this);
   }
 
   // 注销拦截
   void unregister() {
+    if (!autoRegister) return;
     final modalRoute = ModalRoute.of(context);
     modalRoute?.unregisterPopEntry(this);
   }

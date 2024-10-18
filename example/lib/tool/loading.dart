@@ -20,10 +20,13 @@ class ToolLoadingPage extends ProviderPage<ToolLoadingProvider> {
       appBar: AppBar(
         title: const Text('工具-加载'),
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {},
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
-
 
 class ToolLoadingProvider extends PageProvider {
   ToolLoadingProvider(super.context, super.state);
