@@ -1,47 +1,5 @@
 import 'package:flutter/material.dart';
 
-// // 管理全局dialog
-// final _customDialogOverlay = CustomOverlay();
-//
-// // 通过key取消dialog
-// void cancelCustomDialog(String key) => _customDialogOverlay.cancel(key);
-//
-// // 展示自定义弹窗
-// Future<T?> showCustomDialog<T>(
-//   BuildContext context, {
-//   required WidgetBuilder builder,
-//   String? key,
-//   bool dismissible = true,
-//   Curve curve = Curves.easeIn,
-//   CustomOverlayToken<T>? token,
-//   Curve reverseCurve = Curves.easeOut,
-//   Color barrierColor = Colors.black38,
-// }) {
-//   token ??= CustomOverlayToken<T>();
-//   return _customDialogOverlay.insert<T>(
-//     context,
-//     key: key,
-//     token: token,
-//     dismissible: dismissible,
-//     barrierColor: barrierColor,
-//     alignment: Alignment.center,
-//     animationDuration: Duration(milliseconds: 200),
-//     builder: (_, animation, __) {
-//       return FadeTransition(
-//         opacity: CurvedAnimation(
-//           curve: curve,
-//           parent: animation,
-//           reverseCurve: reverseCurve,
-//         ),
-//         child: _CustomDialogScope(
-//           token: token!,
-//           child: Builder(builder: builder),
-//         ),
-//       );
-//     },
-//   );
-// }
-
 /*
 * 自定义弹窗
 * @author wuxubaiyang
@@ -86,33 +44,4 @@ class CustomDialog extends StatelessWidget {
       ),
     );
   }
-
-  // // 获取控制token
-  // static CustomOverlayToken? maybeOf(BuildContext context) {
-  //   final scope =
-  //       context.dependOnInheritedWidgetOfExactType<_CustomDialogScope>();
-  //   return scope?._token;
-  // }
-  //
-  // // 取消当前dialog
-  // static void cancel(BuildContext context, [data, bool withAnime = true]) =>
-  //     maybeOf(context)?.cancel(data, withAnime);
 }
-
-// /*
-// * 自定义弹窗作用域
-// * @author wuxubaiyang
-// * @Time 2024/10/17 16:35
-// */
-// class _CustomDialogScope extends InheritedWidget {
-//   // 弹窗token
-//   final CustomOverlayToken _token;
-//
-//   const _CustomDialogScope({
-//     required super.child,
-//     required CustomOverlayToken token,
-//   }) : _token = token;
-//
-//   @override
-//   bool updateShouldNotify(_CustomDialogScope old) => false;
-// }
