@@ -165,3 +165,34 @@ class DurationPattern {
   // 简略分秒格式
   static const String minuteSecond = 'mm:ss';
 }
+
+// 尝试解析duration
+Duration? tryParseDuration(String durationString) {
+  if (durationString.isEmpty) return null;
+  final parts = durationString.split(':');
+  int? hours = 0, minutes = 0, seconds = 0;
+  if (parts.length == 3) {
+    hours = int.tryParse(parts[0]);
+    minutes = int.tryParse(parts[1]);
+    seconds = int.tryParse(parts[2]);
+    if (hours == null || minutes == null || seconds == null) return null;
+  } else if (parts.length == 2) {
+    minutes = int.tryParse(parts[0]);
+    seconds = int.tryParse(parts[1]);
+    if (minutes == null || seconds == null) return null;
+  }
+  return Duration(hours: hours, minutes: minutes, seconds: seconds);
+}
+
+// 获取零点时间
+DateTime getDayZero({int dayOffset = 0}) {
+  if (dayOffset < 0) return DateTime.now();
+  final now = DateTime.now();
+  return DateTime(now.year, now.month, now.day).add(Duration(days: dayOffset));
+}
+
+// 获取距离零点的duration
+Duration toDayZero({int dayOffset = 1}) {
+  if (dayOffset < 1) return Duration.zero;
+  return getDayZero(dayOffset: dayOffset).difference(DateTime.now());
+}

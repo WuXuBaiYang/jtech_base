@@ -5,7 +5,7 @@ import 'package:logger/logger.dart';
 * @author wuxubaiyang
 * @Time 2022/3/17 16:26
 */
-class LogTool {
+class Log {
   // 日期方法
   static Logger? _logger;
 

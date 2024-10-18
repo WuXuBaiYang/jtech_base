@@ -7,6 +7,20 @@ import 'package:jtech_base/jtech_base.dart';
 * @Time 2022/3/17 16:11
 */
 class FileTool {
+  // 缓存目标文件到缓存目录
+  static Future<String?> cache(String filePath) async {
+    final file = File(filePath);
+    if (!file.existsSync()) return null;
+    final baseDir = await getCachePath();
+    if (baseDir == null) return null;
+    final outputPath = join(baseDir, '${genDateSign()}${file.suffixes}');
+    return (await file.copy(outputPath)).path;
+  }
+
+  // 获取文件缓存目录
+  static Future<String?> getCachePath([String cacheFilePath = 'cache_file']) =>
+      FileTool.getDirPath(cacheFilePath, root: FileDir.temporary);
+
   // 清除目录文件
   static Future<bool> clearDir([String path = '']) async {
     try {
@@ -14,7 +28,7 @@ class FileTool {
       if (dir.existsSync()) await dir.delete(recursive: true);
       return true;
     } catch (e) {
-      LogTool.e('dir_cache_clear_error：', error: e);
+      Log.e('dir_cache_clear_error：', error: e);
     }
     return false;
   }
@@ -77,11 +91,10 @@ class FileTool {
   }
 
   // 获取文件的sha256
-  static Future<String> getFileSha256(String filePath) async {
+  static Future<String> calcFileSha256(String filePath) async {
     final file = File(filePath);
     if (!file.existsSync()) throw Exception('文件不存在');
-    final sha256Hash = sha256.convert(await file.readAsBytes());
-    return sha256Hash.toString();
+    return sha256.convert(await file.readAsBytes()).toString();
   }
 }
 

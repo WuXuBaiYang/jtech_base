@@ -8,7 +8,6 @@ export 'package:go_router/go_router.dart';
 export 'package:path_provider/path_provider.dart';
 export 'package:provider/single_child_widget.dart';
 export 'package:permission_handler/permission_handler.dart';
-export 'package:font_awesome_flutter/font_awesome_flutter.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 export 'package:path/path.dart' show join, joinAll, split, basename, separator;
 
@@ -37,6 +36,7 @@ export 'tool/list.dart';
 export 'tool/loading.dart';
 export 'tool/log.dart';
 export 'tool/notice.dart';
+export 'tool/picker.dart';
 export 'tool/throttle.dart';
 export 'tool/toast.dart';
 export 'tool/tool.dart';
