@@ -17,7 +17,7 @@ dependencies:
   logger: ^2.4.0
   crypto: ^3.0.6
   provider: ^6.1.2
-  objectbox: ^4.0.2
+  objectbox: ^4.0.3
   go_router: ^14.3.0
   http_parser: ^4.0.2
   file_picker: ^8.1.2
@@ -26,13 +26,13 @@ dependencies:
   path_provider: ^2.1.4
   flex_color_scheme: ^7.3.1
   shimmer_animation: ^2.2.1
-  package_info_plus: ^8.0.3
+  package_info_plus: ^8.1.0
   shared_preferences: ^2.3.2
   permission_handler: ^11.3.1
   cached_network_image: ^3.4.1
   font_awesome_flutter: ^10.7.0
   flutter_image_compress: ^2.3.0
-  objectbox_flutter_libs: ^4.0.2
+  objectbox_flutter_libs: ^4.0.3
   loading_animation_widget: ^1.3.0
 
 dev_dependencies:
