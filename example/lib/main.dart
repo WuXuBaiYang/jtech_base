@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:jtech_base/jtech_base.dart';
 import 'tool/dialog.dart';
 import 'tool/loading.dart';
@@ -52,7 +53,10 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
       ),
       body: _buildFunctionList(context, provider.functions),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Picker.file(dialogTitle: 'xxxx',);
+          // ImagePicker().pickImage(source: ImageSource.gallery);
+        },
       ),
     );
   }
