@@ -51,6 +51,9 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
         title: const Text('JTech Base Demo'),
       ),
       body: _buildFunctionList(context, provider.functions),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+      ),
     );
   }
 
