@@ -30,35 +30,43 @@ class Notice {
     Duration animeDuration = const Duration(milliseconds: 240),
   }) {
     token ??= CustomOverlayToken<T>();
-    // 一定时间后移除
-    if (!onGoing) Timer(duration, token.cancel);
+    final noticeTimer = _NoticeTimer(
+        autoStart: true,
+        func: token.cancel,
+        duration: duration,
+        isEffective: !onGoing);
     return _customOverlay.insert<T>(
       context,
       key: key,
       token: token,
       dismissible: false,
+      interceptPop: false,
       alignment: Alignment.topCenter,
       animationDuration: animeDuration,
       builder: (_, animation, __) {
-        return Dismissible(
-          direction: DismissDirection.up,
-          onDismissed: (_) => token?.cancel(null, false),
-          key: ValueKey(DateTime.now().microsecondsSinceEpoch),
-          child: SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, -1),
-              end: const Offset(0, 0),
-            ).animate(CurvedAnimation(
-              curve: curve,
-              parent: animation,
-              reverseCurve: reverseCurve,
-            )),
-            child: NoticeView(
-              title: title,
-              status: status,
-              message: message,
-              actions: actions,
-              decoration: decoration,
+        return SafeArea(
+          child: Dismissible(
+            direction: DismissDirection.up,
+            onDismissed: (_) => token?.cancel(null, false),
+            onUpdate: (details) =>
+                noticeTimer.pauseOrResume(details.progress > 0),
+            key: ValueKey(DateTime.now().microsecondsSinceEpoch),
+            child: SlideTransition(
+              position: Tween<Offset>(
+                begin: const Offset(0, -1),
+                end: const Offset(0, 0),
+              ).animate(CurvedAnimation(
+                curve: curve,
+                parent: animation,
+                reverseCurve: reverseCurve,
+              )),
+              child: NoticeView(
+                title: title,
+                status: status,
+                message: message,
+                actions: actions,
+                decoration: decoration,
+              ),
             ),
           ),
         );
@@ -176,6 +184,50 @@ class Notice {
       status: NoticeStatus.info,
       reverseCurve: reverseCurve,
     );
+  }
+}
+
+/*
+* 自动取消定时器
+* @author wuxubaiyang
+* @Time 2024/10/18 9:53
+*/
+class _NoticeTimer {
+  // 计时器是否生效
+  final bool _isEffective;
+
+  // 计时时长
+  final Duration duration;
+
+  // 事件
+  final VoidCallback? func;
+
+  _NoticeTimer({
+    this.func,
+    bool autoStart = true,
+    bool isEffective = true,
+    this.duration = const Duration(milliseconds: 1800),
+  }) : _isEffective = isEffective {
+    if (autoStart) start();
+  }
+
+  // 计时器
+  Timer? _timer;
+
+  // 暂停或恢复定时器
+  void pauseOrResume(bool pause) => pause ? cancel() : start();
+
+  // 启动定时器
+  void start() {
+    cancel();
+    if (!_isEffective) return;
+    _timer = Timer(duration, () => func?.call());
+  }
+
+  // 销毁定时器
+  void cancel() {
+    _timer?.cancel();
+    _timer = null;
   }
 }
 

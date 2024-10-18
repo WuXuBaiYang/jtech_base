@@ -32,6 +32,7 @@ class CustomOverlay {
     bool replace = true, // 如果数量超过限制，是否替换最早的弹层,false则不弹出
     Color? barrierColor,
     bool dismissible = false,
+    bool interceptPop = true,
     VoidCallback? onOutsideTap,
     bool maintainState = false,
     bool canSizeOverlay = false,
@@ -39,78 +40,59 @@ class CustomOverlay {
     AlignmentGeometry alignment = Alignment.center,
     Duration animationDuration = const Duration(milliseconds: 130),
   }) async {
+    // 检查弹层数量是否超出限制以及是否需要移除
+    if (!_checkOverlayCount(replace)) return null;
+    // 创建初始化字段
     OverlayEntry? overlayEntry;
-    final overlayState = Overlay.of(context);
-    final modalRoute = ModalRoute.of(context);
-    if (_overlayTokens.length >= _maxCount) {
-      if (!replace) return null;
-      cancel(_overlayTokens.keys.first);
-    }
     token ??= CustomOverlayToken<T>();
+    final overlayState = Overlay.of(context);
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
-    // 创建动画控制器并装载动画
-    final tween = Tween<double>(begin: 0, end: 1);
-    final barrierController = AnimationController(
-            vsync: overlayState, duration: animationDuration),
-        overlayController = AnimationController(
-            vsync: overlayState, duration: animationDuration);
-    // 拦截路由pop
-    final popEntry = _OverlayPopEntry<T>(
-        canPop: false,
-        onPopWithResult: (didPop, result) {
-          if (didPop) {
-            barrierController.dispose();
-            overlayController.dispose();
-          } else {
-            cancel(key!, result);
-          }
-        });
+    final animation =
+        _OverlayAnimation(vsync: overlayState, duration: animationDuration);
+    final overlayPop = interceptPop
+        ? _OverlayPop<T>(context,
+            canPop: false,
+            overlayKey: key,
+            autoRegister: true,
+            onPop: (v) => cancel(key!, v),
+            onDidPop: () => animation.dispose())
+        : null;
     try {
-      modalRoute?.registerPopEntry(popEntry);
       // 插入覆盖层
       overlayState.insert(overlayEntry = OverlayEntry(
         opaque: opaque,
         maintainState: maintainState,
         canSizeOverlay: canSizeOverlay,
         builder: (context) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            barrierController.forward();
-            overlayController.forward();
-          });
+          WidgetsBinding.instance
+              .addPostFrameCallback((_) => animation.forward());
           return CustomOverlayView(
             alignment: alignment,
             barrierColor: barrierColor,
-            barrierAnimation: tween.animate(barrierController),
-            overlayAnimation: tween.animate(overlayController),
+            barrierAnimation: animation.barrier,
+            overlayAnimation: animation.overlay,
             onOutsideTap: () {
               if (onOutsideTap != null) return onOutsideTap();
               if (dismissible) cancel(key!);
             },
-            builder: (_, child) =>
-                builder(context, overlayController.view, child),
+            builder: (_, child) {
+              return builder(context, animation.overlay, child);
+            },
             child: child,
           );
         },
       ));
       // 处理弹层后续事件
       final result = await (_overlayTokens[key] = token).whenCancel;
-      if (token.withAnime &&
-          barrierController.isCompleted &&
-          overlayController.isCompleted) {
-        await Future.wait([
-          barrierController.reverse(),
-          overlayController.reverse(),
-        ]);
-      }
+      if (token.withAnime) await animation.reverse();
       return result;
     } catch (e) {
       if (kDebugMode) print('弹窗异常：${e.toString()}');
     } finally {
+      animation.dispose();
       overlayEntry?.remove();
+      overlayPop?.unregister();
       _overlayTokens.remove(key);
-      barrierController.dispose();
-      overlayController.dispose();
-      modalRoute?.unregisterPopEntry(popEntry);
     }
     return null;
   }
@@ -128,6 +110,80 @@ class CustomOverlay {
     _overlayTokens.forEach((_, v) => v.cancel());
     _overlayTokens.clear();
   }
+
+  // 检查弹层数量
+  bool _checkOverlayCount(bool replace) {
+    if (_overlayTokens.length >= _maxCount) {
+      if (!replace) return false;
+      cancel(_overlayTokens.keys.first);
+    }
+    return true;
+  }
+}
+
+/*
+* 动画管理
+* @author wuxubaiyang
+* @Time 2024/10/18 8:54
+*/
+class _OverlayAnimation {
+  // 遮罩动画
+  final AnimationController _barrierController;
+
+  // 覆盖物动画
+  final AnimationController _overlayController;
+
+  // 动画控制器
+  final Tween<double> tween;
+
+  _OverlayAnimation({
+    required TickerProvider vsync,
+    double end = 1,
+    double begin = 0,
+    Duration duration = const Duration(milliseconds: 130),
+  })  : tween = Tween<double>(begin: begin, end: end),
+        _barrierController =
+            AnimationController(vsync: vsync, duration: duration),
+        _overlayController =
+            AnimationController(vsync: vsync, duration: duration);
+
+  // 获取遮罩动画
+  Animation<double> get barrier => tween.animate(_barrierController);
+
+  // 获取覆盖物动画
+  Animation<double> get overlay => tween.animate(_overlayController);
+
+  // 正向动画
+  Future<void> forward() async {
+    await Future.wait([
+      _barrierController.forward(),
+      _overlayController.forward(),
+    ]);
+  }
+
+  // 反向动画
+  Future<void> reverse() async {
+    if (!_isCompleted) return;
+    await Future.wait([
+      _barrierController.reverse(),
+      _overlayController.reverse(),
+    ]);
+  }
+
+  // 判断是否处于销毁状态
+  bool get _isDismissed =>
+      _barrierController.isDismissed && _overlayController.isDismissed;
+
+  // 动画是否处于完成状态
+  bool get _isCompleted =>
+      _barrierController.isCompleted && _overlayController.isCompleted;
+
+  // 动画销毁
+  void dispose() {
+    if (_isDismissed) return;
+    _barrierController.dispose();
+    _overlayController.dispose();
+  }
 }
 
 /*
@@ -135,27 +191,56 @@ class CustomOverlay {
 * @author wuxubaiyang
 * @Time 2024/10/17 17:30
 */
-class _OverlayPopEntry<T> implements PopEntry<T> {
-  // 是否可以pop
+class _OverlayPop<T> implements PopEntry<T> {
+  // 上下文
+  final BuildContext context;
+
+  // overlay覆盖层key
+  final String overlayKey;
+
+  // 是否拦截pop
   final bool canPop;
 
-  // pop回调
-  final PopInvokedWithResultCallback<T>? onPopWithResult;
+  // didPop回调
+  final VoidCallback? onDidPop;
 
-  _OverlayPopEntry({
+  // pop回调
+  final ValueChanged<T?>? onPop;
+
+  _OverlayPop(
+    this.context, {
+    required this.overlayKey,
+    this.onPop,
+    this.onDidPop,
     this.canPop = false,
-    this.onPopWithResult,
-  });
+    bool autoRegister = true,
+  }) {
+    if (autoRegister) register();
+  }
+
+  // 注册拦截
+  void register() {
+    final modalRoute = ModalRoute.of(context);
+    modalRoute?.registerPopEntry(this);
+  }
+
+  // 注销拦截
+  void unregister() {
+    final modalRoute = ModalRoute.of(context);
+    modalRoute?.unregisterPopEntry(this);
+  }
 
   @override
   void onPopInvoked(bool didPop) => throw UnimplementedError();
 
   @override
-  void onPopInvokedWithResult(bool didPop, T? result) =>
-      onPopWithResult?.call(didPop, result);
+  void onPopInvokedWithResult(bool didPop, T? result) {
+    if (didPop) return onDidPop?.call();
+    onPop?.call(result);
+  }
 
   @override
-  late final ValueNotifier<bool> canPopNotifier = ValueNotifier(false);
+  late final ValueNotifier<bool> canPopNotifier = ValueNotifier(canPop);
 }
 
 /*

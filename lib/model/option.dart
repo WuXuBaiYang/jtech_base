@@ -31,6 +31,9 @@ class OptionItem<T> extends BaseModel {
   // 值
   final T? value;
 
+  // 子元素集合
+  final List<OptionItem<T>> children;
+
   OptionItem({
     required this.label,
     this.icon,
@@ -40,5 +43,6 @@ class OptionItem<T> extends BaseModel {
     this.onTap,
     this.subLabel,
     this.activeIcon,
+    this.children = const [],
   });
 }
