@@ -50,7 +50,18 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
       appBar: AppBar(
         title: const Text('JTech Base Demo'),
       ),
-      body: _buildFunctionList(context, provider.functions),
+      // body: _buildFunctionList(context, provider.functions),
+      body: Center(
+        child: CustomImage.network(
+          // 'assets/test.jpg',
+          'https://pic3.zhimg.com/v2-5fb13110e1de13d4c11e6e7f5b8026da_r.jpg',
+          backgroundColor: Colors.red,
+          padding: const EdgeInsets.all(10),
+          size: Size.square(200),
+          // shape: BoxShape.circle,
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
       ),

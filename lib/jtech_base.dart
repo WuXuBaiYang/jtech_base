@@ -12,6 +12,8 @@ export 'package:permission_handler/permission_handler.dart';
 export 'package:cached_network_image/cached_network_image.dart';
 export 'package:image_picker/image_picker.dart' show CameraDevice;
 export 'package:path/path.dart' show join, joinAll, split, basename, separator;
+export 'package:flutter_cache_manager/flutter_cache_manager.dart'
+    show BaseCacheManager;
 
 export 'common/api/request.dart';
 export 'common/api/response.dart';
@@ -43,12 +45,14 @@ export 'tool/throttle.dart';
 export 'tool/toast.dart';
 export 'tool/tool.dart';
 
-export 'widget/dialog.dart';
-export 'widget/keep_alive.dart';
-export 'widget/notice.dart';
 export 'widget/loading/future.dart';
+export 'widget/loading/overlay.dart';
 export 'widget/loading/status.dart';
 export 'widget/loading/view.dart';
+export 'widget/dialog.dart';
+export 'widget/image.dart';
+export 'widget/keep_alive.dart';
+export 'widget/notice.dart';
 export 'widget/overlay.dart';
 export 'widget/refresh.dart';
 export 'widget/scheme_picker.dart';
