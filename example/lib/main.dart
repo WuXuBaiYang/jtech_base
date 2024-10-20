@@ -52,15 +52,17 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
       ),
       // body: _buildFunctionList(context, provider.functions),
       body: Center(
-        child: CustomImage.network(
-          // 'assets/test.jpg',
-          'https://pic3.zhimg.com/v2-5fb13110e1de13d4c11e6e7f5b8026da_r.jpg',
-          backgroundColor: Colors.red,
-          padding: const EdgeInsets.all(10),
-          size: Size.square(200),
-          // shape: BoxShape.circle,
-          borderRadius: BorderRadius.circular(14),
-        ),
+        child: StatefulBuilder(builder: (_, setState) {
+          return CustomImage.asset(
+            'assets/test.jpg',
+            // 'https://pic3.zhimg.com/v2-5fb13110e1de13d4c11e6e7f5b8026da_r.jpg',
+            backgroundColor: Colors.red,
+            padding: const EdgeInsets.all(10),
+            size: Size.square(200),
+            shape: BoxShape.circle,
+            borderRadius: BorderRadius.circular(14),
+          );
+        }),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},

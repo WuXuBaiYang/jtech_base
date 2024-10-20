@@ -14,8 +14,11 @@ class CustomImage extends StatefulWidget {
   // 图片代理
   final ImageProvider _image;
 
-  // 尺寸
-  final Size? size;
+  // 宽度
+  final double? width;
+
+  // 高度
+  final double? height;
 
   // 语义标签
   final String? semanticLabel;
@@ -86,15 +89,25 @@ class CustomImage extends StatefulWidget {
   // 加载构建
   final ImageLoadingBuilder? loadingBuilder;
 
-  const CustomImage({
+  // 点击事件
+  final GestureTapCallback? onTap;
+
+  // 长按事件
+  final GestureLongPressCallback? onLongPress;
+
+  CustomImage({
     super.key,
     required ImageProvider image,
-    this.size,
+    Size? size,
+    double? width,
+    double? height,
     this.color,
+    this.onTap,
     this.margin,
     this.padding,
     this.opacity,
     this.centerSlice,
+    this.onLongPress,
     this.borderRadius,
     this.frameBuilder,
     this.errorBuilder,
@@ -113,18 +126,24 @@ class CustomImage extends StatefulWidget {
     this.repeat = ImageRepeat.noRepeat,
     this.filterQuality = FilterQuality.medium,
     this.animationDuration = const Duration(milliseconds: 200),
-  }) : _image = image;
+  })  : _image = image,
+        width = width ?? size?.width,
+        height = height ?? size?.height;
 
   // 本地图片
   CustomImage.file(
     String path, {
     super.key,
-    this.size,
+    Size? size,
+    double? width,
+    double? height,
     this.color,
+    this.onTap,
     this.margin,
     this.padding,
     this.opacity,
     this.centerSlice,
+    this.onLongPress,
     this.frameBuilder,
     this.errorBuilder,
     this.borderRadius,
@@ -144,19 +163,25 @@ class CustomImage extends StatefulWidget {
     this.filterQuality = FilterQuality.medium,
     this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = FileImage(File(path), scale: scale),
+        width = width ?? size?.width,
+        height = height ?? size?.height,
         loadingBuilder = null;
 
   // asset图片
   CustomImage.asset(
     String assetName, {
     super.key,
-    this.size,
+    Size? size,
+    double? width,
+    double? height,
     this.color,
+    this.onTap,
     this.margin,
     this.padding,
     this.opacity,
     String? package,
     this.centerSlice,
+    this.onLongPress,
     this.frameBuilder,
     this.errorBuilder,
     this.borderRadius,
@@ -176,18 +201,24 @@ class CustomImage extends StatefulWidget {
     this.filterQuality = FilterQuality.medium,
     this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = AssetImage(assetName, bundle: bundle, package: package),
+        width = width ?? size?.width,
+        height = height ?? size?.height,
         loadingBuilder = null;
 
   // 内存图片
   CustomImage.memory(
     Uint8List bytes, {
     super.key,
-    this.size,
+    Size? size,
+    double? width,
+    double? height,
     this.color,
+    this.onTap,
     this.margin,
     this.padding,
     this.opacity,
     this.centerSlice,
+    this.onLongPress,
     this.frameBuilder,
     this.errorBuilder,
     this.borderRadius,
@@ -207,14 +238,19 @@ class CustomImage extends StatefulWidget {
     this.filterQuality = FilterQuality.medium,
     this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = MemoryImage(bytes, scale: scale),
+        width = width ?? size?.width,
+        height = height ?? size?.height,
         loadingBuilder = null;
 
   // 网络图片
   CustomImage.network(
     String url, {
     super.key,
-    this.size,
+    Size? size,
+    double? width,
+    double? height,
     this.color,
+    this.onTap,
     this.margin,
     this.padding,
     this.opacity,
@@ -222,6 +258,7 @@ class CustomImage extends StatefulWidget {
     int? maxHeight,
     String? cacheKey,
     this.centerSlice,
+    this.onLongPress,
     this.frameBuilder,
     this.errorBuilder,
     this.borderRadius,
@@ -244,7 +281,7 @@ class CustomImage extends StatefulWidget {
     void Function(Object)? errorListener,
     this.filterQuality = FilterQuality.medium,
     this.animationDuration = const Duration(milliseconds: 200),
-  }) : _image = CachedNetworkImageProvider(
+  })  : _image = CachedNetworkImageProvider(
           url,
           scale: scale,
           headers: headers,
@@ -253,15 +290,23 @@ class CustomImage extends StatefulWidget {
           maxHeight: maxHeight,
           cacheManager: cacheManager,
           errorListener: errorListener,
-        );
+        ),
+        width = width ?? size?.width,
+        height = height ?? size?.height;
 
   @override
   State<CustomImage> createState() => _CustomImageState();
 }
 
-class _CustomImageState extends State<CustomImage> {
-  // 记录图片代理
-  ImageProvider? _cachedImage;
+class _CustomImageState extends State<CustomImage>
+    with SingleTickerProviderStateMixin {
+  // 动画管理
+  late final _controller =
+      AnimationController(vsync: this, duration: widget.animationDuration);
+
+  // 默认动画
+  late final _animation = Tween(begin: 0.0, end: 1.0)
+      .animate(CurvedAnimation(parent: _controller, curve: widget.curve));
 
   @override
   Widget build(BuildContext context) {
@@ -272,12 +317,16 @@ class _CustomImageState extends State<CustomImage> {
       borderRadius: borderRadius,
       color: widget.backgroundColor,
     );
-    return Container(
-      margin: widget.margin,
-      padding: widget.padding,
-      decoration: decoration,
-      clipBehavior: Clip.antiAlias,
-      child: _buildImage(context),
+    return GestureDetector(
+      onTap: widget.onTap,
+      onLongPress: widget.onLongPress,
+      child: Container(
+        margin: widget.margin,
+        padding: widget.padding,
+        decoration: decoration,
+        clipBehavior: Clip.antiAlias,
+        child: _buildImage(context),
+      ),
     );
   }
 
@@ -286,16 +335,16 @@ class _CustomImageState extends State<CustomImage> {
     return Image(
       fit: widget.fit,
       color: widget.color,
+      width: widget.width,
       image: widget._image,
+      height: widget.height,
       repeat: widget.repeat,
-      opacity: widget.opacity,
-      width: widget.size?.width,
-      height: widget.size?.height,
       alignment: widget.alignment,
       centerSlice: widget.centerSlice,
       isAntiAlias: widget.isAntiAlias,
       semanticLabel: widget.semanticLabel,
       filterQuality: widget.filterQuality,
+      opacity: widget.opacity ?? _animation,
       colorBlendMode: widget.colorBlendMode,
       gaplessPlayback: widget.gaplessPlayback,
       matchTextDirection: widget.matchTextDirection,
@@ -312,14 +361,8 @@ class _CustomImageState extends State<CustomImage> {
   // 构建帧图片
   Widget _buildFrameImage(BuildContext context, Widget child, int? frame,
       bool wasSynchronouslyLoaded) {
-    if (_cachedImage == widget._image) return _clipImage(child);
-    if (wasSynchronouslyLoaded) _cachedImage = widget._image;
-    return AnimatedOpacity(
-      curve: Curves.easeIn,
-      duration: Duration(seconds: 1),
-      opacity: frame == null ? 0 : 1,
-      child: _clipImage(child),
-    );
+    if (frame != null) _playAnimation();
+    return _clipImage(child);
   }
 
   // 裁剪图片
@@ -344,5 +387,18 @@ class _CustomImageState extends State<CustomImage> {
   Widget _buildErrorImage(
       BuildContext context, Object error, StackTrace? stackTrace) {
     return SizedBox();
+  }
+
+  // 播放动画
+  TickerFuture? _playAnimation() {
+    if (widget.opacity != null) return null;
+    if (_controller.isCompleted) return null;
+    return _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }
