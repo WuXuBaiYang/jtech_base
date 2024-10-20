@@ -53,13 +53,16 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
       // body: _buildFunctionList(context, provider.functions),
       body: Center(
         child: StatefulBuilder(builder: (_, setState) {
-          return CustomImage.asset(
-            'assets/test.jpg',
+          return CustomImage.network(
+            // 'assets/test.jpg',
             // 'https://pic3.zhimg.com/v2-5fb13110e1de13d4c11e6e7f5b8026da_r.jpg',
+            'https://img.zcool.cn/community/017f51563447666ac7259e0f1522ea.jpg@1280w_1l_2o_100sh.jpg',
             backgroundColor: Colors.red,
-            padding: const EdgeInsets.all(10),
-            size: Size.square(200),
+            width: 1280,
+            height: 1600,
+            scaleByHeight: 200,
             shape: BoxShape.circle,
+            padding: const EdgeInsets.all(10),
             borderRadius: BorderRadius.circular(14),
           );
         }),

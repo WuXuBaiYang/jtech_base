@@ -99,8 +99,12 @@ class CustomImage extends StatefulWidget {
     super.key,
     required ImageProvider image,
     Size? size,
+    BoxFit? fit,
     double? width,
     double? height,
+    BoxShape? shape,
+    double? scaleByWidth, // 固定宽度等比缩放
+    double? scaleByHeight, // 固定高度等比缩放
     this.color,
     this.onTap,
     this.margin,
@@ -115,11 +119,9 @@ class CustomImage extends StatefulWidget {
     this.colorBlendMode,
     this.loadingBuilder,
     this.backgroundColor,
-    this.fit = BoxFit.cover,
     this.isAntiAlias = false,
     this.curve = Curves.easeIn,
     this.gaplessPlayback = false,
-    this.shape = BoxShape.rectangle,
     this.matchTextDirection = false,
     this.excludeFromSemantics = false,
     this.alignment = Alignment.center,
@@ -127,16 +129,24 @@ class CustomImage extends StatefulWidget {
     this.filterQuality = FilterQuality.medium,
     this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = image,
-        width = width ?? size?.width,
-        height = height ?? size?.height;
+        width = _computeScaleWidth(
+            scaleByWidth, scaleByHeight, width, height, size),
+        height = _computeScaleHeight(
+            scaleByWidth, scaleByHeight, width, height, size),
+        fit = _handleFit(fit, scaleByWidth, scaleByHeight),
+        shape = _handleShape(shape, scaleByWidth, scaleByHeight);
 
   // 本地图片
   CustomImage.file(
     String path, {
     super.key,
     Size? size,
+    BoxFit? fit,
     double? width,
     double? height,
+    BoxShape? shape,
+    double? scaleByWidth, // 固定宽度等比缩放
+    double? scaleByHeight, // 固定高度等比缩放
     this.color,
     this.onTap,
     this.margin,
@@ -151,11 +161,9 @@ class CustomImage extends StatefulWidget {
     double scale = 1.0,
     this.colorBlendMode,
     this.backgroundColor,
-    this.fit = BoxFit.cover,
     this.isAntiAlias = false,
     this.curve = Curves.easeIn,
     this.gaplessPlayback = false,
-    this.shape = BoxShape.rectangle,
     this.matchTextDirection = false,
     this.excludeFromSemantics = false,
     this.alignment = Alignment.center,
@@ -163,17 +171,25 @@ class CustomImage extends StatefulWidget {
     this.filterQuality = FilterQuality.medium,
     this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = FileImage(File(path), scale: scale),
-        width = width ?? size?.width,
-        height = height ?? size?.height,
-        loadingBuilder = null;
+        loadingBuilder = null,
+        width = _computeScaleWidth(
+            scaleByWidth, scaleByHeight, width, height, size),
+        height = _computeScaleHeight(
+            scaleByWidth, scaleByHeight, width, height, size),
+        fit = _handleFit(fit, scaleByWidth, scaleByHeight),
+        shape = _handleShape(shape, scaleByWidth, scaleByHeight);
 
   // asset图片
   CustomImage.asset(
     String assetName, {
     super.key,
     Size? size,
+    BoxFit? fit,
     double? width,
     double? height,
+    BoxShape? shape,
+    double? scaleByWidth, // 固定宽度等比缩放
+    double? scaleByHeight, // 固定高度等比缩放
     this.color,
     this.onTap,
     this.margin,
@@ -189,11 +205,9 @@ class CustomImage extends StatefulWidget {
     AssetBundle? bundle,
     this.colorBlendMode,
     this.backgroundColor,
-    this.fit = BoxFit.cover,
     this.isAntiAlias = false,
     this.curve = Curves.easeIn,
     this.gaplessPlayback = false,
-    this.shape = BoxShape.rectangle,
     this.matchTextDirection = false,
     this.excludeFromSemantics = false,
     this.alignment = Alignment.center,
@@ -201,17 +215,25 @@ class CustomImage extends StatefulWidget {
     this.filterQuality = FilterQuality.medium,
     this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = AssetImage(assetName, bundle: bundle, package: package),
-        width = width ?? size?.width,
-        height = height ?? size?.height,
-        loadingBuilder = null;
+        loadingBuilder = null,
+        width = _computeScaleWidth(
+            scaleByWidth, scaleByHeight, width, height, size),
+        height = _computeScaleHeight(
+            scaleByWidth, scaleByHeight, width, height, size),
+        fit = _handleFit(fit, scaleByWidth, scaleByHeight),
+        shape = _handleShape(shape, scaleByWidth, scaleByHeight);
 
   // 内存图片
   CustomImage.memory(
     Uint8List bytes, {
     super.key,
     Size? size,
+    BoxFit? fit,
     double? width,
     double? height,
+    BoxShape? shape,
+    double? scaleByWidth, // 固定宽度等比缩放
+    double? scaleByHeight, // 固定高度等比缩放
     this.color,
     this.onTap,
     this.margin,
@@ -226,11 +248,9 @@ class CustomImage extends StatefulWidget {
     this.semanticLabel,
     this.colorBlendMode,
     this.backgroundColor,
-    this.fit = BoxFit.cover,
     this.isAntiAlias = false,
     this.curve = Curves.easeIn,
     this.gaplessPlayback = false,
-    this.shape = BoxShape.rectangle,
     this.matchTextDirection = false,
     this.excludeFromSemantics = false,
     this.alignment = Alignment.center,
@@ -238,17 +258,25 @@ class CustomImage extends StatefulWidget {
     this.filterQuality = FilterQuality.medium,
     this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = MemoryImage(bytes, scale: scale),
-        width = width ?? size?.width,
-        height = height ?? size?.height,
-        loadingBuilder = null;
+        loadingBuilder = null,
+        width = _computeScaleWidth(
+            scaleByWidth, scaleByHeight, width, height, size),
+        height = _computeScaleHeight(
+            scaleByWidth, scaleByHeight, width, height, size),
+        fit = _handleFit(fit, scaleByWidth, scaleByHeight),
+        shape = _handleShape(shape, scaleByWidth, scaleByHeight);
 
   // 网络图片
   CustomImage.network(
     String url, {
     super.key,
     Size? size,
+    BoxFit? fit,
     double? width,
     double? height,
+    BoxShape? shape,
+    double? scaleByWidth, // 固定宽度等比缩放
+    double? scaleByHeight, // 固定高度等比缩放
     this.color,
     this.onTap,
     this.margin,
@@ -267,13 +295,11 @@ class CustomImage extends StatefulWidget {
     this.colorBlendMode,
     this.loadingBuilder,
     this.backgroundColor,
-    this.fit = BoxFit.cover,
     this.isAntiAlias = false,
     this.curve = Curves.easeIn,
     Map<String, String>? headers,
     this.gaplessPlayback = false,
     BaseCacheManager? cacheManager,
-    this.shape = BoxShape.rectangle,
     this.matchTextDirection = false,
     this.excludeFromSemantics = false,
     this.alignment = Alignment.center,
@@ -291,11 +317,63 @@ class CustomImage extends StatefulWidget {
           cacheManager: cacheManager,
           errorListener: errorListener,
         ),
-        width = width ?? size?.width,
-        height = height ?? size?.height;
+        width = _computeScaleWidth(
+            scaleByWidth, scaleByHeight, width, height, size),
+        height = _computeScaleHeight(
+            scaleByWidth, scaleByHeight, width, height, size),
+        fit = _handleFit(fit, scaleByWidth, scaleByHeight),
+        shape = _handleShape(shape, scaleByWidth, scaleByHeight);
 
   @override
   State<CustomImage> createState() => _CustomImageState();
+}
+
+// 处理图片形状(当设置等比缩放时，强制为矩形)
+BoxShape _handleShape(
+    BoxShape? shape, double? scaleByWidth, double? scaleByHeight) {
+  if (scaleByWidth != null || scaleByHeight != null) return BoxShape.rectangle;
+  return shape ?? BoxShape.rectangle;
+}
+
+// 处理图片填充方式(当设置等比缩放时，强制为填充)
+BoxFit _handleFit(BoxFit? fit, double? scaleByWidth, double? scaleByHeight) {
+  if (fit != null) return fit;
+  return (scaleByWidth != null || scaleByHeight != null)
+      ? BoxFit.fill
+      : BoxFit.cover;
+}
+
+// 计算等比缩放
+(double?, double?) _computeScale(double? scaleByWidth, double? scaleByHeight,
+    double? width, double? height, Size? size) {
+  width = width ?? size?.width;
+  height = height ?? size?.height;
+  assert(scaleByWidth == null || scaleByHeight == null, '等比缩放宽高不能同时赋值');
+  assert(
+      (scaleByWidth ?? scaleByHeight) == null ||
+          (width != null && height != null),
+      '当设置等比缩放时，宽高不能为空');
+  return (width, height);
+}
+
+// 计算等比缩放宽度
+double? _computeScaleWidth(double? scaleByWidth, double? scaleByHeight,
+    double? width, double? height, Size? size) {
+  final (w, h) =
+      _computeScale(scaleByWidth, scaleByHeight, width, height, size);
+  if (scaleByWidth != null) return scaleByWidth;
+  if (scaleByHeight != null) return (w! / h!) * scaleByHeight;
+  return w;
+}
+
+// 计算等比缩放高度
+double? _computeScaleHeight(double? scaleByWidth, double? scaleByHeight,
+    double? width, double? height, Size? size) {
+  final (w, h) =
+      _computeScale(scaleByWidth, scaleByHeight, width, height, size);
+  if (scaleByHeight != null) return scaleByHeight;
+  if (scaleByWidth != null) return (h! / w!) * scaleByWidth;
+  return h;
 }
 
 class _CustomImageState extends State<CustomImage>
