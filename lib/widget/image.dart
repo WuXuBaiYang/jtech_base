@@ -457,13 +457,14 @@ class _CustomImageState extends State<CustomImage>
       BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
     if (!_isNetworkImage) return child;
 
-    /// TODO 加载网络图片
+    /// TODO 加载图片
     return child;
   }
 
   // 构建错误图片
   Widget _buildErrorImage(
       BuildContext context, Object error, StackTrace? stackTrace) {
+    /// TODO 错误图片
     return SizedBox();
   }
 
