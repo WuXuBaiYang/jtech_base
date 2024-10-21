@@ -33,7 +33,6 @@ export 'model/option.dart';
 export 'tool/cache.dart';
 export 'tool/date.dart';
 export 'tool/debounce.dart';
-export 'tool/event.dart';
 export 'tool/file.dart';
 export 'tool/list.dart';
 export 'tool/loading.dart';
