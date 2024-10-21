@@ -37,7 +37,8 @@ abstract class PageProvider extends BaseProvider {
   PageProvider(super.context, [this.state]);
 
   // 从state中获取值
-  String? find(String key) => state?.uri.queryParameters[key];
+  String? find(String key) =>
+      state?.uri.queryParameters[key] ?? state?.pathParameters[key];
 
   // 从state中获取整数
   int? findInt(String key) {

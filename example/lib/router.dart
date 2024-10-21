@@ -1,4 +1,5 @@
 import 'package:example/tool/dialog.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:jtech_base/jtech_base.dart';
 
 import 'main.dart';
@@ -23,21 +24,30 @@ class Router extends BaseRouter {
           name: 'home',
           path: '/',
           builder: (_, __) => MyHomePage(),
-        ),
-        GoRoute(
-          name: 'toolDialog',
-          path: '/tool/dialog',
-          builder: (_, state) => ToolDialogPage(state: state),
-        ),
-        GoRoute(
-          name: 'toolLoading',
-          path: '/tool/loading',
-          builder: (_, state) => ToolLoadingPage(state: state),
-        ),
-        GoRoute(
-          name: 'toolNotice',
-          path: '/tool/notice',
-          builder: (_, state) => ToolNoticePage(state: state),
+          routes: [
+            GoRoute(
+              name: 'tool',
+              path: 'tool',
+              builder: (_, __) => SizedBox(),
+              routes: [
+                GoRoute(
+                  name: 'toolDialog',
+                  path: '/dialog',
+                  builder: (_, state) => ToolDialogPage(state: state),
+                ),
+                GoRoute(
+                  name: 'toolLoading',
+                  path: '/loading',
+                  builder: (_, state) => ToolLoadingPage(state: state),
+                ),
+                GoRoute(
+                  name: 'toolNotice',
+                  path: '/notice',
+                  builder: (_, state) => ToolNoticePage(state: state),
+                ),
+              ],
+            ),
+          ],
         ),
       ];
 
