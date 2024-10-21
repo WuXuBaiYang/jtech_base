@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:jtech_base/jtech_base.dart';
+import 'package:jtech_base/widget/overlay.dart';
 
 /*
 * 自定义覆盖物

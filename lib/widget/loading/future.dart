@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:jtech_base/jtech_base.dart';
+
+import 'status.dart';
+
 
 /*
 * 异步加载状态组件

@@ -1,5 +1,11 @@
 import 'dart:io';
-import 'package:jtech_base/jtech_base.dart';
+
+import 'package:crypto/crypto.dart';
+import 'package:jtech_base/tool/log.dart';
+import 'package:jtech_base/tool/tool.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+
 
 /*
 * 文件操作工具方法baseCachePath

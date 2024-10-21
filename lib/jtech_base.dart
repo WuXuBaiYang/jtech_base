@@ -50,8 +50,6 @@ export 'widget/loading/view.dart';
 export 'widget/dialog.dart';
 export 'widget/image.dart';
 export 'widget/keep_alive.dart';
-export 'widget/notice.dart';
-export 'widget/overlay.dart';
 export 'widget/refresh.dart';
 export 'widget/scheme_picker.dart';
 export 'widget/shimmer.dart';
