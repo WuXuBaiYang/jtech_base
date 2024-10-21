@@ -52,4 +52,3 @@ export 'widget/image.dart';
 export 'widget/keep_alive.dart';
 export 'widget/refresh.dart';
 export 'widget/scheme_picker.dart';
-export 'widget/shimmer.dart';
