@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:go_router/go_router.dart';
 
 /*
@@ -30,4 +32,76 @@ abstract class BaseRouter {
         routes: routes + extensions,
         initialLocation: initialLocation,
       );
+
+  // 推送
+  Future<T?> push<T extends Object?>(String location, {Object? extra}) =>
+      routerConfig.push(location, extra: extra);
+
+  // 推送
+  Future<T?> pushNamed<T extends Object?>(
+    String name, {
+    Object? extra,
+    Map<String, String> pathParameters = const <String, String>{},
+    Map<String, dynamic> queryParameters = const <String, dynamic>{},
+  }) {
+    return routerConfig.pushNamed(
+      name,
+      extra: extra,
+      pathParameters: pathParameters,
+      queryParameters: _handleParameters(queryParameters),
+    );
+  }
+
+  // 推送
+  Future<T?> pushReplacement<T extends Object?>(String name, {Object? extra}) =>
+      routerConfig.pushReplacement(name, extra: extra);
+
+  // 推送
+  Future<T?> pushReplacementNamed<T extends Object?>(
+    String name, {
+    Object? extra,
+    Map<String, String> pathParameters = const <String, String>{},
+    Map<String, dynamic> queryParameters = const <String, dynamic>{},
+  }) {
+    return routerConfig.pushReplacementNamed(
+      name,
+      extra: extra,
+      pathParameters: pathParameters,
+      queryParameters: _handleParameters(queryParameters),
+    );
+  }
+
+  // 跳转
+  void go(String name, {Object? extra}) => routerConfig.go(name, extra: extra);
+
+  // 跳转
+  void goNamed(
+    String name, {
+    Object? extra,
+    Map<String, String> pathParameters = const <String, String>{},
+    Map<String, dynamic> queryParameters = const <String, dynamic>{},
+  }) {
+    return routerConfig.goNamed(
+      name,
+      extra: extra,
+      pathParameters: pathParameters,
+      queryParameters: _handleParameters(queryParameters),
+    );
+  }
+
+  // 处理路由传参问题（接收多种格式类型）
+  Map<String, dynamic> _handleParameters(Map<String, dynamic> queryParameters) {
+    return queryParameters.map((k, v) {
+      if (v is String) return MapEntry(k, v);
+      // 如果是数字、布尔、浮点数、数字类型，则转为字符串
+      if ([int, bool, double, num].contains(v.runtimeType)) {
+        return MapEntry(k, '$v');
+      }
+      try {
+        return MapEntry(k, jsonEncode(v));
+      } catch (_) {}
+      // 其他类型直接返回
+      return MapEntry(k, v);
+    });
+  }
 }

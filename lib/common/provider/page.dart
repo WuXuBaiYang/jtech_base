@@ -40,24 +40,38 @@ abstract class PageProvider extends BaseProvider {
   String? find(String key) => state?.uri.queryParameters[key];
 
   // 从state中获取整数
-  int? findInt(String key) => int.tryParse(find(key) ?? '');
+  int? findInt(String key) {
+    final value = find(key);
+    if (value == null) return null;
+    return int.tryParse(value);
+  }
 
   // 从state中获取布尔值
-  bool? findBool(String key) => bool.tryParse(find(key) ?? '');
+  bool? findBool(String key) {
+    final value = find(key);
+    if (value == null) return null;
+    return bool.tryParse(value);
+  }
 
   // 从state中获取浮点数
-  double? findDouble(String key) => double.tryParse(find(key) ?? '');
+  double? findDouble(String key) {
+    final value = find(key);
+    if (value == null) return null;
+    return double.tryParse(value);
+  }
 
   // 从state中获取json
   Map<String, dynamic>? findJson(String key) {
     final value = find(key);
-    return value != null ? jsonDecode(value) : null;
+    if (value == null) return null;
+    return jsonDecode(value);
   }
 
   // 从state中获取json数组
   List<T>? findJsonList<T>(String key) {
     final value = find(key);
-    return value != null ? List<T>.from(jsonDecode(value)) : null;
+    if (value == null) return null;
+    return List<T>.from(jsonDecode(value));
   }
 
   // 获取extra

@@ -10,6 +10,9 @@ class ToolDialogPage extends ProviderPage<ToolDialogProvider> {
   ToolDialogPage({super.key, super.state});
 
   @override
+  bool get lazyLoadProvider => false;
+
+  @override
   ToolDialogProvider createPageProvider(
           BuildContext context, GoRouterState? state) =>
       ToolDialogProvider(context, state);
@@ -26,7 +29,4 @@ class ToolDialogPage extends ProviderPage<ToolDialogProvider> {
 
 class ToolDialogProvider extends PageProvider {
   ToolDialogProvider(super.context, super.state);
-
-  String text = '';
-  int count = 0;
 }
