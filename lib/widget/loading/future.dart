@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'status.dart';
 
-
 /*
 * 异步加载状态组件
 * @author wuxubaiyang
@@ -53,8 +52,8 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<T>(
-      initialData: initialData,
       future: onFuture(),
+      initialData: initialData,
       builder: (_, snap) {
         return LoadingStatusBuilder(
           onRetry: onRetry,

@@ -57,8 +57,7 @@ class LoadingStatusBuilder extends StatelessWidget {
   Widget _buildLoading(BuildContext context) {
     return _buildStatus(context, (_) {
       if (loadingBuilder != null) return loadingBuilder!(context);
-      final size = loadingSize ?? 80;
-      return Center(child: LoadingView.random(size: size));
+      return Center(child: LoadingView.random(size: loadingSize ?? 80));
     });
   }
 
@@ -66,9 +65,9 @@ class LoadingStatusBuilder extends StatelessWidget {
   Widget _buildEmpty(BuildContext context) {
     return _buildStatus(context, (_) {
       if (emptyBuilder != null) return emptyBuilder!(context);
-      final hintColor = Colors.grey[400];
-      final hintStyle =
-          Theme.of(context).textTheme.bodySmall?.copyWith(color: hintColor);
+      final hintStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Colors.grey[400],
+          );
       return Text('暂无数据', style: hintStyle);
     });
   }
