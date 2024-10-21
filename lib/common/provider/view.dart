@@ -57,17 +57,104 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
   // 构建组件内容
   @mustCallSuper
   Widget buildWidget(BuildContext context);
+
+  // 创建本页面选择器
+  Widget createSelector<S>({
+    required ValueWidgetBuilder<S> builder,
+    required S Function(BuildContext context, T) selector,
+    ShouldRebuild<S>? shouldRebuild,
+    Widget? child,
+  }) {
+    return Selector<T, S>(
+      builder: builder,
+      selector: selector,
+      shouldRebuild: shouldRebuild,
+      child: child,
+    );
+  }
+
+  // 创建双元素选择器
+  Widget createSelector2<S1, S2>({
+    required Widget Function(
+            BuildContext context, S1 value1, S2 value2, Widget? child)
+        builder,
+    required (S1, S2) Function(BuildContext context, T) selector,
+    ShouldRebuild<(S1, S2)>? shouldRebuild,
+    Widget? child,
+  }) {
+    return Selector<T, (S1, S2)>(
+      selector: selector,
+      shouldRebuild: shouldRebuild,
+      builder: (context, values, child) =>
+          builder(context, values.$1, values.$2, child),
+      child: child,
+    );
+  }
+
+// 创建三元素选择器
+  Widget createSelector3<S1, S2, S3>({
+    required Widget Function(BuildContext context, S1 value1, S2 value2,
+            S3 value3, Widget? child)
+        builder,
+    required (S1, S2, S3) Function(BuildContext context, T) selector,
+    ShouldRebuild<(S1, S2, S3)>? shouldRebuild,
+    Widget? child,
+  }) {
+    return Selector<T, (S1, S2, S3)>(
+      selector: selector,
+      shouldRebuild: shouldRebuild,
+      builder: (context, values, child) =>
+          builder(context, values.$1, values.$2, values.$3, child),
+      child: child,
+    );
+  }
+
+// 创建四元素选择器
+  Widget createSelector4<S1, S2, S3, S4>({
+    required Widget Function(BuildContext context, S1 value1, S2 value2,
+            S3 value3, S4 value4, Widget? child)
+        builder,
+    required (S1, S2, S3, S4) Function(BuildContext context, T) selector,
+    ShouldRebuild<(S1, S2, S3, S4)>? shouldRebuild,
+    Widget? child,
+  }) {
+    return Selector<T, (S1, S2, S3, S4)>(
+      selector: selector,
+      shouldRebuild: shouldRebuild,
+      builder: (context, values, child) =>
+          builder(context, values.$1, values.$2, values.$3, values.$4, child),
+      child: child,
+    );
+  }
+
+// 创建四元素选择器
+  Widget createSelector5<S1, S2, S3, S4, S5>({
+    required Widget Function(BuildContext context, S1 value1, S2 value2,
+            S3 value3, S4 value4, S5 value5, Widget? child)
+        builder,
+    required (S1, S2, S3, S4, S5) Function(BuildContext context, T) selector,
+    ShouldRebuild<(S1, S2, S3, S4, S5)>? shouldRebuild,
+    Widget? child,
+  }) {
+    return Selector<T, (S1, S2, S3, S4, S5)>(
+      selector: selector,
+      shouldRebuild: shouldRebuild,
+      builder: (context, values, child) => builder(context, values.$1,
+          values.$2, values.$3, values.$4, values.$5, child),
+      child: child,
+    );
+  }
 }
 
 // 页面上下文管理
 class PageContext {
-  // 页面上下文
+// 页面上下文
   BuildContext? _context;
 
-  // 更新
+// 更新
   void update(BuildContext context) => _context = context;
 
-  // 使用
+// 使用
   BuildContext get context {
     assert(_context != null, '请在build方法之后使用context');
     return _context!;

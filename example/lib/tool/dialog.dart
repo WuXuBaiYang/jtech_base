@@ -26,4 +26,7 @@ class ToolDialogPage extends ProviderPage<ToolDialogProvider> {
 
 class ToolDialogProvider extends PageProvider {
   ToolDialogProvider(super.context, super.state);
+
+  String text = '';
+  int count = 0;
 }
