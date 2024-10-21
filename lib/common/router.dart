@@ -72,7 +72,8 @@ abstract class BaseRouter {
   }
 
   // 跳转
-  void go(String name, {Object? extra}) => routerConfig.go(name, extra: extra);
+  void go(String location, {Object? extra}) =>
+      routerConfig.go(location, extra: extra);
 
   // 跳转
   void goNamed(
