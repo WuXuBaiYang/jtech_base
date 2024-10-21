@@ -53,8 +53,9 @@ abstract class BaseRouter {
   }
 
   // 推送
-  Future<T?> pushReplacement<T extends Object?>(String name, {Object? extra}) =>
-      routerConfig.pushReplacement(name, extra: extra);
+  Future<T?> pushReplacement<T extends Object?>(String location,
+          {Object? extra}) =>
+      routerConfig.pushReplacement(location, extra: extra);
 
   // 推送
   Future<T?> pushReplacementNamed<T extends Object?>(
