@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:jtech_base/jtech_base.dart';
+import 'package:jtech_base/tool/loading.dart';
+import 'package:jtech_base/tool/notice.dart';
 import 'package:jtech_base/tool/overlay.dart';
+import 'package:jtech_base/widget/dialog.dart';
+import 'package:jtech_base/widget/image.dart';
+import 'package:jtech_base/widget/loading/future.dart';
+import 'package:jtech_base/widget/loading/status.dart';
+import 'package:jtech_base/widget/refresh.dart';
 
 /*
 * 自定义样式配置
@@ -56,14 +62,30 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
       Theme.of(context).extension<CustomTheme>();
 
   @override
-  ThemeExtension<CustomTheme> copyWith() {
-    // TODO: implement copyWith
-    throw UnimplementedError();
+  ThemeExtension<CustomTheme> copyWith({
+    NoticeThemeData? noticeTheme,
+    LoadingThemeData? loadingTheme,
+    LoadingStatusThemeData? loadingStatusTheme,
+    CustomRefreshThemeData? customRefreshTheme,
+    LoadingFutureThemeData? loadingFutureTheme,
+    CustomOverlayThemeData? customOverlayTheme,
+    CustomDialogThemeData? customDialogTheme,
+    CustomImageThemeData? customImageTheme,
+  }) {
+    return CustomTheme(
+      noticeTheme: noticeTheme ?? this.noticeTheme,
+      loadingTheme: loadingTheme ?? this.loadingTheme,
+      loadingStatusTheme: loadingStatusTheme ?? this.loadingStatusTheme,
+      customRefreshTheme: customRefreshTheme ?? this.customRefreshTheme,
+      loadingFutureTheme: loadingFutureTheme ?? this.loadingFutureTheme,
+      customOverlayTheme: customOverlayTheme ?? this.customOverlayTheme,
+      customDialogTheme: customDialogTheme ?? this.customDialogTheme,
+      customImageTheme: customImageTheme ?? this.customImageTheme,
+    );
   }
 
   @override
   ThemeExtension<CustomTheme> lerp(
-      covariant ThemeExtension<CustomTheme>? other, double t) {
-    throw UnimplementedError();
-  }
+          covariant ThemeExtension<CustomTheme>? other, double t) =>
+      CustomTheme();
 }
