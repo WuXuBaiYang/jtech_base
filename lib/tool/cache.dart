@@ -8,14 +8,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 * @Time 2022/3/29 10:29
 */
 class LocalCache {
-  // 时效字段后缀
-  final String _expirationSuffix = 'expiration';
-
   static final LocalCache _instance = LocalCache._internal();
 
   factory LocalCache() => _instance;
 
   LocalCache._internal();
+
+  // 时效字段后缀
+  String _expirationSuffix = 'expiration';
 
   // sp对象
   SharedPreferences? _sp;
@@ -26,8 +26,16 @@ class LocalCache {
     return _sp!;
   }
 
-  Future<void> initialize() async =>
-      _sp = await SharedPreferences.getInstance();
+  // 初始化
+  Future<void> initialize({
+    String? expirationSuffix,
+    String prefix = 'jtech_base.',
+    Set<String>? allowList,
+  }) async {
+    _expirationSuffix = expirationSuffix ?? _expirationSuffix;
+    SharedPreferences.setPrefix(prefix, allowList: allowList);
+    _sp = await SharedPreferences.getInstance();
+  }
 
   // 获取int类型
   int? getInt(String key) {
