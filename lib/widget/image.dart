@@ -383,14 +383,14 @@ class _CustomImageState extends State<CustomImage>
   late final _controller = AnimationController(
       vsync: this,
       duration: widget.animationDuration ??
-          CustomTheme.of(context)?.customImageAnimationDuration ??
+          CustomTheme.of(context)?.customImageTheme.animationDuration ??
           const Duration(milliseconds: 200));
 
   // 默认动画
   late final _animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
       parent: _controller,
       curve: widget.curve ??
-          CustomTheme.of(context)?.customImageCurve ??
+          CustomTheme.of(context)?.customImageTheme.curve ??
           Curves.easeInOut));
 
   @override
@@ -417,7 +417,7 @@ class _CustomImageState extends State<CustomImage>
 
   // 构建图片
   Widget _buildImage(BuildContext context) {
-    final customTheme = CustomTheme.of(context);
+    final theme = CustomTheme.of(context)?.customImageTheme;
     return Image(
       fit: widget.fit,
       color: widget.color,
@@ -436,9 +436,8 @@ class _CustomImageState extends State<CustomImage>
       matchTextDirection: widget.matchTextDirection,
       excludeFromSemantics: widget.excludeFromSemantics,
       frameBuilder: widget.frameBuilder ?? _buildFrameImage,
-      loadingBuilder:
-          widget.loadingBuilder ?? customTheme?.customImageLoadingBuilder,
-      errorBuilder: widget.errorBuilder ?? customTheme?.customImageErrorBuilder,
+      errorBuilder: widget.errorBuilder ?? theme?.errorBuilder,
+      loadingBuilder: widget.loadingBuilder ?? theme?.loadingBuilder,
     );
   }
 
@@ -470,4 +469,30 @@ class _CustomImageState extends State<CustomImage>
     _controller.dispose();
     super.dispose();
   }
+}
+
+/*
+* 自定义图片样式
+* @author wuxubaiyang
+* @Time 2024/10/22 13:19
+*/
+class CustomImageThemeData {
+  // 动画
+  final Curve curve;
+
+  // 动画时长
+  final Duration animationDuration;
+
+  // 错误构建
+  final ImageErrorWidgetBuilder? errorBuilder;
+
+  // 加载构建
+  final ImageLoadingBuilder? loadingBuilder;
+
+  const CustomImageThemeData({
+    this.errorBuilder,
+    this.loadingBuilder,
+    this.curve = Curves.easeInOut,
+    this.animationDuration = const Duration(milliseconds: 200),
+  });
 }

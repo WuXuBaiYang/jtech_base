@@ -2,6 +2,7 @@ import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
 import 'package:jtech_base/common/model.dart';
 import 'package:jtech_base/common/provider/provider.dart';
+import 'package:jtech_base/common/theme.dart';
 import 'package:jtech_base/tool/cache.dart';
 import 'package:jtech_base/widget/scheme_picker.dart';
 
@@ -157,11 +158,19 @@ abstract class BaseThemeProvider extends BaseProvider {
 
   // 根据主题亮度生成不同的主题数据
   ThemeData _genThemeData(Brightness brightness, [bool useMaterial3 = true]) {
-    return customTheme(_getThemeData(brightness, useMaterial3), brightness);
+    final themeData =
+        createTheme(_getThemeData(brightness, useMaterial3), brightness);
+    final customTheme = createCustomTheme(themeData, brightness);
+    if (customTheme == null) return themeData;
+    return themeData.copyWith(extensions: [customTheme]);
   }
 
-  // 自定义主题样式
-  ThemeData customTheme(ThemeData themeData, Brightness brightness);
+  // 创建系统主题样式
+  ThemeData createTheme(ThemeData themeData, Brightness brightness);
+
+  // 创建自定义主题样式
+  CustomTheme? createCustomTheme(ThemeData themeData, Brightness brightness) =>
+      null;
 }
 
 /*

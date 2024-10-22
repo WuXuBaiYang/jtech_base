@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:jtech_base/common/theme.dart';
 
 import 'status.dart';
 
@@ -47,19 +48,18 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = CustomTheme.of(context)?.loadingFutureTheme;
     return FutureBuilder<T>(
       future: onFuture(),
       initialData: initialData,
       builder: (_, snap) {
         return LoadingStatusBuilder(
-          decoration: decoration,
           status: _getStatus(snap),
-          failBuilder: failBuilder,
-          noDataBuilder: noDataBuilder,
-          loadingBuilder: loadingBuilder,
-          builder: (_, child) {
-            return builder(context, snap.data, child);
-          },
+          decoration: decoration ?? theme?.decoration,
+          failBuilder: failBuilder ?? theme?.failBuilder,
+          noDataBuilder: noDataBuilder ?? theme?.noDataBuilder,
+          loadingBuilder: loadingBuilder ?? theme?.loadingBuilder,
+          builder: (_, child) => builder(context, snap.data, child),
           child: child,
         );
       },
@@ -75,4 +75,18 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
     if (snap.hasData) return LoadStatus.success;
     return LoadStatus.noData;
   }
+}
+
+/*
+* 异步加载构造器样式
+* @author wuxubaiyang
+* @Time 2024/10/22 13:11
+*/
+class LoadingFutureThemeData extends LoadingStatusThemeData {
+  const LoadingFutureThemeData({
+    super.decoration,
+    super.failBuilder,
+    super.noDataBuilder,
+    super.loadingBuilder,
+  });
 }

@@ -33,9 +33,9 @@ class CustomDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final decoration = this.decoration ??
-        CustomTheme.of(context)?.customDialogDecoration ??
-        CustomDialogDecoration();
+    final theme = CustomTheme.of(context)?.customDialogTheme;
+    final decoration =
+        this.decoration ?? theme?.decoration ?? CustomDialogDecoration();
     return AlertDialog(
       title: title,
       actions: actions,
@@ -65,5 +65,19 @@ class CustomDialogDecoration {
     this.constraints = const BoxConstraints(maxWidth: 280),
     this.contentPadding =
         const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+  });
+}
+
+/*
+* 自定义弹窗样式
+* @author wuxubaiyang
+* @Time 2024/10/22 13:17
+*/
+class CustomDialogThemeData {
+  // 装饰器
+  final CustomDialogDecoration decoration;
+
+  const CustomDialogThemeData({
+    this.decoration = const CustomDialogDecoration(),
   });
 }

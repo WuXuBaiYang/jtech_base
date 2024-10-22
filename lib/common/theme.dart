@@ -1,7 +1,6 @@
-import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:jtech_base/jtech_base.dart';
-import 'package:jtech_base/widget/notice.dart';
+import 'package:jtech_base/tool/overlay.dart';
 
 /*
 * 自定义样式配置
@@ -9,111 +8,47 @@ import 'package:jtech_base/widget/notice.dart';
 * @Time 2024/10/22 8:53
 */
 class CustomTheme extends ThemeExtension<CustomTheme> {
-  // 通知装饰器
-  final NoticeDecoration noticeDecoration;
+  // 通知样式
+  final NoticeThemeData noticeTheme;
 
-  // 通知是否持续
-  final bool noticeOnGoing;
+  // 加载遮罩样式
+  final LoadingThemeData loadingTheme;
 
-  // 通知动画曲线
-  final Curve noticeCurve;
+  // 自定义刷新组件样式
+  final CustomRefreshThemeData customRefreshTheme;
 
-  // 通知反向动画曲线
-  final Curve noticeReverseCurve;
+  // 异步加载构造器样式
+  final LoadingFutureThemeData loadingFutureTheme;
 
-  // 通知持续时间
-  final Duration noticeDuration;
+  // 加载状态组件样式
+  final LoadingStatusThemeData loadingStatusTheme;
 
-  // 通知动画持续时间
-  final Duration noticeAnimeDuration;
+  // 自定义遮罩样式
+  final CustomOverlayThemeData customOverlayTheme;
 
-  // 加载遮罩装饰器
-  final LoadingOverlayDecoration loadingDecoration;
+  // 自定义弹窗
+  final CustomDialogThemeData customDialogTheme;
 
-  // 加载遮罩是否可点击取消
-  final bool loadingDismissible;
-
-  // 加载遮罩背景色
-  final Color loadingBarrierColor;
-
-  // 加载遮罩对齐方式
-  final Alignment loadingAlignment;
-
-  // 加载遮罩动画曲线
-  final Curve loadingCurve;
-
-  // 加载遮罩反向动画曲线
-  final Curve loadingReverseCurve;
-
-  // 遮罩层动画持续时间
-  final Duration animationDuration;
-
-  // 自定义刷新组件头部
-  final Header customRefreshHeader;
-
-  // 自定义刷新组件底部
-  final Footer customRefreshFooter;
-
-  // 加载状态-报错状态构建
-  final ValueWidgetBuilder<LoadingStatusDecoration>? loadingStatusFailBuilder;
-
-  // 加载状态-空数据状态构建
-  final ValueWidgetBuilder<LoadingStatusDecoration>? loadingStatusNoDataBuilder;
-
-  // 加载状态-加载中状态构建
-  final ValueWidgetBuilder<LoadingStatusDecoration>?
-      loadingStatusLoadingBuilder;
-
-  // 加载状态-装饰器
-  final LoadingStatusDecoration loadingStatusDecoration;
-
-  // 自定义弹窗装饰器
-  final CustomDialogDecoration customDialogDecoration;
-
-  // 动画
-  final Curve customImageCurve;
-
-  // 动画时长
-  final Duration customImageAnimationDuration;
-
-  // 错误构建
-  final ImageErrorWidgetBuilder? customImageErrorBuilder;
-
-  // 加载构建
-  final ImageLoadingBuilder? customImageLoadingBuilder;
+  // 自定义图片
+  final CustomImageThemeData customImageTheme;
 
   CustomTheme({
     // 通知
-    this.noticeOnGoing = false,
-    this.noticeCurve = Curves.bounceInOut,
-    this.noticeReverseCurve = Curves.easeInOutBack,
-    this.noticeDecoration = const NoticeDecoration(),
-    this.noticeDuration = const Duration(milliseconds: 1800),
-    this.noticeAnimeDuration = const Duration(milliseconds: 240),
+    this.noticeTheme = const NoticeThemeData(),
     // 加载遮罩
-    this.loadingDismissible = true,
-    this.loadingCurve = Curves.easeInOut,
-    this.loadingAlignment = Alignment.center,
-    this.loadingBarrierColor = Colors.black38,
-    this.loadingReverseCurve = Curves.easeInOutBack,
-    this.loadingDecoration = const LoadingOverlayDecoration(),
-    // 遮罩层
-    this.animationDuration = const Duration(milliseconds: 130),
-    // 自定义刷新组件
-    this.customRefreshFooter = const BezierFooter(),
-    this.customRefreshHeader = const BezierCircleHeader(),
+    this.loadingTheme = const LoadingThemeData(),
     // 加载状态
-    this.loadingStatusDecoration = const LoadingStatusDecoration(),
-    this.loadingStatusFailBuilder,
-    this.loadingStatusNoDataBuilder,
-    this.loadingStatusLoadingBuilder,
+    this.loadingStatusTheme = const LoadingStatusThemeData(),
+    // 自定义刷新组件
+    this.customRefreshTheme = const CustomRefreshThemeData(),
+    // 异步加载构造器
+    this.loadingFutureTheme = const LoadingFutureThemeData(),
+    // 自定义遮罩
+    this.customOverlayTheme = const CustomOverlayThemeData(),
     // 自定义弹窗
-    this.customDialogDecoration = const CustomDialogDecoration(),
+    this.customDialogTheme = const CustomDialogThemeData(),
     // 自定义图片
-    this.customImageErrorBuilder,
-    this.customImageLoadingBuilder,
-    this.customImageCurve = Curves.easeInOut,
-    this.customImageAnimationDuration = const Duration(milliseconds: 200),
+    this.customImageTheme = const CustomImageThemeData(),
   });
 
   // 获取自定义主题

@@ -23,7 +23,7 @@ class LoadingOverlay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final decoration = this.decoration ??
-        CustomTheme.of(context)?.loadingDecoration ??
+        CustomTheme.of(context)?.loadingTheme.decoration ??
         const LoadingOverlayDecoration();
     final boxDecoration = BoxDecoration(
       borderRadius: decoration.borderRadius,

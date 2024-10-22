@@ -48,9 +48,9 @@ class CustomOverlay {
     token ??= CustomOverlayToken<T>();
     final overlayState = Overlay.of(context);
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
-    final customTheme = CustomTheme.of(context);
+    final theme = CustomTheme.of(context)?.customOverlayTheme;
     animationDuration ??=
-        customTheme?.animationDuration ?? const Duration(milliseconds: 130);
+        theme?.animationDuration ?? const Duration(milliseconds: 130);
     final animation =
         _OverlayAnimation(vsync: overlayState, duration: animationDuration);
     final overlayPop = _OverlayPop<T>(context,
@@ -272,4 +272,18 @@ class CustomOverlayToken<T> {
     if (!_completer.isCompleted) _completer.complete(data);
     _data = data;
   }
+}
+
+/*
+* 自定义覆盖物样式
+* @author wuxubaiyang
+* @Time 2024/10/22 13:15
+*/
+class CustomOverlayThemeData {
+  // 动画时间
+  final Duration animationDuration;
+
+  const CustomOverlayThemeData({
+    this.animationDuration = const Duration(milliseconds: 130),
+  });
 }

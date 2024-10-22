@@ -28,13 +28,13 @@ class Loading {
   }) async {
     _customOverlay.cancelAll();
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
-    final customTheme = CustomTheme.of(context);
-    curve ??= customTheme?.loadingCurve ?? Curves.easeInOut;
-    dismissible ??= customTheme?.loadingDismissible ?? true;
-    alignment ??= customTheme?.loadingAlignment ?? Alignment.center;
-    barrierColor ??= customTheme?.loadingBarrierColor ?? Colors.black38;
-    reverseCurve ??= customTheme?.loadingReverseCurve ?? Curves.easeInOutBack;
-    decoration ??= customTheme?.loadingDecoration ?? LoadingOverlayDecoration();
+    final theme = CustomTheme.of(context)?.loadingTheme;
+    curve ??= theme?.curve ?? Curves.easeInOut;
+    dismissible ??= theme?.dismissible ?? true;
+    alignment ??= theme?.alignment ?? Alignment.center;
+    barrierColor ??= theme?.barrierColor ?? Colors.black38;
+    reverseCurve ??= theme?.reverseCurve ?? Curves.easeInOutBack;
+    decoration ??= theme?.decoration ?? LoadingOverlayDecoration();
     try {
       _customOverlay.insert(
         context,
@@ -91,4 +91,38 @@ extension FutureLoading<T> on Future<T> {
         barrierColor: barrierColor,
         progressStream: progressStream,
       );
+}
+
+/*
+* 加载弹窗样式数据
+* @author wuxubaiyang
+* @Time 2024/10/22 11:27
+*/
+class LoadingThemeData {
+  // 加载遮罩装饰器
+  final LoadingOverlayDecoration decoration;
+
+  // 加载遮罩是否可点击取消
+  final bool dismissible;
+
+  // 加载遮罩背景色
+  final Color barrierColor;
+
+  // 加载遮罩对齐方式
+  final Alignment alignment;
+
+  // 加载遮罩动画曲线
+  final Curve curve;
+
+  // 加载遮罩反向动画曲线
+  final Curve reverseCurve;
+
+  const LoadingThemeData({
+    this.dismissible = true,
+    this.curve = Curves.easeInOut,
+    this.alignment = Alignment.center,
+    this.barrierColor = Colors.black38,
+    this.reverseCurve = Curves.easeInOutBack,
+    this.decoration = const LoadingOverlayDecoration(),
+  });
 }

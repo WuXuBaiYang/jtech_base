@@ -35,7 +35,7 @@ class NoticeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final decoration = this.decoration ??
-        CustomTheme.of(context)?.noticeDecoration ??
+        CustomTheme.of(context)?.noticeTheme.decoration ??
         const NoticeDecoration();
     final shape = RoundedRectangleBorder(
       borderRadius: decoration.borderRadius,

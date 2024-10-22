@@ -42,22 +42,21 @@ class LoadingStatusBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final decoration = this.decoration ??
-        CustomTheme.of(context)?.loadingStatusDecoration ??
-        const LoadingStatusDecoration();
+    final theme = CustomTheme.of(context)?.loadingStatusTheme;
+    final decoration =
+        this.decoration ?? theme?.decoration ?? const LoadingStatusDecoration();
     return switch (status) {
-      LoadStatus.fail => _buildFail(context, decoration),
-      LoadStatus.noData => _buildNoData(context, decoration),
-      LoadStatus.loading => _buildLoading(context, decoration),
+      LoadStatus.fail => _buildFail(context, theme, decoration),
+      LoadStatus.noData => _buildNoData(context, theme, decoration),
+      LoadStatus.loading => _buildLoading(context, theme, decoration),
       LoadStatus.success => builder(context, child),
     };
   }
 
   // 构建加载中状态
-  Widget _buildLoading(
-      BuildContext context, LoadingStatusDecoration decoration) {
-    final builder =
-        loadingBuilder ?? CustomTheme.of(context)?.loadingStatusLoadingBuilder;
+  Widget _buildLoading(BuildContext context, LoadingStatusThemeData? theme,
+      LoadingStatusDecoration decoration) {
+    final builder = loadingBuilder ?? theme?.loadingBuilder;
     return _buildStatus(context, (_) {
       if (builder != null) return builder(context, decoration, child);
       return Center(
@@ -71,10 +70,9 @@ class LoadingStatusBuilder extends StatelessWidget {
   }
 
   // 构建空数据状态
-  Widget _buildNoData(
-      BuildContext context, LoadingStatusDecoration decoration) {
-    final builder =
-        noDataBuilder ?? CustomTheme.of(context)?.loadingStatusNoDataBuilder;
+  Widget _buildNoData(BuildContext context, LoadingStatusThemeData? theme,
+      LoadingStatusDecoration decoration) {
+    final builder = noDataBuilder ?? theme?.noDataBuilder;
     return _buildStatus(context, (_) {
       if (builder != null) return builder(context, decoration, child);
       return Center(
@@ -85,9 +83,9 @@ class LoadingStatusBuilder extends StatelessWidget {
   }
 
   // 构建加载失败状态
-  Widget _buildFail(BuildContext context, LoadingStatusDecoration decoration) {
-    final builder =
-        failBuilder ?? CustomTheme.of(context)?.loadingStatusFailBuilder;
+  Widget _buildFail(BuildContext context, LoadingStatusThemeData? theme,
+      LoadingStatusDecoration decoration) {
+    final builder = failBuilder ?? theme?.failBuilder;
     return _buildStatus(context, (_) {
       if (builder != null) return builder(context, decoration, child);
       return Center(
@@ -160,4 +158,30 @@ class LoadingStatusDecoration {
   TextStyle? getHintStyle(BuildContext context) =>
       hintStyle ??
       Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey[400]);
+}
+
+/*
+* 自定义刷新组件样式
+* @author wuxubaiyang
+* @Time 2024/10/22 11:30
+*/
+class LoadingStatusThemeData {
+  // 报错状态构建
+  final ValueWidgetBuilder<LoadingStatusDecoration>? failBuilder;
+
+  // 空数据状态构建
+  final ValueWidgetBuilder<LoadingStatusDecoration>? noDataBuilder;
+
+  // 加载中状态构建
+  final ValueWidgetBuilder<LoadingStatusDecoration>? loadingBuilder;
+
+  // 加载状态装饰器
+  final LoadingStatusDecoration decoration;
+
+  const LoadingStatusThemeData({
+    this.failBuilder,
+    this.noDataBuilder,
+    this.loadingBuilder,
+    this.decoration = const LoadingStatusDecoration(),
+  });
 }

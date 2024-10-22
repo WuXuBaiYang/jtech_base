@@ -31,15 +31,13 @@ class Notice {
     NoticeStatus status = NoticeStatus.info,
   }) {
     token ??= CustomOverlayToken<T>();
-    final customTheme = CustomTheme.of(context);
-    onGoing ??= customTheme?.noticeOnGoing ?? false;
-    curve ??= customTheme?.noticeCurve ?? Curves.bounceInOut;
-    decoration ??= customTheme?.noticeDecoration ?? const NoticeDecoration();
-    reverseCurve ??= customTheme?.noticeReverseCurve ?? Curves.easeInOutBack;
-    duration ??=
-        customTheme?.noticeDuration ?? const Duration(milliseconds: 1800);
-    animeDuration ??=
-        customTheme?.noticeAnimeDuration ?? const Duration(milliseconds: 240);
+    final theme = CustomTheme.of(context)?.noticeTheme;
+    onGoing ??= theme?.onGoing ?? false;
+    curve ??= theme?.curve ?? Curves.bounceInOut;
+    decoration ??= theme?.decoration ?? const NoticeDecoration();
+    reverseCurve ??= theme?.reverseCurve ?? Curves.easeInOutBack;
+    duration ??= theme?.duration ?? const Duration(milliseconds: 1800);
+    animeDuration ??= theme?.animeDuration ?? const Duration(milliseconds: 240);
     final noticeTimer = _NoticeTimer(
         autoStart: true,
         func: token.cancel,
@@ -247,4 +245,38 @@ enum NoticeStatus {
   error,
   warning,
   info,
+}
+
+/*
+* 通知配置
+* @author wuxubaiyang
+* @Time 2024/10/22 11:22
+*/
+class NoticeThemeData {
+  // 通知装饰器
+  final NoticeDecoration decoration;
+
+  // 通知是否持续
+  final bool onGoing;
+
+  // 通知动画曲线
+  final Curve curve;
+
+  // 通知反向动画曲线
+  final Curve reverseCurve;
+
+  // 通知持续时间
+  final Duration duration;
+
+  // 通知动画持续时间
+  final Duration animeDuration;
+
+  const NoticeThemeData({
+    this.onGoing = false,
+    this.curve = Curves.bounceInOut,
+    this.reverseCurve = Curves.easeInOutBack,
+    this.decoration = const NoticeDecoration(),
+    this.duration = const Duration(milliseconds: 1800),
+    this.animeDuration = const Duration(milliseconds: 240),
+  });
 }

@@ -67,11 +67,9 @@ class CustomRefreshView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = CustomTheme.of(context);
-    final footer =
-        this.footer ?? customTheme?.customRefreshFooter ?? BezierFooter();
-    final header =
-        this.header ?? customTheme?.customRefreshHeader ?? BezierCircleHeader();
+    final theme = CustomTheme.of(context)?.customRefreshTheme;
+    final footer = this.footer ?? theme?.footer ?? BezierFooter();
+    final header = this.header ?? theme?.header ?? BezierCircleHeader();
     final onLoad = enableLoad ? () => onRefreshLoad?.call(true) : null;
     final onRefresh = enableRefresh ? () => onRefreshLoad?.call(false) : null;
     return EasyRefresh(
@@ -83,24 +81,22 @@ class CustomRefreshView<T> extends StatelessWidget {
       canRefreshAfterNoMore: true,
       refreshOnStart: initRefresh,
       controller: controller._controller,
-      child: _buildContent(context),
+      child: _buildContent(context, theme),
     );
   }
 
   // 构建内容
-  Widget _buildContent(BuildContext context) {
+  Widget _buildContent(BuildContext context, CustomRefreshThemeData? theme) {
     return ValueListenableBuilder<CustomRefreshControllerValue<T>>(
       valueListenable: controller,
       builder: (_, value, __) {
         return LoadingStatusBuilder(
-          decoration: decoration,
           status: value.loadStatus,
-          failBuilder: failBuilder,
-          noDataBuilder: noDataBuilder,
-          loadingBuilder: loadingBuilder,
-          builder: (_, __) {
-            return builder(context, value.data);
-          },
+          decoration: decoration ?? theme?.decoration,
+          failBuilder: failBuilder ?? theme?.failBuilder,
+          noDataBuilder: noDataBuilder ?? theme?.noDataBuilder,
+          loadingBuilder: loadingBuilder ?? theme?.loadingBuilder,
+          builder: (_, __) => builder(context, value.data),
         );
       },
     );
@@ -233,4 +229,26 @@ class CustomRefreshController<T>
     _controller.dispose();
     super.dispose();
   }
+}
+
+/*
+* 自定义刷新组件样式
+* @author wuxubaiyang
+* @Time 2024/10/22 11:30
+*/
+class CustomRefreshThemeData extends LoadingStatusThemeData {
+  // 头部
+  final Header? header;
+
+  // 足部
+  final Footer? footer;
+
+  const CustomRefreshThemeData({
+    this.header,
+    this.footer,
+    super.decoration,
+    super.failBuilder,
+    super.noDataBuilder,
+    super.loadingBuilder,
+  });
 }
