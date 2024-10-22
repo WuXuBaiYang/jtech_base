@@ -1,3 +1,4 @@
+import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
 import 'package:jtech_base/jtech_base.dart';
 import 'package:jtech_base/widget/notice.dart';
@@ -47,6 +48,12 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
   // 遮罩层动画持续时间
   final Duration animationDuration;
 
+  // 自定义刷新组件头部
+  final Header customRefreshHeader;
+
+  // 自定义刷新组件底部
+  final Footer customRefreshFooter;
+
   CustomTheme({
     // 通知
     this.noticeOnGoing = false,
@@ -64,6 +71,9 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
     this.loadingDecoration = const LoadingOverlayDecoration(),
     // 遮罩层
     this.animationDuration = const Duration(milliseconds: 130),
+    // 自定义刷新组件
+    this.customRefreshFooter = const BezierFooter(),
+    this.customRefreshHeader = const BezierCircleHeader(),
   });
 
   // 获取自定义主题

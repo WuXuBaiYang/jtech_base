@@ -1,6 +1,6 @@
 import 'package:easy_refresh/easy_refresh.dart';
 import 'package:flutter/material.dart';
-
+import 'package:jtech_base/common/theme.dart';
 import 'loading/status.dart';
 
 // 刷新控件构造器
@@ -43,11 +43,10 @@ class CustomRefreshView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final background = Theme.of(context).primaryColor.withOpacity(0.4);
+    final customTheme = CustomTheme.of(context);
+    final loadFooter = customTheme?.customRefreshFooter ?? BezierFooter();
     final refreshHeader =
-        BezierCircleHeader(backgroundColor: background, triggerOffset: 60);
-    final loadFooter =
-        BezierFooter(backgroundColor: background, triggerOffset: 60);
+        customTheme?.customRefreshHeader ?? BezierCircleHeader();
     final onLoad = enableLoad ? () => onRefreshLoad?.call(true) : null;
     final onRefresh = enableRefresh ? () => onRefreshLoad?.call(false) : null;
     return EasyRefresh(
