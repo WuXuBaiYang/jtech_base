@@ -6,7 +6,6 @@ import 'package:jtech_base/tool/tool.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
-
 /*
 * 文件操作工具方法baseCachePath
 * @author wuxubaiyang
@@ -110,9 +109,9 @@ class FileTool {
 * @Time 2022/9/9 17:41
 */
 enum FileDir {
-  applicationDocuments,
   temporary,
   applicationSupport,
+  applicationDocuments,
 }
 
 /*
