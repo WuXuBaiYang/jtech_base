@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+import 'package:jtech_base/common/theme.dart';
 
 /*
 * 自定义图片
@@ -60,10 +61,10 @@ class CustomImage extends StatefulWidget {
   final FilterQuality filterQuality;
 
   // 动画
-  final Curve curve;
+  final Curve? curve;
 
   // 动画时长
-  final Duration animationDuration;
+  final Duration? animationDuration;
 
   // 边距
   final EdgeInsetsGeometry? margin;
@@ -107,6 +108,7 @@ class CustomImage extends StatefulWidget {
     double? scaleByHeight, // 固定高度等比缩放
     this.color,
     this.onTap,
+    this.curve,
     this.margin,
     this.padding,
     this.opacity,
@@ -119,15 +121,14 @@ class CustomImage extends StatefulWidget {
     this.colorBlendMode,
     this.loadingBuilder,
     this.backgroundColor,
+    this.animationDuration,
     this.isAntiAlias = false,
-    this.curve = Curves.easeIn,
     this.gaplessPlayback = false,
     this.matchTextDirection = false,
     this.excludeFromSemantics = false,
     this.alignment = Alignment.center,
     this.repeat = ImageRepeat.noRepeat,
     this.filterQuality = FilterQuality.medium,
-    this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = image,
         width = _computeScaleWidth(
             scaleByWidth, scaleByHeight, width, height, size),
@@ -149,6 +150,7 @@ class CustomImage extends StatefulWidget {
     double? scaleByHeight, // 固定高度等比缩放
     this.color,
     this.onTap,
+    this.curve,
     this.margin,
     this.padding,
     this.opacity,
@@ -161,15 +163,14 @@ class CustomImage extends StatefulWidget {
     double scale = 1.0,
     this.colorBlendMode,
     this.backgroundColor,
+    this.animationDuration,
     this.isAntiAlias = false,
-    this.curve = Curves.easeIn,
     this.gaplessPlayback = false,
     this.matchTextDirection = false,
     this.excludeFromSemantics = false,
     this.alignment = Alignment.center,
     this.repeat = ImageRepeat.noRepeat,
     this.filterQuality = FilterQuality.medium,
-    this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = FileImage(File(path), scale: scale),
         loadingBuilder = null,
         width = _computeScaleWidth(
@@ -192,6 +193,7 @@ class CustomImage extends StatefulWidget {
     double? scaleByHeight, // 固定高度等比缩放
     this.color,
     this.onTap,
+    this.curve,
     this.margin,
     this.padding,
     this.opacity,
@@ -205,15 +207,14 @@ class CustomImage extends StatefulWidget {
     AssetBundle? bundle,
     this.colorBlendMode,
     this.backgroundColor,
+    this.animationDuration,
     this.isAntiAlias = false,
-    this.curve = Curves.easeIn,
     this.gaplessPlayback = false,
     this.matchTextDirection = false,
     this.excludeFromSemantics = false,
     this.alignment = Alignment.center,
     this.repeat = ImageRepeat.noRepeat,
     this.filterQuality = FilterQuality.medium,
-    this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = AssetImage(assetName, bundle: bundle, package: package),
         loadingBuilder = null,
         width = _computeScaleWidth(
@@ -236,6 +237,7 @@ class CustomImage extends StatefulWidget {
     double? scaleByHeight, // 固定高度等比缩放
     this.color,
     this.onTap,
+    this.curve,
     this.margin,
     this.padding,
     this.opacity,
@@ -248,15 +250,14 @@ class CustomImage extends StatefulWidget {
     this.semanticLabel,
     this.colorBlendMode,
     this.backgroundColor,
+    this.animationDuration,
     this.isAntiAlias = false,
-    this.curve = Curves.easeIn,
     this.gaplessPlayback = false,
     this.matchTextDirection = false,
     this.excludeFromSemantics = false,
     this.alignment = Alignment.center,
     this.repeat = ImageRepeat.noRepeat,
     this.filterQuality = FilterQuality.medium,
-    this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = MemoryImage(bytes, scale: scale),
         loadingBuilder = null,
         width = _computeScaleWidth(
@@ -279,6 +280,7 @@ class CustomImage extends StatefulWidget {
     double? scaleByHeight, // 固定高度等比缩放
     this.color,
     this.onTap,
+    this.curve,
     this.margin,
     this.padding,
     this.opacity,
@@ -295,8 +297,8 @@ class CustomImage extends StatefulWidget {
     this.colorBlendMode,
     this.loadingBuilder,
     this.backgroundColor,
+    this.animationDuration,
     this.isAntiAlias = false,
-    this.curve = Curves.easeIn,
     Map<String, String>? headers,
     this.gaplessPlayback = false,
     BaseCacheManager? cacheManager,
@@ -306,7 +308,6 @@ class CustomImage extends StatefulWidget {
     this.repeat = ImageRepeat.noRepeat,
     void Function(Object)? errorListener,
     this.filterQuality = FilterQuality.medium,
-    this.animationDuration = const Duration(milliseconds: 200),
   })  : _image = CachedNetworkImageProvider(
           url,
           scale: scale,
@@ -379,12 +380,18 @@ double? _computeScaleHeight(double? scaleByWidth, double? scaleByHeight,
 class _CustomImageState extends State<CustomImage>
     with SingleTickerProviderStateMixin {
   // 动画管理
-  late final _controller =
-      AnimationController(vsync: this, duration: widget.animationDuration);
+  late final _controller = AnimationController(
+      vsync: this,
+      duration: widget.animationDuration ??
+          CustomTheme.of(context)?.customImageAnimationDuration ??
+          const Duration(milliseconds: 200));
 
   // 默认动画
-  late final _animation = Tween(begin: 0.0, end: 1.0)
-      .animate(CurvedAnimation(parent: _controller, curve: widget.curve));
+  late final _animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+      parent: _controller,
+      curve: widget.curve ??
+          CustomTheme.of(context)?.customImageCurve ??
+          Curves.easeInOut));
 
   @override
   Widget build(BuildContext context) {
@@ -410,6 +417,7 @@ class _CustomImageState extends State<CustomImage>
 
   // 构建图片
   Widget _buildImage(BuildContext context) {
+    final customTheme = CustomTheme.of(context);
     return Image(
       fit: widget.fit,
       color: widget.color,
@@ -428,13 +436,11 @@ class _CustomImageState extends State<CustomImage>
       matchTextDirection: widget.matchTextDirection,
       excludeFromSemantics: widget.excludeFromSemantics,
       frameBuilder: widget.frameBuilder ?? _buildFrameImage,
-      errorBuilder: widget.errorBuilder ?? _buildErrorImage,
-      loadingBuilder: widget.loadingBuilder ?? _buildLoadingImage,
+      loadingBuilder:
+          widget.loadingBuilder ?? customTheme?.customImageLoadingBuilder,
+      errorBuilder: widget.errorBuilder ?? customTheme?.customImageErrorBuilder,
     );
   }
-
-  // 判断是否为网络图片
-  bool get _isNetworkImage => widget._image is CachedNetworkImageProvider;
 
   // 构建帧图片
   Widget _buildFrameImage(BuildContext context, Widget child, int? frame,
@@ -450,22 +456,6 @@ class _CustomImageState extends State<CustomImage>
     }
     if (widget.shape == BoxShape.circle) return ClipOval(child: child);
     return child;
-  }
-
-  // 构建加载图片
-  Widget _buildLoadingImage(
-      BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-    if (!_isNetworkImage) return child;
-
-    /// TODO 加载图片
-    return child;
-  }
-
-  // 构建错误图片
-  Widget _buildErrorImage(
-      BuildContext context, Object error, StackTrace? stackTrace) {
-    /// TODO 错误图片
-    return SizedBox();
   }
 
   // 播放动画

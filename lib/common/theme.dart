@@ -70,6 +70,18 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
   // 自定义弹窗装饰器
   final CustomDialogDecoration customDialogDecoration;
 
+  // 动画
+  final Curve customImageCurve;
+
+  // 动画时长
+  final Duration customImageAnimationDuration;
+
+  // 错误构建
+  final ImageErrorWidgetBuilder? customImageErrorBuilder;
+
+  // 加载构建
+  final ImageLoadingBuilder? customImageLoadingBuilder;
+
   CustomTheme({
     // 通知
     this.noticeOnGoing = false,
@@ -97,6 +109,11 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
     this.loadingStatusLoadingBuilder,
     // 自定义弹窗
     this.customDialogDecoration = const CustomDialogDecoration(),
+    // 自定义图片
+    this.customImageErrorBuilder,
+    this.customImageLoadingBuilder,
+    this.customImageCurve = Curves.easeInOut,
+    this.customImageAnimationDuration = const Duration(milliseconds: 200),
   });
 
   // 获取自定义主题
