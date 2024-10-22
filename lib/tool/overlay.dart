@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:jtech_base/common/theme.dart';
 import 'package:jtech_base/widget/overlay.dart';
 
 /*
@@ -36,9 +37,9 @@ class CustomOverlay {
     VoidCallback? onOutsideTap,
     bool maintainState = false,
     bool canSizeOverlay = false,
+    Duration? animationDuration,
     CustomOverlayToken<T>? token,
     AlignmentGeometry alignment = Alignment.center,
-    Duration animationDuration = const Duration(milliseconds: 130),
   }) async {
     // 检查弹层数量是否超出限制以及是否需要移除
     if (!_checkOverlayCount(replace)) return null;
@@ -47,6 +48,9 @@ class CustomOverlay {
     token ??= CustomOverlayToken<T>();
     final overlayState = Overlay.of(context);
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
+    final customTheme = CustomTheme.of(context);
+    animationDuration ??=
+        customTheme?.animationDuration ?? const Duration(milliseconds: 130);
     final animation =
         _OverlayAnimation(vsync: overlayState, duration: animationDuration);
     final overlayPop = _OverlayPop<T>(context,

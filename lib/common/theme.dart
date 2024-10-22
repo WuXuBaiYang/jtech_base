@@ -44,6 +44,9 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
   // 加载遮罩反向动画曲线
   final Curve loadingReverseCurve;
 
+  // 遮罩层动画持续时间
+  final Duration animationDuration;
+
   CustomTheme({
     // 通知
     this.noticeOnGoing = false,
@@ -59,6 +62,8 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
     this.loadingBarrierColor = Colors.black38,
     this.loadingReverseCurve = Curves.easeInOutBack,
     this.loadingDecoration = const LoadingOverlayDecoration(),
+    // 遮罩层
+    this.animationDuration = const Duration(milliseconds: 130),
   });
 
   // 获取自定义主题
