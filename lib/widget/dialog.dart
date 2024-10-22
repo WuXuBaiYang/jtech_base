@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jtech_base/common/theme.dart';
 
 /*
 * 自定义弹窗
@@ -18,30 +19,51 @@ class CustomDialog extends StatelessWidget {
   // 是否可滚动
   final bool scrollable;
 
-  // 约束
-  final BoxConstraints constraints;
+  // 装饰器
+  final CustomDialogDecoration? decoration;
 
   const CustomDialog({
     super.key,
     this.title,
     this.content,
+    this.decoration,
     this.actions = const [],
     this.scrollable = false,
-    this.constraints = const BoxConstraints.tightFor(width: 280),
   });
 
   @override
   Widget build(BuildContext context) {
-    const contentPadding = EdgeInsets.symmetric(horizontal: 24, vertical: 8);
+    final decoration = this.decoration ??
+        CustomTheme.of(context)?.customDialogDecoration ??
+        CustomDialogDecoration();
     return AlertDialog(
       title: title,
       actions: actions,
       scrollable: scrollable,
-      contentPadding: contentPadding,
+      contentPadding: decoration.contentPadding,
       content: ConstrainedBox(
-        constraints: constraints,
+        constraints: decoration.constraints,
         child: content,
       ),
     );
   }
+}
+
+/*
+* 自定义弹窗装饰器
+* @author wuxubaiyang
+* @Time 2024/10/22 10:34
+*/
+class CustomDialogDecoration {
+  // 约束
+  final BoxConstraints constraints;
+
+  // 内容间距
+  final EdgeInsetsGeometry contentPadding;
+
+  const CustomDialogDecoration({
+    this.constraints = const BoxConstraints(maxWidth: 280),
+    this.contentPadding =
+        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+  });
 }

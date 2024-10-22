@@ -2,7 +2,6 @@ import 'package:example/router.dart';
 import 'package:flutter/material.dart';
 import 'package:jtech_base/jtech_base.dart';
 
-
 void main() {
   runApp(const MyApp());
 }
@@ -32,10 +31,11 @@ class MyHomePage extends ProviderView<MyHomePageProvider> {
       appBar: AppBar(
         title: const Text('JTech Base Demo'),
       ),
-      // body: _buildFunctionList(context, provider.functions),
       body: _buildFunctionList(context, provider.functions),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          showSchemePicker(context, themeSchemes: []);
+        },
       ),
     );
   }

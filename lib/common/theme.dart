@@ -65,7 +65,10 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
       loadingStatusLoadingBuilder;
 
   // 加载状态-装饰器
-  final LoadingStatusDecoration? loadingStatusDecoration;
+  final LoadingStatusDecoration loadingStatusDecoration;
+
+  // 自定义弹窗装饰器
+  final CustomDialogDecoration customDialogDecoration;
 
   CustomTheme({
     // 通知
@@ -88,10 +91,12 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
     this.customRefreshFooter = const BezierFooter(),
     this.customRefreshHeader = const BezierCircleHeader(),
     // 加载状态
-    this.loadingStatusDecoration,
+    this.loadingStatusDecoration = const LoadingStatusDecoration(),
     this.loadingStatusFailBuilder,
     this.loadingStatusNoDataBuilder,
     this.loadingStatusLoadingBuilder,
+    // 自定义弹窗
+    this.customDialogDecoration = const CustomDialogDecoration(),
   });
 
   // 获取自定义主题

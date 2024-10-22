@@ -42,9 +42,8 @@ class LoadingStatusBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final customTheme = CustomTheme.of(context);
     final decoration = this.decoration ??
-        customTheme?.loadingStatusDecoration ??
+        CustomTheme.of(context)?.loadingStatusDecoration ??
         const LoadingStatusDecoration();
     return switch (status) {
       LoadStatus.fail => _buildFail(context, decoration),
