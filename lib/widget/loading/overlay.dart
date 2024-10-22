@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jtech_base/common/theme.dart';
 import 'view.dart';
 
 /*
@@ -11,16 +12,19 @@ class LoadingOverlay extends StatelessWidget {
   final Stream<double>? progressStream;
 
   // 装饰器
-  final LoadingOverlayDecoration decoration;
+  final LoadingOverlayDecoration? decoration;
 
   const LoadingOverlay({
     super.key,
+    this.decoration,
     this.progressStream,
-    this.decoration = const LoadingOverlayDecoration(),
   });
 
   @override
   Widget build(BuildContext context) {
+    final decoration = this.decoration ??
+        CustomTheme.of(context)?.loadingDecoration ??
+        const LoadingOverlayDecoration();
     final boxDecoration = BoxDecoration(
       borderRadius: decoration.borderRadius,
       color: decoration.backgroundColor ?? Theme.of(context).cardColor,
@@ -29,12 +33,13 @@ class LoadingOverlay extends StatelessWidget {
       decoration: boxDecoration,
       alignment: Alignment.center,
       constraints: decoration.constraints,
-      child: _buildLoading(context),
+      child: _buildLoading(context, decoration),
     );
   }
 
   // 构建进度加载视图
-  Widget _buildLoading(BuildContext context) {
+  Widget _buildLoading(
+      BuildContext context, LoadingOverlayDecoration decoration) {
     if (progressStream == null) {
       return LoadingView(
         size: decoration.loadingSize,

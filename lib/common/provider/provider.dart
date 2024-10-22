@@ -43,13 +43,13 @@ abstract class BaseProvider extends ChangeNotifier {
   Future<T?> showNoticeInfo<T>(
     String message, {
     String? key,
+    Curve? curve,
+    bool? onGoing,
     String? title,
-    bool onGoing = false,
+    Curve? reverseCurve,
+    NoticeDecoration? decoration,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
-    Curve curve = Curves.bounceInOut,
-    Curve reverseCurve = Curves.easeInOutBack,
-    NoticeDecoration decoration = const NoticeDecoration(),
   }) async {
     cancelNotice();
     if (!context.mounted) return null;
@@ -72,13 +72,13 @@ abstract class BaseProvider extends ChangeNotifier {
   Future<T?> showNoticeError<T>(
     String message, {
     String? key,
+    Curve? curve,
+    bool? onGoing,
     String? title,
-    bool onGoing = false,
+    Curve? reverseCurve,
+    NoticeDecoration? decoration,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
-    Curve curve = Curves.bounceInOut,
-    Curve reverseCurve = Curves.easeInOutBack,
-    NoticeDecoration decoration = const NoticeDecoration(),
   }) async {
     cancelNotice();
     if (!context.mounted) return null;
@@ -101,13 +101,13 @@ abstract class BaseProvider extends ChangeNotifier {
   Future<T?> showNoticeWarning<T>(
     String message, {
     String? key,
+    Curve? curve,
+    bool? onGoing,
     String? title,
-    bool onGoing = false,
+    Curve? reverseCurve,
+    NoticeDecoration? decoration,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
-    Curve curve = Curves.bounceInOut,
-    Curve reverseCurve = Curves.easeInOutBack,
-    NoticeDecoration decoration = const NoticeDecoration(),
   }) async {
     cancelNotice();
     if (!context.mounted) return null;
@@ -130,13 +130,13 @@ abstract class BaseProvider extends ChangeNotifier {
   Future<T?> showNoticeSuccess<T>(
     String message, {
     String? key,
+    Curve? curve,
+    bool? onGoing,
     String? title,
-    bool onGoing = false,
+    Curve? reverseCurve,
+    NoticeDecoration? decoration,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
-    Curve curve = Curves.bounceInOut,
-    Curve reverseCurve = Curves.easeInOutBack,
-    NoticeDecoration decoration = const NoticeDecoration(),
   }) async {
     cancelNotice();
     if (!context.mounted) return null;

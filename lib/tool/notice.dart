@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:jtech_base/common/theme.dart';
 import 'package:jtech_base/widget/notice.dart';
 import 'overlay.dart';
 
@@ -18,18 +19,27 @@ class Notice {
     BuildContext context, {
     required String message,
     String? key,
+    Curve? curve,
+    bool? onGoing,
     String? title,
-    bool onGoing = false,
+    Duration? duration,
+    Curve? reverseCurve,
+    Duration? animeDuration,
+    NoticeDecoration? decoration,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
-    Curve curve = Curves.bounceInOut,
     NoticeStatus status = NoticeStatus.info,
-    Curve reverseCurve = Curves.easeInOutBack,
-    Duration duration = const Duration(milliseconds: 1800),
-    NoticeDecoration decoration = const NoticeDecoration(),
-    Duration animeDuration = const Duration(milliseconds: 240),
   }) {
     token ??= CustomOverlayToken<T>();
+    final customTheme = CustomTheme.of(context);
+    onGoing ??= customTheme?.noticeOnGoing ?? false;
+    curve ??= customTheme?.noticeCurve ?? Curves.bounceInOut;
+    decoration ??= customTheme?.noticeDecoration ?? const NoticeDecoration();
+    reverseCurve ??= customTheme?.noticeReverseCurve ?? Curves.easeInOutBack;
+    duration ??=
+        customTheme?.noticeDuration ?? const Duration(milliseconds: 1800);
+    animeDuration ??=
+        customTheme?.noticeAnimeDuration ?? const Duration(milliseconds: 240);
     final noticeTimer = _NoticeTimer(
         autoStart: true,
         func: token.cancel,
@@ -56,7 +66,7 @@ class Notice {
                 begin: const Offset(0, -1),
                 end: const Offset(0, 0),
               ).animate(CurvedAnimation(
-                curve: curve,
+                curve: curve!,
                 parent: animation,
                 reverseCurve: reverseCurve,
               )),
@@ -79,13 +89,13 @@ class Notice {
     BuildContext context, {
     required String message,
     String? key,
+    Curve? curve,
+    bool? onGoing,
     String? title,
-    bool onGoing = false,
+    Curve? reverseCurve,
+    NoticeDecoration? decoration,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
-    Curve curve = Curves.bounceInOut,
-    Curve reverseCurve = Curves.easeInOutBack,
-    NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     return show<T>(
       context,
@@ -107,13 +117,13 @@ class Notice {
     BuildContext context, {
     required String message,
     String? key,
+    Curve? curve,
+    bool? onGoing,
     String? title,
-    bool onGoing = false,
+    Curve? reverseCurve,
+    NoticeDecoration? decoration,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
-    Curve curve = Curves.bounceInOut,
-    Curve reverseCurve = Curves.easeInOutBack,
-    NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     return show<T>(
       context,
@@ -135,13 +145,13 @@ class Notice {
     BuildContext context, {
     required String message,
     String? key,
+    Curve? curve,
+    bool? onGoing,
     String? title,
-    bool onGoing = false,
+    Curve? reverseCurve,
+    NoticeDecoration? decoration,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
-    Curve curve = Curves.bounceInOut,
-    Curve reverseCurve = Curves.easeInOutBack,
-    NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     return show<T>(
       context,
@@ -163,13 +173,13 @@ class Notice {
     BuildContext context, {
     required String message,
     String? key,
+    Curve? curve,
+    bool? onGoing,
     String? title,
-    bool onGoing = false,
+    Curve? reverseCurve,
+    NoticeDecoration? decoration,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
-    Curve curve = Curves.bounceInOut,
-    Curve reverseCurve = Curves.easeInOutBack,
-    NoticeDecoration decoration = const NoticeDecoration(),
   }) {
     return show<T>(
       context,

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:jtech_base/common/theme.dart';
 import 'package:jtech_base/tool/overlay.dart';
 import 'package:jtech_base/widget/loading/overlay.dart';
 
@@ -17,27 +18,35 @@ class Loading {
     BuildContext context, {
     required Future<T?> loadFuture,
     String? key,
-    bool dismissible = true,
+    Curve? curve,
+    bool? dismissible,
+    Color? barrierColor,
+    Curve? reverseCurve,
+    Alignment? alignment,
     Stream<double>? progressStream,
-    Curve curve = Curves.easeInOut,
-    Color barrierColor = Colors.black38,
-    Curve reverseCurve = Curves.easeInOutBack,
-    LoadingOverlayDecoration decoration = const LoadingOverlayDecoration(),
+    LoadingOverlayDecoration? decoration,
   }) async {
     _customOverlay.cancelAll();
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
+    final customTheme = CustomTheme.of(context);
+    curve ??= customTheme?.loadingCurve ?? Curves.easeInOut;
+    dismissible ??= customTheme?.loadingDismissible ?? true;
+    alignment ??= customTheme?.loadingAlignment ?? Alignment.center;
+    barrierColor ??= customTheme?.loadingBarrierColor ?? Colors.black38;
+    reverseCurve ??= customTheme?.loadingReverseCurve ?? Curves.easeInOutBack;
+    decoration ??= customTheme?.loadingDecoration ?? LoadingOverlayDecoration();
     try {
       _customOverlay.insert(
         context,
         key: key,
         interceptPop: false,
+        alignment: alignment,
         dismissible: dismissible,
         barrierColor: barrierColor,
-        alignment: Alignment.center,
         builder: (_, animation, child) {
           return ScaleTransition(
             scale: CurvedAnimation(
-              curve: curve,
+              curve: curve!,
               parent: animation,
               reverseCurve: reverseCurve,
             ),
@@ -65,12 +74,12 @@ class Loading {
 extension FutureLoading<T> on Future<T> {
   Future<T?> loading(
     BuildContext context, {
-    bool dismissible = true,
+    Curve? curve,
+    bool? dismissible,
+    Color? barrierColor,
+    Curve? reverseCurve,
     Stream<double>? progressStream,
-    Curve curve = Curves.easeInOut,
-    Color barrierColor = Colors.black38,
-    Curve reverseCurve = Curves.easeInOutBack,
-    LoadingOverlayDecoration decoration = const LoadingOverlayDecoration(),
+    LoadingOverlayDecoration? decoration,
   }) =>
       Loading.show(
         context,

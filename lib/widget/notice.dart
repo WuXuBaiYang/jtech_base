@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jtech_base/common/theme.dart';
 import 'package:jtech_base/tool/notice.dart';
 
 /*
@@ -20,7 +21,7 @@ class NoticeView extends StatelessWidget {
   final NoticeStatus status;
 
   // 装饰器
-  final NoticeDecoration decoration;
+  final NoticeDecoration? decoration;
 
   const NoticeView({
     super.key,
@@ -28,11 +29,14 @@ class NoticeView extends StatelessWidget {
     required this.message,
     required this.actions,
     required this.status,
-    this.decoration = const NoticeDecoration(),
+    this.decoration,
   });
 
   @override
   Widget build(BuildContext context) {
+    final decoration = this.decoration ??
+        CustomTheme.of(context)?.noticeDecoration ??
+        const NoticeDecoration();
     final shape = RoundedRectangleBorder(
       borderRadius: decoration.borderRadius,
     );
@@ -45,20 +49,13 @@ class NoticeView extends StatelessWidget {
         elevation: decoration.elevation,
         color: decoration.backgroundColor,
         shadowColor: decoration.shadowColor,
-        child: _buildMessage(context),
+        child: _buildMessage(context, decoration),
       ),
     );
   }
 
   // 构建内容消息
-  Widget _buildMessage(BuildContext context) {
-    final titleStyle = decoration.titleStyle ??
-        Theme.of(context)
-            .textTheme
-            .titleMedium
-            ?.copyWith(fontWeight: FontWeight.w600);
-    final messageStyle =
-        decoration.messageStyle ?? Theme.of(context).textTheme.bodyMedium;
+  Widget _buildMessage(BuildContext context, NoticeDecoration decoration) {
     return Padding(
       padding: decoration.padding,
       child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -69,8 +66,9 @@ class NoticeView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              if (title != null) Text(title!, style: titleStyle),
-              Text(message, style: messageStyle),
+              if (title != null)
+                Text(title!, style: decoration.getTitleStyle(context)),
+              Text(message, style: decoration.getMessageStyle(context)),
             ],
           ),
         ),
@@ -131,6 +129,18 @@ class NoticeDecoration {
     this.borderRadius = const BorderRadius.all(Radius.circular(8)),
     this.constraints = const BoxConstraints(maxWidth: 350, minWidth: 80),
   });
+
+  // 获取标题样式
+  TextStyle? getTitleStyle(BuildContext context) =>
+      titleStyle ??
+      Theme.of(context)
+          .textTheme
+          .titleMedium
+          ?.copyWith(fontWeight: FontWeight.w600);
+
+  // 获取消息样式
+  TextStyle? getMessageStyle(BuildContext context) =>
+      messageStyle ?? Theme.of(context).textTheme.bodyMedium;
 }
 
 /*
