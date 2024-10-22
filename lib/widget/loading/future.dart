@@ -12,23 +12,14 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
   // 初始值
   final T? initialData;
 
-  // 加载动画大小
-  final double? loadingSize;
-
-  // 子元素
-  final Widget? child;
-
-  // 失败重试回调
-  final VoidCallback? onRetry;
-
   // 报错状态构建
-  final WidgetBuilder? failBuilder;
+  final ValueWidgetBuilder<LoadingStatusDecoration>? failBuilder;
 
   // 空数据状态构建
-  final WidgetBuilder? emptyBuilder;
+  final ValueWidgetBuilder<LoadingStatusDecoration>? noDataBuilder;
 
   // 加载中状态构建
-  final WidgetBuilder? loadingBuilder;
+  final ValueWidgetBuilder<LoadingStatusDecoration>? loadingBuilder;
 
   // 视图构建
   final ValueWidgetBuilder<T?> builder;
@@ -36,16 +27,21 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
   // 异步方法
   final AsyncValueGetter<T> onFuture;
 
+  // 子元素
+  final Widget? child;
+
+  // 加载状态装饰器
+  final LoadingStatusDecoration? decoration;
+
   const LoadingFutureBuilder({
     super.key,
     required this.builder,
     required this.onFuture,
     this.child,
-    this.onRetry,
+    this.decoration,
     this.initialData,
-    this.loadingSize,
     this.failBuilder,
-    this.emptyBuilder,
+    this.noDataBuilder,
     this.loadingBuilder,
   });
 
@@ -56,11 +52,10 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
       initialData: initialData,
       builder: (_, snap) {
         return LoadingStatusBuilder(
-          onRetry: onRetry,
+          decoration: decoration,
           status: _getStatus(snap),
-          loadingSize: loadingSize,
           failBuilder: failBuilder,
-          emptyBuilder: emptyBuilder,
+          noDataBuilder: noDataBuilder,
           loadingBuilder: loadingBuilder,
           builder: (_, child) {
             return builder(context, snap.data, child);
@@ -78,6 +73,6 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
       return LoadStatus.loading;
     }
     if (snap.hasData) return LoadStatus.success;
-    return LoadStatus.empty;
+    return LoadStatus.noData;
   }
 }

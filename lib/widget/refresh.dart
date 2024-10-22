@@ -28,32 +28,57 @@ class CustomRefreshView<T> extends StatelessWidget {
   // 是否启用加载
   final bool enableLoad;
 
+  // 头部
+  final Header? header;
+
+  // 足部
+  final Footer? footer;
+
   // 子元素构建
   final CustomRefreshWidgetBuilder<T> builder;
+
+  // 报错状态构建
+  final ValueWidgetBuilder<LoadingStatusDecoration>? failBuilder;
+
+  // 空数据状态构建
+  final ValueWidgetBuilder<LoadingStatusDecoration>? noDataBuilder;
+
+  // 加载中状态构建
+  final ValueWidgetBuilder<LoadingStatusDecoration>? loadingBuilder;
+
+  // 加载状态装饰器
+  final LoadingStatusDecoration? decoration;
 
   const CustomRefreshView({
     super.key,
     required this.builder,
     required this.controller,
+    this.header,
+    this.footer,
     this.onRefreshLoad,
     this.enableLoad = true,
     this.initRefresh = true,
     this.enableRefresh = true,
+    this.decoration,
+    this.failBuilder,
+    this.noDataBuilder,
+    this.loadingBuilder,
   });
 
   @override
   Widget build(BuildContext context) {
     final customTheme = CustomTheme.of(context);
-    final loadFooter = customTheme?.customRefreshFooter ?? BezierFooter();
-    final refreshHeader =
-        customTheme?.customRefreshHeader ?? BezierCircleHeader();
+    final footer =
+        this.footer ?? customTheme?.customRefreshFooter ?? BezierFooter();
+    final header =
+        this.header ?? customTheme?.customRefreshHeader ?? BezierCircleHeader();
     final onLoad = enableLoad ? () => onRefreshLoad?.call(true) : null;
     final onRefresh = enableRefresh ? () => onRefreshLoad?.call(false) : null;
     return EasyRefresh(
       onLoad: onLoad,
-      footer: loadFooter,
+      header: header,
+      footer: footer,
       onRefresh: onRefresh,
-      header: refreshHeader,
       canLoadAfterNoMore: true,
       canRefreshAfterNoMore: true,
       refreshOnStart: initRefresh,
@@ -68,7 +93,11 @@ class CustomRefreshView<T> extends StatelessWidget {
       valueListenable: controller,
       builder: (_, value, __) {
         return LoadingStatusBuilder(
+          decoration: decoration,
           status: value.loadStatus,
+          failBuilder: failBuilder,
+          noDataBuilder: noDataBuilder,
+          loadingBuilder: loadingBuilder,
           builder: (_, __) {
             return builder(context, value.data);
           },
@@ -134,7 +163,7 @@ class CustomRefreshController<T>
         : IndicatorResult.success;
     final loadStatus = loadMore || (!loadMore && data.isNotEmpty)
         ? LoadStatus.success
-        : LoadStatus.empty;
+        : LoadStatus.noData;
     if (loadMore) {
       _controller.finishLoad(indicatorResult, true);
       return _update(data: value.data + data, loadStatus: loadStatus);
@@ -176,19 +205,19 @@ class CustomRefreshController<T>
   // 移除数据
   void removeAll(List<T> data) {
     final list = List<T>.from(value.data)..removeWhere((e) => data.contains(e));
-    final loadState = list.isNotEmpty ? LoadStatus.success : LoadStatus.empty;
+    final loadState = list.isNotEmpty ? LoadStatus.success : LoadStatus.noData;
     _update(data: list, loadStatus: loadState);
   }
 
   // 根据条件移除数据
   void removeWhere(bool Function(T) test) {
     final list = List<T>.from(value.data)..removeWhere(test);
-    final loadState = list.isNotEmpty ? LoadStatus.success : LoadStatus.empty;
+    final loadState = list.isNotEmpty ? LoadStatus.success : LoadStatus.noData;
     _update(data: list, loadStatus: loadState);
   }
 
   // 清空所有数据
-  void clear() => _update(data: <T>[], loadStatus: LoadStatus.empty);
+  void clear() => _update(data: <T>[], loadStatus: LoadStatus.noData);
 
   // 更新数据
   void _update({List<T>? data, LoadStatus? loadStatus}) {

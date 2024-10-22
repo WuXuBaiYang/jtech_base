@@ -54,6 +54,19 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
   // 自定义刷新组件底部
   final Footer customRefreshFooter;
 
+  // 加载状态-报错状态构建
+  final ValueWidgetBuilder<LoadingStatusDecoration>? loadingStatusFailBuilder;
+
+  // 加载状态-空数据状态构建
+  final ValueWidgetBuilder<LoadingStatusDecoration>? loadingStatusNoDataBuilder;
+
+  // 加载状态-加载中状态构建
+  final ValueWidgetBuilder<LoadingStatusDecoration>?
+      loadingStatusLoadingBuilder;
+
+  // 加载状态-装饰器
+  final LoadingStatusDecoration? loadingStatusDecoration;
+
   CustomTheme({
     // 通知
     this.noticeOnGoing = false,
@@ -74,6 +87,11 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
     // 自定义刷新组件
     this.customRefreshFooter = const BezierFooter(),
     this.customRefreshHeader = const BezierCircleHeader(),
+    // 加载状态
+    this.loadingStatusDecoration,
+    this.loadingStatusFailBuilder,
+    this.loadingStatusNoDataBuilder,
+    this.loadingStatusLoadingBuilder,
   });
 
   // 获取自定义主题
