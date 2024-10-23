@@ -22,7 +22,7 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
   final ValueWidgetBuilder<LoadingStatusStyle>? loadingBuilder;
 
   // 视图构建
-  final ValueWidgetBuilder<T?> builder;
+  final ValueWidgetBuilder<T> builder;
 
   // future
   final Future<T>? future;
@@ -53,12 +53,12 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
       initialData: initialData,
       builder: (_, snap) {
         return LoadingStatusBuilder(
-          status: _getStatus(snap),
+          status: _handleStatus(snap),
           style: style ?? themeData.style,
           failBuilder: failBuilder ?? themeData.failBuilder,
           noDataBuilder: noDataBuilder ?? themeData.noDataBuilder,
           loadingBuilder: loadingBuilder ?? themeData.loadingBuilder,
-          builder: (_, child) => builder(context, snap.data, child),
+          builder: (_, child) => builder(context, snap.data as T, child),
           child: child,
         );
       },
@@ -66,7 +66,7 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
   }
 
   // 根据当前数据状态获取对应的状态
-  LoadStatus _getStatus(AsyncSnapshot<T> snap) {
+  LoadStatus _handleStatus(AsyncSnapshot<T> snap) {
     if (snap.hasError) return LoadStatus.fail;
     if (snap.connectionState == ConnectionState.waiting) {
       return LoadStatus.loading;
