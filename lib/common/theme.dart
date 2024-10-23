@@ -38,7 +38,7 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
   // 自定义图片
   final CustomImageThemeData customImageTheme;
 
-  CustomTheme({
+  const CustomTheme({
     // 通知
     this.noticeTheme = const NoticeThemeData(),
     // 加载遮罩
@@ -58,7 +58,11 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
   });
 
   // 获取自定义主题
-  static CustomTheme? of(BuildContext context) =>
+  static CustomTheme of(BuildContext context) =>
+      maybeOf(context) ?? const CustomTheme();
+
+  // 获取可能自定义主题
+  static CustomTheme? maybeOf(BuildContext context) =>
       Theme.of(context).extension<CustomTheme>();
 
   @override

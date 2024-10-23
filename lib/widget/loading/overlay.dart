@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jtech_base/common/theme.dart';
+import 'package:jtech_base/tool/loading.dart';
 import 'view.dart';
 
 /*
@@ -22,9 +22,8 @@ class LoadingOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final decoration = this.decoration ??
-        CustomTheme.of(context)?.loadingTheme.decoration ??
-        const LoadingOverlayDecoration();
+    final decoration =
+        this.decoration ?? LoadingThemeData.of(context).decoration;
     final boxDecoration = BoxDecoration(
       borderRadius: decoration.borderRadius,
       color: decoration.backgroundColor ?? Theme.of(context).cardColor,

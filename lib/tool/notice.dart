@@ -31,18 +31,12 @@ class Notice {
     NoticeStatus status = NoticeStatus.info,
   }) {
     token ??= CustomOverlayToken<T>();
-    final theme = CustomTheme.of(context)?.noticeTheme;
-    onGoing ??= theme?.onGoing ?? false;
-    curve ??= theme?.curve ?? Curves.bounceInOut;
-    decoration ??= theme?.decoration ?? const NoticeDecoration();
-    reverseCurve ??= theme?.reverseCurve ?? Curves.easeInOutBack;
-    duration ??= theme?.duration ?? const Duration(milliseconds: 1800);
-    animeDuration ??= theme?.animeDuration ?? const Duration(milliseconds: 240);
+    final themeData = NoticeThemeData.of(context);
     final noticeTimer = _NoticeTimer(
         autoStart: true,
         func: token.cancel,
-        duration: duration,
-        isEffective: !onGoing);
+        duration: duration ?? themeData.duration,
+        isEffective: !(onGoing ?? themeData.onGoing));
     return _customOverlay.insert<T>(
       context,
       key: key,
@@ -50,7 +44,7 @@ class Notice {
       dismissible: false,
       interceptPop: false,
       alignment: Alignment.topCenter,
-      animationDuration: animeDuration,
+      animationDuration: animeDuration ?? themeData.animeDuration,
       builder: (_, animation, __) {
         return SafeArea(
           child: Dismissible(
@@ -64,16 +58,16 @@ class Notice {
                 begin: const Offset(0, -1),
                 end: const Offset(0, 0),
               ).animate(CurvedAnimation(
-                curve: curve!,
                 parent: animation,
-                reverseCurve: reverseCurve,
+                curve: curve ?? themeData.curve,
+                reverseCurve: reverseCurve ?? themeData.reverseCurve,
               )),
               child: NoticeView(
                 title: title,
                 status: status,
                 message: message,
                 actions: actions,
-                decoration: decoration,
+                decoration: decoration ?? themeData.decoration,
               ),
             ),
           ),
@@ -279,4 +273,12 @@ class NoticeThemeData {
     this.duration = const Duration(milliseconds: 1800),
     this.animeDuration = const Duration(milliseconds: 240),
   });
+
+  // 获取通知主题
+  static NoticeThemeData of(BuildContext context) =>
+      maybeOf(context) ?? const NoticeThemeData();
+
+  // 获取通知主题
+  static NoticeThemeData? maybeOf(BuildContext context) =>
+      CustomTheme.maybeOf(context)?.noticeTheme;
 }

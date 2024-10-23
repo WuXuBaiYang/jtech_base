@@ -28,34 +28,28 @@ class Loading {
   }) async {
     _customOverlay.cancelAll();
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
-    final theme = CustomTheme.of(context)?.loadingTheme;
-    curve ??= theme?.curve ?? Curves.easeInOut;
-    dismissible ??= theme?.dismissible ?? true;
-    alignment ??= theme?.alignment ?? Alignment.center;
-    barrierColor ??= theme?.barrierColor ?? Colors.black38;
-    reverseCurve ??= theme?.reverseCurve ?? Curves.easeInOutBack;
-    decoration ??= theme?.decoration ?? LoadingOverlayDecoration();
+    final themeData = LoadingThemeData.of(context);
     try {
       _customOverlay.insert(
         context,
         key: key,
         interceptPop: false,
-        alignment: alignment,
-        dismissible: dismissible,
-        barrierColor: barrierColor,
+        alignment: alignment ?? themeData.alignment,
+        dismissible: dismissible ?? themeData.dismissible,
+        barrierColor: barrierColor ?? themeData.barrierColor,
         builder: (_, animation, child) {
           return ScaleTransition(
             scale: CurvedAnimation(
-              curve: curve!,
               parent: animation,
-              reverseCurve: reverseCurve,
+              curve: curve ?? themeData.curve,
+              reverseCurve: reverseCurve ?? themeData.reverseCurve,
             ),
             child: child,
           );
         },
         child: LoadingOverlay(
           progressStream: progressStream,
-          decoration: decoration,
+          decoration: decoration ?? themeData.decoration,
         ),
       );
       return await loadFuture;
@@ -125,4 +119,12 @@ class LoadingThemeData {
     this.reverseCurve = Curves.easeInOutBack,
     this.decoration = const LoadingOverlayDecoration(),
   });
+
+  // 获取通知主题
+  static LoadingThemeData of(BuildContext context) =>
+      maybeOf(context) ?? const LoadingThemeData();
+
+  // 获取通知主题
+  static LoadingThemeData? maybeOf(BuildContext context) =>
+      CustomTheme.maybeOf(context)?.loadingTheme;
 }

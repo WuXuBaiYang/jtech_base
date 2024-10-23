@@ -48,17 +48,17 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomTheme.of(context)?.loadingFutureTheme;
+    final themeData = LoadingFutureThemeData.of(context);
     return FutureBuilder<T>(
       future: onFuture(),
       initialData: initialData,
       builder: (_, snap) {
         return LoadingStatusBuilder(
           status: _getStatus(snap),
-          decoration: decoration ?? theme?.decoration,
-          failBuilder: failBuilder ?? theme?.failBuilder,
-          noDataBuilder: noDataBuilder ?? theme?.noDataBuilder,
-          loadingBuilder: loadingBuilder ?? theme?.loadingBuilder,
+          decoration: decoration ?? themeData.decoration,
+          failBuilder: failBuilder ?? themeData.failBuilder,
+          noDataBuilder: noDataBuilder ?? themeData.noDataBuilder,
+          loadingBuilder: loadingBuilder ?? themeData.loadingBuilder,
           builder: (_, child) => builder(context, snap.data, child),
           child: child,
         );
@@ -89,4 +89,12 @@ class LoadingFutureThemeData extends LoadingStatusThemeData {
     super.noDataBuilder,
     super.loadingBuilder,
   });
+
+  // 获取通知主题
+  static LoadingFutureThemeData of(BuildContext context) =>
+      maybeOf(context) ?? const LoadingFutureThemeData();
+
+  // 获取通知主题
+  static LoadingFutureThemeData? maybeOf(BuildContext context) =>
+      CustomTheme.maybeOf(context)?.loadingFutureTheme;
 }

@@ -33,9 +33,8 @@ class CustomDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomTheme.of(context)?.customDialogTheme;
-    final decoration =
-        this.decoration ?? theme?.decoration ?? CustomDialogDecoration();
+    final themeData = CustomDialogThemeData.of(context);
+    final decoration = this.decoration ?? themeData.decoration;
     return AlertDialog(
       title: title,
       actions: actions,
@@ -80,4 +79,12 @@ class CustomDialogThemeData {
   const CustomDialogThemeData({
     this.decoration = const CustomDialogDecoration(),
   });
+
+  // 获取通知主题
+  static CustomDialogThemeData of(BuildContext context) =>
+      maybeOf(context) ?? const CustomDialogThemeData();
+
+  // 获取通知主题
+  static CustomDialogThemeData? maybeOf(BuildContext context) =>
+      CustomTheme.maybeOf(context)?.customDialogTheme;
 }

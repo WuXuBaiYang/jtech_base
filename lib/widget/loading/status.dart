@@ -42,21 +42,19 @@ class LoadingStatusBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomTheme.of(context)?.loadingStatusTheme;
-    final decoration =
-        this.decoration ?? theme?.decoration ?? const LoadingStatusDecoration();
+    final themeData = LoadingStatusThemeData.of(context);
     return switch (status) {
-      LoadStatus.fail => _buildFail(context, theme, decoration),
-      LoadStatus.noData => _buildNoData(context, theme, decoration),
-      LoadStatus.loading => _buildLoading(context, theme, decoration),
+      LoadStatus.fail => _buildFail(context, themeData),
+      LoadStatus.noData => _buildNoData(context, themeData),
+      LoadStatus.loading => _buildLoading(context, themeData),
       LoadStatus.success => builder(context, child),
     };
   }
 
   // 构建加载中状态
-  Widget _buildLoading(BuildContext context, LoadingStatusThemeData? theme,
-      LoadingStatusDecoration decoration) {
-    final builder = loadingBuilder ?? theme?.loadingBuilder;
+  Widget _buildLoading(BuildContext context, LoadingStatusThemeData themeData) {
+    final decoration = themeData.decoration;
+    final builder = loadingBuilder ?? themeData.loadingBuilder;
     return _buildStatus(context, (_) {
       if (builder != null) return builder(context, decoration, child);
       return Center(
@@ -70,9 +68,9 @@ class LoadingStatusBuilder extends StatelessWidget {
   }
 
   // 构建空数据状态
-  Widget _buildNoData(BuildContext context, LoadingStatusThemeData? theme,
-      LoadingStatusDecoration decoration) {
-    final builder = noDataBuilder ?? theme?.noDataBuilder;
+  Widget _buildNoData(BuildContext context, LoadingStatusThemeData themeData) {
+    final decoration = themeData.decoration;
+    final builder = noDataBuilder ?? themeData.noDataBuilder;
     return _buildStatus(context, (_) {
       if (builder != null) return builder(context, decoration, child);
       return Center(
@@ -83,9 +81,9 @@ class LoadingStatusBuilder extends StatelessWidget {
   }
 
   // 构建加载失败状态
-  Widget _buildFail(BuildContext context, LoadingStatusThemeData? theme,
-      LoadingStatusDecoration decoration) {
-    final builder = failBuilder ?? theme?.failBuilder;
+  Widget _buildFail(BuildContext context, LoadingStatusThemeData themeData) {
+    final decoration = themeData.decoration;
+    final builder = failBuilder ?? themeData.failBuilder;
     return _buildStatus(context, (_) {
       if (builder != null) return builder(context, decoration, child);
       return Center(
@@ -184,4 +182,12 @@ class LoadingStatusThemeData {
     this.loadingBuilder,
     this.decoration = const LoadingStatusDecoration(),
   });
+
+  // 获取通知主题
+  static LoadingStatusThemeData of(BuildContext context) =>
+      maybeOf(context) ?? const LoadingStatusThemeData();
+
+  // 获取通知主题
+  static LoadingStatusThemeData? maybeOf(BuildContext context) =>
+      CustomTheme.maybeOf(context)?.loadingStatusTheme;
 }

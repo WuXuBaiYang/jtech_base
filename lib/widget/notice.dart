@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:jtech_base/common/theme.dart';
 import 'package:jtech_base/tool/notice.dart';
 
 /*
@@ -34,9 +33,8 @@ class NoticeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final decoration = this.decoration ??
-        CustomTheme.of(context)?.noticeTheme.decoration ??
-        const NoticeDecoration();
+    final decoration =
+        this.decoration ?? NoticeThemeData.of(context).decoration;
     final shape = RoundedRectangleBorder(
       borderRadius: decoration.borderRadius,
     );

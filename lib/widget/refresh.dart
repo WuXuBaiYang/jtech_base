@@ -67,9 +67,9 @@ class CustomRefreshView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomTheme.of(context)?.customRefreshTheme;
-    final footer = this.footer ?? theme?.footer ?? BezierFooter();
-    final header = this.header ?? theme?.header ?? BezierCircleHeader();
+    final themeData = CustomRefreshThemeData.of(context);
+    final footer = this.footer ?? themeData.footer;
+    final header = this.header ?? themeData.header;
     final onLoad = enableLoad ? () => onRefreshLoad?.call(true) : null;
     final onRefresh = enableRefresh ? () => onRefreshLoad?.call(false) : null;
     return EasyRefresh(
@@ -81,21 +81,21 @@ class CustomRefreshView<T> extends StatelessWidget {
       canRefreshAfterNoMore: true,
       refreshOnStart: initRefresh,
       controller: controller._controller,
-      child: _buildContent(context, theme),
+      child: _buildContent(context, themeData),
     );
   }
 
   // 构建内容
-  Widget _buildContent(BuildContext context, CustomRefreshThemeData? theme) {
+  Widget _buildContent(BuildContext context, CustomRefreshThemeData theme) {
     return ValueListenableBuilder<CustomRefreshControllerValue<T>>(
       valueListenable: controller,
       builder: (_, value, __) {
         return LoadingStatusBuilder(
           status: value.loadStatus,
-          decoration: decoration ?? theme?.decoration,
-          failBuilder: failBuilder ?? theme?.failBuilder,
-          noDataBuilder: noDataBuilder ?? theme?.noDataBuilder,
-          loadingBuilder: loadingBuilder ?? theme?.loadingBuilder,
+          decoration: decoration ?? theme.decoration,
+          failBuilder: failBuilder ?? theme.failBuilder,
+          noDataBuilder: noDataBuilder ?? theme.noDataBuilder,
+          loadingBuilder: loadingBuilder ?? theme.loadingBuilder,
           builder: (_, __) => builder(context, value.data),
         );
       },
@@ -251,4 +251,12 @@ class CustomRefreshThemeData extends LoadingStatusThemeData {
     super.noDataBuilder,
     super.loadingBuilder,
   });
+
+  // 获取通知主题
+  static CustomRefreshThemeData of(BuildContext context) =>
+      maybeOf(context) ?? const CustomRefreshThemeData();
+
+  // 获取通知主题
+  static CustomRefreshThemeData? maybeOf(BuildContext context) =>
+      CustomTheme.maybeOf(context)?.customRefreshTheme;
 }
