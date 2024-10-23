@@ -12,9 +12,25 @@ class ThemeProvider extends BaseThemeProvider {
   @override
   ThemeData createTheme(ThemeData themeData, Brightness brightness) {
     return themeData.copyWith(
+      cardTheme: CardTheme(
+        elevation: 4,
+        color: brightness == Brightness.light
+            ? Colors.white
+            : const Color(0xFF121212),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+      ),
+      dividerTheme: DividerThemeData(
+        color: brightness == Brightness.light
+            ? Colors.grey.shade300
+            : Colors.grey.shade700,
+        thickness: 0.5,
+        space: 0,
+      ),
 
-        /// TODO 在此处添加自定义组件样式，重启后生效
-        );
+      /// TODO 在此处添加自定义组件样式，重启后生效
+    );
   }
 
   @override

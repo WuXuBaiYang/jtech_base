@@ -20,6 +20,9 @@ class ToolDatePage extends ProviderPage<ToolDateProvider> {
       appBar: AppBar(
         title: const Text('工具-日期时间'),
       ),
+      body: SingleChildScrollView(
+        child: Column(children: []),
+      ),
     );
   }
 }

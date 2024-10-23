@@ -33,8 +33,6 @@ final Map<String, String Function(DateTime date, Duration dur)>
 
 // duration方法扩展
 extension DurationExtension on Duration {
-  static void a() {}
-
   // 时长格式化
   String format(String pattern) {
     DateTime date = DateTime(0).add(this);
