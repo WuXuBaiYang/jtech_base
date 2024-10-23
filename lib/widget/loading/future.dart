@@ -25,8 +25,8 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
   // 视图构建
   final ValueWidgetBuilder<T?> builder;
 
-  // 异步方法
-  final AsyncValueGetter<T> onFuture;
+  // future
+  final Future<T>? future;
 
   // 子元素
   final Widget? child;
@@ -36,8 +36,8 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
 
   const LoadingFutureBuilder({
     super.key,
+    required this.future,
     required this.builder,
-    required this.onFuture,
     this.child,
     this.style,
     this.initialData,
@@ -50,7 +50,7 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeData = LoadingFutureThemeData.of(context);
     return FutureBuilder<T>(
-      future: onFuture(),
+      future: future,
       initialData: initialData,
       builder: (_, snap) {
         return LoadingStatusBuilder(
