@@ -4,15 +4,6 @@ import 'package:intl/intl.dart';
 extension DatetimeExtension on DateTime {
   // 日期格式化
   String format(String pattern) => DateFormat(pattern).format(this);
-
-  // 获取utc格式字符串
-  String toIso8601StringWithUTC() =>
-      "${toIso8601String()}+${timeZoneOffset.format("HH:mm")}";
-
-  // 比较差值
-  Duration difference(DateTime dateTime) => Duration(
-      microseconds:
-          (millisecondsSinceEpoch - dateTime.millisecondsSinceEpoch).abs());
 }
 
 // 时长格式化替换表
