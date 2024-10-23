@@ -18,7 +18,7 @@ class FileTool {
     if (!file.existsSync()) return null;
     final baseDir = await getCachePath();
     if (baseDir == null) return null;
-    final outputPath = join(baseDir, '${genDateSign()}${file.suffixes}');
+    final outputPath = join(baseDir, '${genDateSign()}${extension(filePath)}');
     return (await file.copy(outputPath)).path;
   }
 
@@ -134,30 +134,4 @@ extension FileDirExtension on FileDir {
 
   // 获取路径
   Future<String?> get path async => (await dir)?.path;
-}
-
-/*
-* 扩展文件方法
-* @author wuxubaiyang
-* @Time 2022/3/17 16:23
-*/
-extension FileExtension on File {
-  // 获取文件名
-  String? get name {
-    final index = path.lastIndexOf(separator);
-    if (index >= 0 && index < path.length) {
-      return path.substring(index + 1);
-    }
-    return null;
-  }
-
-  // 获取文件后缀
-  String? get suffixes {
-    final index = path.lastIndexOf(r'.');
-    final sepIndex = path.lastIndexOf(r'/');
-    if (index >= 0 && index <= path.length && index > sepIndex) {
-      return path.substring(index);
-    }
-    return null;
-  }
 }
