@@ -1,5 +1,5 @@
 import 'package:jtech_base/jtech_base.dart';
-import 'package:templete/page/home/index.dart';
+import 'package:template/page/home/index.dart';
 
 /*
 * 路由管理

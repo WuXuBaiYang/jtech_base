@@ -1,5 +1,5 @@
 import 'package:jtech_base/common/api/request.dart';
-import 'package:templete/api/api.dart';
+import 'package:template/api/api.dart';
 
 /*
 * 范例接口

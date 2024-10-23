@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jtech_base/jtech_base.dart';
-import 'package:templete/page/home/page.dart';
+import 'package:template/page/home/page.dart';
 
 /*
 * 首页

@@ -1,5 +1,5 @@
 import 'package:jtech_base/jtech_base.dart';
-import 'package:templete/common/common.dart';
+import 'package:template/common/common.dart';
 
 /*
 * 自定义API接口类，可在此处实现请求与响应的统一处理

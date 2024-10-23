@@ -1,6 +1,6 @@
-# templete
+# template
 
-jtech_base templete
+jtech_base template
 
 ## Getting Started
 

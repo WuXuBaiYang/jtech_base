@@ -1,5 +1,5 @@
 import 'package:jtech_base/jtech_base.dart';
-import 'package:templete/objectbox.g.dart';
+import 'package:template/objectbox.g.dart';
 import 'example.dart';
 
 /*
