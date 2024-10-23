@@ -25,7 +25,7 @@ class Notice {
     Duration? duration,
     Curve? reverseCurve,
     Duration? animeDuration,
-    NoticeDecoration? decoration,
+    NoticeStyle? style,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
     NoticeStatus status = NoticeStatus.info,
@@ -67,7 +67,7 @@ class Notice {
                 status: status,
                 message: message,
                 actions: actions,
-                decoration: decoration ?? themeData.decoration,
+                style: style ?? themeData.style,
               ),
             ),
           ),
@@ -85,7 +85,7 @@ class Notice {
     bool? onGoing,
     String? title,
     Curve? reverseCurve,
-    NoticeDecoration? decoration,
+    NoticeStyle? style,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
   }) {
@@ -98,7 +98,7 @@ class Notice {
       message: message,
       actions: actions,
       onGoing: onGoing,
-      decoration: decoration,
+      style: style,
       reverseCurve: reverseCurve,
       status: NoticeStatus.success,
     );
@@ -113,7 +113,7 @@ class Notice {
     bool? onGoing,
     String? title,
     Curve? reverseCurve,
-    NoticeDecoration? decoration,
+    NoticeStyle? style,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
   }) {
@@ -126,7 +126,7 @@ class Notice {
       message: message,
       actions: actions,
       onGoing: onGoing,
-      decoration: decoration,
+      style: style,
       status: NoticeStatus.error,
       reverseCurve: reverseCurve,
     );
@@ -141,7 +141,7 @@ class Notice {
     bool? onGoing,
     String? title,
     Curve? reverseCurve,
-    NoticeDecoration? decoration,
+    NoticeStyle? style,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
   }) {
@@ -154,7 +154,7 @@ class Notice {
       message: message,
       actions: actions,
       onGoing: onGoing,
-      decoration: decoration,
+      style: style,
       reverseCurve: reverseCurve,
       status: NoticeStatus.warning,
     );
@@ -169,7 +169,7 @@ class Notice {
     bool? onGoing,
     String? title,
     Curve? reverseCurve,
-    NoticeDecoration? decoration,
+    NoticeStyle? style,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
   }) {
@@ -182,7 +182,7 @@ class Notice {
       message: message,
       actions: actions,
       onGoing: onGoing,
-      decoration: decoration,
+      style: style,
       status: NoticeStatus.info,
       reverseCurve: reverseCurve,
     );
@@ -247,8 +247,8 @@ enum NoticeStatus {
 * @Time 2024/10/22 11:22
 */
 class NoticeThemeData {
-  // 通知装饰器
-  final NoticeDecoration decoration;
+  // 通知样式
+  final NoticeStyle style;
 
   // 通知是否持续
   final bool onGoing;
@@ -269,7 +269,7 @@ class NoticeThemeData {
     this.onGoing = false,
     this.curve = Curves.bounceInOut,
     this.reverseCurve = Curves.easeInOutBack,
-    this.decoration = const NoticeDecoration(),
+    this.style = const NoticeStyle(),
     this.duration = const Duration(milliseconds: 1800),
     this.animeDuration = const Duration(milliseconds: 240),
   });
@@ -281,4 +281,63 @@ class NoticeThemeData {
   // 获取通知主题
   static NoticeThemeData? maybeOf(BuildContext context) =>
       CustomTheme.maybeOf(context)?.noticeTheme;
+
+  NoticeThemeData copyWith({
+    NoticeStyle? style,
+    bool? onGoing,
+    Curve? curve,
+    Curve? reverseCurve,
+    Duration? duration,
+    Duration? animeDuration,
+  }) {
+    return NoticeThemeData(
+      style: style ?? this.style,
+      onGoing: onGoing ?? this.onGoing,
+      curve: curve ?? this.curve,
+      reverseCurve: reverseCurve ?? this.reverseCurve,
+      duration: duration ?? this.duration,
+      animeDuration: animeDuration ?? this.animeDuration,
+    );
+  }
+
+  static NoticeThemeData lerp(
+      NoticeThemeData? a, NoticeThemeData? b, double t) {
+    if (a == null && b == null) return NoticeThemeData();
+    return NoticeThemeData(
+      style: NoticeStyle.lerp(a?.style, b?.style, t),
+      onGoing: t < 0.5 ? a?.onGoing ?? false : b?.onGoing ?? false,
+      curve: t < 0.5
+          ? a?.curve ?? Curves.bounceInOut
+          : b?.curve ?? Curves.bounceInOut,
+      reverseCurve: t < 0.5
+          ? a?.reverseCurve ?? Curves.easeInOutBack
+          : b?.reverseCurve ?? Curves.easeInOutBack,
+      duration: (t < 0.5 ? a?.duration : b?.duration) ??
+          const Duration(milliseconds: 1800),
+      animeDuration: (t < 0.5 ? a?.animeDuration : b?.animeDuration) ??
+          const Duration(milliseconds: 240),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NoticeThemeData &&
+          runtimeType == other.runtimeType &&
+          style == other.style &&
+          onGoing == other.onGoing &&
+          curve == other.curve &&
+          reverseCurve == other.reverseCurve &&
+          duration == other.duration &&
+          animeDuration == other.animeDuration;
+
+  @override
+  int get hashCode => Object.hashAll([
+        style,
+        onGoing,
+        curve,
+        reverseCurve,
+        duration,
+        animeDuration,
+      ]);
 }

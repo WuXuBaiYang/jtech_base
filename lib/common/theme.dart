@@ -20,14 +20,14 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
   // 加载遮罩样式
   final LoadingThemeData loadingTheme;
 
+  // 加载状态组件样式
+  final LoadingStatusThemeData loadingStatusTheme;
+
   // 自定义刷新组件样式
   final CustomRefreshThemeData customRefreshTheme;
 
   // 异步加载构造器样式
   final LoadingFutureThemeData loadingFutureTheme;
-
-  // 加载状态组件样式
-  final LoadingStatusThemeData loadingStatusTheme;
 
   // 自定义遮罩样式
   final CustomOverlayThemeData customOverlayTheme;
@@ -90,6 +90,47 @@ class CustomTheme extends ThemeExtension<CustomTheme> {
 
   @override
   ThemeExtension<CustomTheme> lerp(
-          covariant ThemeExtension<CustomTheme>? other, double t) =>
-      CustomTheme();
+      covariant ThemeExtension<CustomTheme>? other, double t) {
+    if (other is! CustomTheme) return this;
+    return CustomTheme(
+      noticeTheme: NoticeThemeData.lerp(noticeTheme, other.noticeTheme, t),
+      loadingTheme: LoadingThemeData.lerp(loadingTheme, other.loadingTheme, t),
+      loadingStatusTheme: LoadingStatusThemeData.lerp(
+          loadingStatusTheme, other.loadingStatusTheme, t),
+      customRefreshTheme: CustomRefreshThemeData.lerp(
+          customRefreshTheme, other.customRefreshTheme, t),
+      loadingFutureTheme: LoadingFutureThemeData.lerp(
+          loadingFutureTheme, other.loadingFutureTheme, t),
+      customOverlayTheme: CustomOverlayThemeData.lerp(
+          customOverlayTheme, other.customOverlayTheme, t),
+      customDialogTheme: CustomDialogThemeData.lerp(
+          customDialogTheme, other.customDialogTheme, t),
+      customImageTheme: CustomImageThemeData.lerp(
+          customImageTheme, other.customImageTheme, t),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is CustomTheme &&
+      noticeTheme == other.noticeTheme &&
+      loadingTheme == other.loadingTheme &&
+      loadingStatusTheme == other.loadingStatusTheme &&
+      customRefreshTheme == other.customRefreshTheme &&
+      loadingFutureTheme == other.loadingFutureTheme &&
+      customOverlayTheme == other.customOverlayTheme &&
+      customDialogTheme == other.customDialogTheme &&
+      customImageTheme == other.customImageTheme;
+
+  @override
+  int get hashCode => Object.hashAll([
+        noticeTheme,
+        loadingTheme,
+        loadingStatusTheme,
+        customRefreshTheme,
+        loadingFutureTheme,
+        customOverlayTheme,
+        customDialogTheme,
+        customImageTheme,
+      ]);
 }

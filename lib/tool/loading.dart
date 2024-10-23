@@ -24,7 +24,7 @@ class Loading {
     Curve? reverseCurve,
     Alignment? alignment,
     Stream<double>? progressStream,
-    LoadingOverlayDecoration? decoration,
+    LoadingOverlayStyle? style,
   }) async {
     _customOverlay.cancelAll();
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
@@ -49,7 +49,7 @@ class Loading {
         },
         child: LoadingOverlay(
           progressStream: progressStream,
-          decoration: decoration ?? themeData.decoration,
+          style: style ?? themeData.style,
         ),
       );
       return await loadFuture;
@@ -73,13 +73,13 @@ extension FutureLoading<T> on Future<T> {
     Color? barrierColor,
     Curve? reverseCurve,
     Stream<double>? progressStream,
-    LoadingOverlayDecoration? decoration,
+    LoadingOverlayStyle? style,
   }) =>
       Loading.show(
         context,
         curve: curve,
         loadFuture: this,
-        decoration: decoration,
+        style: style,
         dismissible: dismissible,
         reverseCurve: reverseCurve,
         barrierColor: barrierColor,
@@ -93,8 +93,8 @@ extension FutureLoading<T> on Future<T> {
 * @Time 2024/10/22 11:27
 */
 class LoadingThemeData {
-  // 加载遮罩装饰器
-  final LoadingOverlayDecoration decoration;
+  // 加载遮罩样式
+  final LoadingOverlayStyle style;
 
   // 加载遮罩是否可点击取消
   final bool dismissible;
@@ -117,7 +117,7 @@ class LoadingThemeData {
     this.alignment = Alignment.center,
     this.barrierColor = Colors.black38,
     this.reverseCurve = Curves.easeInOutBack,
-    this.decoration = const LoadingOverlayDecoration(),
+    this.style = const LoadingOverlayStyle(),
   });
 
   // 获取通知主题
@@ -127,4 +127,59 @@ class LoadingThemeData {
   // 获取通知主题
   static LoadingThemeData? maybeOf(BuildContext context) =>
       CustomTheme.maybeOf(context)?.loadingTheme;
+
+  LoadingThemeData copyWith({
+    bool? dismissible,
+    Color? barrierColor,
+    Alignment? alignment,
+    Curve? curve,
+    Curve? reverseCurve,
+    LoadingOverlayStyle? style,
+  }) =>
+      LoadingThemeData(
+        dismissible: dismissible ?? this.dismissible,
+        barrierColor: barrierColor ?? this.barrierColor,
+        alignment: alignment ?? this.alignment,
+        curve: curve ?? this.curve,
+        reverseCurve: reverseCurve ?? this.reverseCurve,
+        style: style ?? this.style,
+      );
+
+  static LoadingThemeData lerp(
+      LoadingThemeData? a, LoadingThemeData? b, double t) {
+    if (a == null && b == null) return LoadingThemeData();
+    return LoadingThemeData(
+      dismissible: t < 0.5 ? a?.dismissible ?? true : b?.dismissible ?? true,
+      barrierColor:
+          Color.lerp(a?.barrierColor, b?.barrierColor, t) ?? Colors.black38,
+      alignment:
+          Alignment.lerp(a?.alignment, b?.alignment, t) ?? Alignment.center,
+      curve:
+          t < 0.5 ? a?.curve ?? Curves.easeInOut : b?.curve ?? Curves.easeInOut,
+      reverseCurve: t < 0.5
+          ? a?.reverseCurve ?? Curves.easeInOutBack
+          : b?.reverseCurve ?? Curves.easeInOutBack,
+      style: LoadingOverlayStyle.lerp(a?.style, b?.style, t),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is LoadingThemeData &&
+      other.style == style &&
+      other.dismissible == dismissible &&
+      other.barrierColor == barrierColor &&
+      other.alignment == alignment &&
+      other.curve == curve &&
+      other.reverseCurve == reverseCurve;
+
+  @override
+  int get hashCode => Object.hashAll([
+        style,
+        dismissible,
+        barrierColor,
+        alignment,
+        curve,
+        reverseCurve,
+      ]);
 }

@@ -38,16 +38,16 @@ class CustomRefreshView<T> extends StatelessWidget {
   final CustomRefreshWidgetBuilder<T> builder;
 
   // 报错状态构建
-  final ValueWidgetBuilder<LoadingStatusDecoration>? failBuilder;
+  final ValueWidgetBuilder<LoadingStatusStyle>? failBuilder;
 
   // 空数据状态构建
-  final ValueWidgetBuilder<LoadingStatusDecoration>? noDataBuilder;
+  final ValueWidgetBuilder<LoadingStatusStyle>? noDataBuilder;
 
   // 加载中状态构建
-  final ValueWidgetBuilder<LoadingStatusDecoration>? loadingBuilder;
+  final ValueWidgetBuilder<LoadingStatusStyle>? loadingBuilder;
 
-  // 加载状态装饰器
-  final LoadingStatusDecoration? decoration;
+  // 加载状态样式
+  final LoadingStatusStyle? style;
 
   const CustomRefreshView({
     super.key,
@@ -59,7 +59,7 @@ class CustomRefreshView<T> extends StatelessWidget {
     this.enableLoad = true,
     this.initRefresh = true,
     this.enableRefresh = true,
-    this.decoration,
+    this.style,
     this.failBuilder,
     this.noDataBuilder,
     this.loadingBuilder,
@@ -86,16 +86,16 @@ class CustomRefreshView<T> extends StatelessWidget {
   }
 
   // 构建内容
-  Widget _buildContent(BuildContext context, CustomRefreshThemeData theme) {
+  Widget _buildContent(BuildContext context, CustomRefreshThemeData themeData) {
     return ValueListenableBuilder<CustomRefreshControllerValue<T>>(
       valueListenable: controller,
       builder: (_, value, __) {
         return LoadingStatusBuilder(
           status: value.loadStatus,
-          decoration: decoration ?? theme.decoration,
-          failBuilder: failBuilder ?? theme.failBuilder,
-          noDataBuilder: noDataBuilder ?? theme.noDataBuilder,
-          loadingBuilder: loadingBuilder ?? theme.loadingBuilder,
+          style: style ?? themeData.style,
+          failBuilder: failBuilder ?? themeData.failBuilder,
+          noDataBuilder: noDataBuilder ?? themeData.noDataBuilder,
+          loadingBuilder: loadingBuilder ?? themeData.loadingBuilder,
           builder: (_, __) => builder(context, value.data),
         );
       },
@@ -246,7 +246,7 @@ class CustomRefreshThemeData extends LoadingStatusThemeData {
   const CustomRefreshThemeData({
     this.header,
     this.footer,
-    super.decoration,
+    super.style,
     super.failBuilder,
     super.noDataBuilder,
     super.loadingBuilder,
@@ -259,4 +259,56 @@ class CustomRefreshThemeData extends LoadingStatusThemeData {
   // 获取通知主题
   static CustomRefreshThemeData? maybeOf(BuildContext context) =>
       CustomTheme.maybeOf(context)?.customRefreshTheme;
+
+  @override
+  CustomRefreshThemeData copyWith({
+    Header? header,
+    Footer? footer,
+    LoadingStatusStyle? style,
+    ValueWidgetBuilder<LoadingStatusStyle>? failBuilder,
+    ValueWidgetBuilder<LoadingStatusStyle>? noDataBuilder,
+    ValueWidgetBuilder<LoadingStatusStyle>? loadingBuilder,
+  }) {
+    return CustomRefreshThemeData(
+      header: header ?? this.header,
+      footer: footer ?? this.footer,
+      style: style ?? this.style,
+      failBuilder: failBuilder ?? this.failBuilder,
+      noDataBuilder: noDataBuilder ?? this.noDataBuilder,
+      loadingBuilder: loadingBuilder ?? this.loadingBuilder,
+    );
+  }
+
+  static CustomRefreshThemeData lerp(
+      CustomRefreshThemeData? a, CustomRefreshThemeData? b, double t) {
+    if (a == null && b == null) return CustomRefreshThemeData();
+    return CustomRefreshThemeData(
+      header: b?.header,
+      footer: b?.footer,
+      style: LoadingStatusStyle.lerp(a?.style, b?.style, t),
+      failBuilder: t < 0.5 ? a?.failBuilder : b?.failBuilder,
+      noDataBuilder: t < 0.5 ? a?.noDataBuilder : b?.noDataBuilder,
+      loadingBuilder: t < 0.5 ? a?.loadingBuilder : b?.loadingBuilder,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is CustomRefreshThemeData &&
+      other.header == header &&
+      other.footer == footer &&
+      other.style == style &&
+      other.failBuilder == failBuilder &&
+      other.noDataBuilder == noDataBuilder &&
+      other.loadingBuilder == loadingBuilder;
+
+  @override
+  int get hashCode => Object.hashAll([
+        header,
+        footer,
+        style,
+        failBuilder,
+        noDataBuilder,
+        loadingBuilder,
+      ]);
 }

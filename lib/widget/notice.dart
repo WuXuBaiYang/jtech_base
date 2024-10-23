@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:jtech_base/tool/notice.dart';
 
@@ -19,8 +21,8 @@ class NoticeView extends StatelessWidget {
   // 消息状态
   final NoticeStatus status;
 
-  // 装饰器
-  final NoticeDecoration? decoration;
+  // 样式
+  final NoticeStyle? style;
 
   const NoticeView({
     super.key,
@@ -28,50 +30,49 @@ class NoticeView extends StatelessWidget {
     required this.message,
     required this.actions,
     required this.status,
-    this.decoration,
+    this.style,
   });
 
   @override
   Widget build(BuildContext context) {
-    final decoration =
-        this.decoration ?? NoticeThemeData.of(context).decoration;
+    final style = this.style ?? NoticeThemeData.of(context).style;
     final shape = RoundedRectangleBorder(
-      borderRadius: decoration.borderRadius,
+      borderRadius: style.borderRadius,
     );
     return ConstrainedBox(
-      constraints: decoration.constraints,
+      constraints: style.constraints,
       child: Card(
         shape: shape,
-        margin: decoration.margin,
+        margin: style.margin,
         clipBehavior: Clip.antiAlias,
-        elevation: decoration.elevation,
-        color: decoration.backgroundColor,
-        shadowColor: decoration.shadowColor,
-        child: _buildMessage(context, decoration),
+        elevation: style.elevation,
+        color: style.backgroundColor,
+        shadowColor: style.shadowColor,
+        child: _buildMessage(context, style),
       ),
     );
   }
 
   // 构建内容消息
-  Widget _buildMessage(BuildContext context, NoticeDecoration decoration) {
+  Widget _buildMessage(BuildContext context, NoticeStyle style) {
     return Padding(
-      padding: decoration.padding,
+      padding: style.padding,
       child: Row(mainAxisSize: MainAxisSize.min, children: [
-        decoration.noticeIcon.getStatusIcon(status),
-        SizedBox(width: decoration.space),
+        style.noticeIcon.getStatusIcon(status),
+        SizedBox(width: style.space),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
               if (title != null)
-                Text(title!, style: decoration.getTitleStyle(context)),
-              Text(message, style: decoration.getMessageStyle(context)),
+                Text(title!, style: style.getTitleStyle(context)),
+              Text(message, style: style.getMessageStyle(context)),
             ],
           ),
         ),
         if (actions.isNotEmpty) ...[
-          SizedBox(width: decoration.space),
+          SizedBox(width: style.space),
           ...actions,
         ],
       ]),
@@ -79,8 +80,8 @@ class NoticeView extends StatelessWidget {
   }
 }
 
-// 消息通知-装饰器
-class NoticeDecoration {
+// 消息通知-样式
+class NoticeStyle {
   // 约束
   final BoxConstraints constraints;
 
@@ -114,7 +115,7 @@ class NoticeDecoration {
   // 外间距
   final EdgeInsetsGeometry margin;
 
-  const NoticeDecoration({
+  const NoticeStyle({
     this.elevation,
     this.titleStyle,
     this.space = 14,
@@ -139,6 +140,88 @@ class NoticeDecoration {
   // 获取消息样式
   TextStyle? getMessageStyle(BuildContext context) =>
       messageStyle ?? Theme.of(context).textTheme.bodyMedium;
+
+  NoticeStyle copyWith({
+    BoxConstraints? constraints,
+    Color? backgroundColor,
+    BorderRadius? borderRadius,
+    Color? shadowColor,
+    double? elevation,
+    TextStyle? titleStyle,
+    TextStyle? messageStyle,
+    NoticeIcon? noticeIcon,
+    double? space,
+    EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
+  }) {
+    return NoticeStyle(
+      constraints: constraints ?? this.constraints,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      borderRadius: borderRadius ?? this.borderRadius,
+      shadowColor: shadowColor ?? this.shadowColor,
+      elevation: elevation ?? this.elevation,
+      titleStyle: titleStyle ?? this.titleStyle,
+      messageStyle: messageStyle ?? this.messageStyle,
+      noticeIcon: noticeIcon ?? this.noticeIcon,
+      space: space ?? this.space,
+      padding: padding ?? this.padding,
+      margin: margin ?? this.margin,
+    );
+  }
+
+  static NoticeStyle lerp(NoticeStyle? a, NoticeStyle? b, double t) {
+    if (a == null && b == null) return NoticeStyle();
+    return NoticeStyle(
+      constraints: BoxConstraints.lerp(a?.constraints, b?.constraints, t) ??
+          const BoxConstraints(),
+      backgroundColor: Color.lerp(a?.backgroundColor, b?.backgroundColor, t),
+      borderRadius: BorderRadius.lerp(a?.borderRadius, b?.borderRadius, t) ??
+          BorderRadius.zero,
+      shadowColor:
+          Color.lerp(a?.shadowColor, b?.shadowColor, t) ?? Colors.black,
+      elevation: lerpDouble(a?.elevation, b?.elevation, t),
+      titleStyle: TextStyle.lerp(a?.titleStyle, b?.titleStyle, t),
+      messageStyle: TextStyle.lerp(a?.messageStyle, b?.messageStyle, t),
+      noticeIcon: NoticeIcon.lerp(a?.noticeIcon, b?.noticeIcon, t),
+      space: lerpDouble(a?.space, b?.space, t) ?? 14,
+      padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t) ??
+          const EdgeInsets.all(14),
+      margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t) ??
+          const EdgeInsets.all(14),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NoticeStyle &&
+          runtimeType == other.runtimeType &&
+          constraints == other.constraints &&
+          backgroundColor == other.backgroundColor &&
+          borderRadius == other.borderRadius &&
+          shadowColor == other.shadowColor &&
+          elevation == other.elevation &&
+          titleStyle == other.titleStyle &&
+          messageStyle == other.messageStyle &&
+          noticeIcon == other.noticeIcon &&
+          space == other.space &&
+          padding == other.padding &&
+          margin == other.margin;
+
+  @override
+  int get hashCode => Object.hashAll([
+        constraints,
+        backgroundColor,
+        borderRadius,
+        shadowColor,
+        elevation,
+        titleStyle,
+        messageStyle,
+        noticeIcon,
+        space,
+        padding,
+        margin,
+      ]);
 }
 
 /*
@@ -206,4 +289,51 @@ class NoticeIcon {
       NoticeStatus.info => Colors.blue,
     };
   }
+
+  NoticeIcon copyWith({
+    double? iconSize,
+    Widget? successIcon,
+    Widget? errorIcon,
+    Widget? warningIcon,
+    Widget? infoIcon,
+  }) {
+    return NoticeIcon(
+      iconSize: iconSize ?? this.iconSize,
+      successIcon: successIcon ?? this.successIcon,
+      errorIcon: errorIcon ?? this.errorIcon,
+      warningIcon: warningIcon ?? this.warningIcon,
+      infoIcon: infoIcon ?? this.infoIcon,
+    );
+  }
+
+  static NoticeIcon lerp(NoticeIcon? a, NoticeIcon? b, double t) {
+    if (a == null && b == null) return NoticeIcon();
+    return NoticeIcon(
+      iconSize: lerpDouble(a?.iconSize, b?.iconSize, t) ?? 35,
+      successIcon: t < 0.5 ? a?.successIcon : b?.successIcon,
+      errorIcon: t < 0.5 ? a?.errorIcon : b?.errorIcon,
+      warningIcon: t < 0.5 ? a?.warningIcon : b?.warningIcon,
+      infoIcon: t < 0.5 ? a?.infoIcon : b?.infoIcon,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is NoticeIcon &&
+          runtimeType == other.runtimeType &&
+          iconSize == other.iconSize &&
+          successIcon == other.successIcon &&
+          errorIcon == other.errorIcon &&
+          warningIcon == other.warningIcon &&
+          infoIcon == other.infoIcon;
+
+  @override
+  int get hashCode => Object.hashAll([
+        iconSize,
+        successIcon,
+        errorIcon,
+        warningIcon,
+        infoIcon,
+      ]);
 }

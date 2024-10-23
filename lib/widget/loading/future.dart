@@ -14,13 +14,13 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
   final T? initialData;
 
   // 报错状态构建
-  final ValueWidgetBuilder<LoadingStatusDecoration>? failBuilder;
+  final ValueWidgetBuilder<LoadingStatusStyle>? failBuilder;
 
   // 空数据状态构建
-  final ValueWidgetBuilder<LoadingStatusDecoration>? noDataBuilder;
+  final ValueWidgetBuilder<LoadingStatusStyle>? noDataBuilder;
 
   // 加载中状态构建
-  final ValueWidgetBuilder<LoadingStatusDecoration>? loadingBuilder;
+  final ValueWidgetBuilder<LoadingStatusStyle>? loadingBuilder;
 
   // 视图构建
   final ValueWidgetBuilder<T?> builder;
@@ -31,15 +31,15 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
   // 子元素
   final Widget? child;
 
-  // 加载状态装饰器
-  final LoadingStatusDecoration? decoration;
+  // 加载状态样式
+  final LoadingStatusStyle? style;
 
   const LoadingFutureBuilder({
     super.key,
     required this.builder,
     required this.onFuture,
     this.child,
-    this.decoration,
+    this.style,
     this.initialData,
     this.failBuilder,
     this.noDataBuilder,
@@ -55,7 +55,7 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
       builder: (_, snap) {
         return LoadingStatusBuilder(
           status: _getStatus(snap),
-          decoration: decoration ?? themeData.decoration,
+          style: style ?? themeData.style,
           failBuilder: failBuilder ?? themeData.failBuilder,
           noDataBuilder: noDataBuilder ?? themeData.noDataBuilder,
           loadingBuilder: loadingBuilder ?? themeData.loadingBuilder,
@@ -84,7 +84,7 @@ class LoadingFutureBuilder<T> extends StatelessWidget {
 */
 class LoadingFutureThemeData extends LoadingStatusThemeData {
   const LoadingFutureThemeData({
-    super.decoration,
+    super.style,
     super.failBuilder,
     super.noDataBuilder,
     super.loadingBuilder,
@@ -97,4 +97,30 @@ class LoadingFutureThemeData extends LoadingStatusThemeData {
   // 获取通知主题
   static LoadingFutureThemeData? maybeOf(BuildContext context) =>
       CustomTheme.maybeOf(context)?.loadingFutureTheme;
+
+  @override
+  LoadingStatusThemeData copyWith({
+    LoadingStatusStyle? style,
+    ValueWidgetBuilder<LoadingStatusStyle>? failBuilder,
+    ValueWidgetBuilder<LoadingStatusStyle>? noDataBuilder,
+    ValueWidgetBuilder<LoadingStatusStyle>? loadingBuilder,
+  }) {
+    return LoadingFutureThemeData(
+      style: style ?? this.style,
+      failBuilder: failBuilder ?? this.failBuilder,
+      noDataBuilder: noDataBuilder ?? this.noDataBuilder,
+      loadingBuilder: loadingBuilder ?? this.loadingBuilder,
+    );
+  }
+
+  static LoadingFutureThemeData lerp(
+      LoadingFutureThemeData? a, LoadingFutureThemeData? b, double t) {
+    if (a == null && b == null) return LoadingFutureThemeData();
+    return LoadingFutureThemeData(
+      style: LoadingStatusStyle.lerp(a?.style, b?.style, t),
+      failBuilder: t < 0.5 ? a?.failBuilder : b?.failBuilder,
+      noDataBuilder: t < 0.5 ? a?.noDataBuilder : b?.noDataBuilder,
+      loadingBuilder: t < 0.5 ? a?.loadingBuilder : b?.loadingBuilder,
+    );
+  }
 }

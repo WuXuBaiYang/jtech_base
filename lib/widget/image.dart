@@ -500,4 +500,47 @@ class CustomImageThemeData {
   // 获取通知主题
   static CustomImageThemeData? maybeOf(BuildContext context) =>
       CustomTheme.maybeOf(context)?.customImageTheme;
+
+  CustomImageThemeData copyWith({
+    ImageErrorWidgetBuilder? errorBuilder,
+    ImageLoadingBuilder? loadingBuilder,
+    Curve? curve,
+    Duration? animationDuration,
+  }) {
+    return CustomImageThemeData(
+      errorBuilder: errorBuilder ?? this.errorBuilder,
+      loadingBuilder: loadingBuilder ?? this.loadingBuilder,
+      curve: curve ?? this.curve,
+      animationDuration: animationDuration ?? this.animationDuration,
+    );
+  }
+
+  static CustomImageThemeData lerp(
+      CustomImageThemeData? a, CustomImageThemeData? b, double t) {
+    if (a == null && b == null) return CustomImageThemeData();
+    return CustomImageThemeData(
+      errorBuilder: t < 0.5 ? a?.errorBuilder : b?.errorBuilder,
+      loadingBuilder: t < 0.5 ? a?.loadingBuilder : b?.loadingBuilder,
+      curve: (t < 0.5 ? a?.curve : b?.curve) ?? Curves.easeInOut,
+      animationDuration:
+          (t < 0.5 ? a?.animationDuration : b?.animationDuration) ??
+              const Duration(milliseconds: 200),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is CustomImageThemeData &&
+      other.errorBuilder == errorBuilder &&
+      other.loadingBuilder == loadingBuilder &&
+      other.curve == curve &&
+      other.animationDuration == animationDuration;
+
+  @override
+  int get hashCode => Object.hashAll([
+        errorBuilder,
+        loadingBuilder,
+        curve,
+        animationDuration,
+      ]);
 }

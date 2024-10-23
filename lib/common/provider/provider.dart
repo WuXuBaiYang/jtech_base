@@ -47,7 +47,7 @@ abstract class BaseProvider extends ChangeNotifier {
     bool? onGoing,
     String? title,
     Curve? reverseCurve,
-    NoticeDecoration? decoration,
+    NoticeStyle? style,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
   }) async {
@@ -63,7 +63,7 @@ abstract class BaseProvider extends ChangeNotifier {
       message: message,
       onGoing: onGoing,
       actions: actions,
-      decoration: decoration,
+      style: style,
       reverseCurve: reverseCurve,
     );
   }
@@ -76,7 +76,7 @@ abstract class BaseProvider extends ChangeNotifier {
     bool? onGoing,
     String? title,
     Curve? reverseCurve,
-    NoticeDecoration? decoration,
+    NoticeStyle? style,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
   }) async {
@@ -92,7 +92,7 @@ abstract class BaseProvider extends ChangeNotifier {
       message: message,
       onGoing: onGoing,
       actions: actions,
-      decoration: decoration,
+      style: style,
       reverseCurve: reverseCurve,
     );
   }
@@ -105,7 +105,7 @@ abstract class BaseProvider extends ChangeNotifier {
     bool? onGoing,
     String? title,
     Curve? reverseCurve,
-    NoticeDecoration? decoration,
+    NoticeStyle? style,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
   }) async {
@@ -121,7 +121,7 @@ abstract class BaseProvider extends ChangeNotifier {
       message: message,
       onGoing: onGoing,
       actions: actions,
-      decoration: decoration,
+      style: style,
       reverseCurve: reverseCurve,
     );
   }
@@ -134,7 +134,7 @@ abstract class BaseProvider extends ChangeNotifier {
     bool? onGoing,
     String? title,
     Curve? reverseCurve,
-    NoticeDecoration? decoration,
+    NoticeStyle? style,
     CustomOverlayToken<T>? token,
     List<Widget> actions = const [],
   }) async {
@@ -150,7 +150,7 @@ abstract class BaseProvider extends ChangeNotifier {
       message: message,
       onGoing: onGoing,
       actions: actions,
-      decoration: decoration,
+      style: style,
       reverseCurve: reverseCurve,
     );
   }
