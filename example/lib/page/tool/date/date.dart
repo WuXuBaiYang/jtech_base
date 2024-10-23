@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 * @Time 2024/10/23 16:48
 */
 class ToolDateTimeCard extends StatelessWidget {
+  const ToolDateTimeCard({super.key});
+
   @override
   Widget build(BuildContext context) {
     return CustomCard(
