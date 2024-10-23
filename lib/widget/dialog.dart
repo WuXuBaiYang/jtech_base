@@ -19,30 +19,29 @@ class CustomDialog extends StatelessWidget {
   // 是否可滚动
   final bool scrollable;
 
-  // 装饰器
-  final CustomDialogDecoration? decoration;
+  // 样式
+  final CustomDialogStyle? style;
 
   const CustomDialog({
     super.key,
     this.title,
     this.content,
-    this.decoration,
+    this.style,
     this.actions = const [],
     this.scrollable = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = CustomTheme.of(context)?.customDialogTheme;
-    final decoration =
-        this.decoration ?? theme?.decoration ?? CustomDialogDecoration();
+    final themeData = CustomDialogThemeData.of(context);
+    final style = this.style ?? themeData.style;
     return AlertDialog(
       title: title,
       actions: actions,
       scrollable: scrollable,
-      contentPadding: decoration.contentPadding,
+      contentPadding: style.contentPadding,
       content: ConstrainedBox(
-        constraints: decoration.constraints,
+        constraints: style.constraints,
         child: content,
       ),
     );
@@ -50,22 +49,56 @@ class CustomDialog extends StatelessWidget {
 }
 
 /*
-* 自定义弹窗装饰器
+* 自定义弹窗样式
 * @author wuxubaiyang
 * @Time 2024/10/22 10:34
 */
-class CustomDialogDecoration {
+class CustomDialogStyle {
   // 约束
   final BoxConstraints constraints;
 
   // 内容间距
   final EdgeInsetsGeometry contentPadding;
 
-  const CustomDialogDecoration({
+  const CustomDialogStyle({
     this.constraints = const BoxConstraints(maxWidth: 280),
     this.contentPadding =
         const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
   });
+
+  CustomDialogStyle copyWith({
+    BoxConstraints? constraints,
+    EdgeInsetsGeometry? contentPadding,
+  }) {
+    return CustomDialogStyle(
+      constraints: constraints ?? this.constraints,
+      contentPadding: contentPadding ?? this.contentPadding,
+    );
+  }
+
+  static CustomDialogStyle lerp(
+      CustomDialogStyle? a, CustomDialogStyle? b, double t) {
+    if (a == null && b == null) return CustomDialogStyle();
+    return CustomDialogStyle(
+      constraints: BoxConstraints.lerp(a?.constraints, b?.constraints, t)!,
+      contentPadding:
+          EdgeInsetsGeometry.lerp(a?.contentPadding, b?.contentPadding, t)!,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CustomDialogStyle &&
+          runtimeType == other.runtimeType &&
+          constraints == other.constraints &&
+          contentPadding == other.contentPadding;
+
+  @override
+  int get hashCode => Object.hashAll([
+        constraints,
+        contentPadding,
+      ]);
 }
 
 /*
@@ -74,10 +107,46 @@ class CustomDialogDecoration {
 * @Time 2024/10/22 13:17
 */
 class CustomDialogThemeData {
-  // 装饰器
-  final CustomDialogDecoration decoration;
+  // 样式
+  final CustomDialogStyle style;
 
   const CustomDialogThemeData({
-    this.decoration = const CustomDialogDecoration(),
+    this.style = const CustomDialogStyle(),
   });
+
+  // 获取通知主题
+  static CustomDialogThemeData of(BuildContext context) =>
+      maybeOf(context) ?? const CustomDialogThemeData();
+
+  // 获取通知主题
+  static CustomDialogThemeData? maybeOf(BuildContext context) =>
+      CustomTheme.maybeOf(context)?.customDialogTheme;
+
+  CustomDialogThemeData copyWith({
+    CustomDialogStyle? style,
+  }) {
+    return CustomDialogThemeData(
+      style: style ?? this.style,
+    );
+  }
+
+  static CustomDialogThemeData lerp(
+      CustomDialogThemeData? a, CustomDialogThemeData? b, double t) {
+    if (a == null && b == null) return CustomDialogThemeData();
+    return CustomDialogThemeData(
+      style: CustomDialogStyle.lerp(a?.style, b?.style, t),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CustomDialogThemeData &&
+          runtimeType == other.runtimeType &&
+          style == other.style;
+
+  @override
+  int get hashCode => Object.hashAll([
+        style,
+      ]);
 }

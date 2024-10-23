@@ -383,15 +383,12 @@ class _CustomImageState extends State<CustomImage>
   late final _controller = AnimationController(
       vsync: this,
       duration: widget.animationDuration ??
-          CustomTheme.of(context)?.customImageTheme.animationDuration ??
-          const Duration(milliseconds: 200));
+          CustomImageThemeData.of(context).animationDuration);
 
   // 默认动画
   late final _animation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
       parent: _controller,
-      curve: widget.curve ??
-          CustomTheme.of(context)?.customImageTheme.curve ??
-          Curves.easeInOut));
+      curve: widget.curve ?? CustomImageThemeData.of(context).curve));
 
   @override
   Widget build(BuildContext context) {
@@ -417,7 +414,7 @@ class _CustomImageState extends State<CustomImage>
 
   // 构建图片
   Widget _buildImage(BuildContext context) {
-    final theme = CustomTheme.of(context)?.customImageTheme;
+    final themeDate = CustomImageThemeData.of(context);
     return Image(
       fit: widget.fit,
       color: widget.color,
@@ -436,8 +433,8 @@ class _CustomImageState extends State<CustomImage>
       matchTextDirection: widget.matchTextDirection,
       excludeFromSemantics: widget.excludeFromSemantics,
       frameBuilder: widget.frameBuilder ?? _buildFrameImage,
-      errorBuilder: widget.errorBuilder ?? theme?.errorBuilder,
-      loadingBuilder: widget.loadingBuilder ?? theme?.loadingBuilder,
+      errorBuilder: widget.errorBuilder ?? themeDate.errorBuilder,
+      loadingBuilder: widget.loadingBuilder ?? themeDate.loadingBuilder,
     );
   }
 
@@ -495,4 +492,55 @@ class CustomImageThemeData {
     this.curve = Curves.easeInOut,
     this.animationDuration = const Duration(milliseconds: 200),
   });
+
+  // 获取通知主题
+  static CustomImageThemeData of(BuildContext context) =>
+      maybeOf(context) ?? const CustomImageThemeData();
+
+  // 获取通知主题
+  static CustomImageThemeData? maybeOf(BuildContext context) =>
+      CustomTheme.maybeOf(context)?.customImageTheme;
+
+  CustomImageThemeData copyWith({
+    ImageErrorWidgetBuilder? errorBuilder,
+    ImageLoadingBuilder? loadingBuilder,
+    Curve? curve,
+    Duration? animationDuration,
+  }) {
+    return CustomImageThemeData(
+      errorBuilder: errorBuilder ?? this.errorBuilder,
+      loadingBuilder: loadingBuilder ?? this.loadingBuilder,
+      curve: curve ?? this.curve,
+      animationDuration: animationDuration ?? this.animationDuration,
+    );
+  }
+
+  static CustomImageThemeData lerp(
+      CustomImageThemeData? a, CustomImageThemeData? b, double t) {
+    if (a == null && b == null) return CustomImageThemeData();
+    return CustomImageThemeData(
+      errorBuilder: t < 0.5 ? a?.errorBuilder : b?.errorBuilder,
+      loadingBuilder: t < 0.5 ? a?.loadingBuilder : b?.loadingBuilder,
+      curve: (t < 0.5 ? a?.curve : b?.curve) ?? Curves.easeInOut,
+      animationDuration:
+          (t < 0.5 ? a?.animationDuration : b?.animationDuration) ??
+              const Duration(milliseconds: 200),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is CustomImageThemeData &&
+      other.errorBuilder == errorBuilder &&
+      other.loadingBuilder == loadingBuilder &&
+      other.curve == curve &&
+      other.animationDuration == animationDuration;
+
+  @override
+  int get hashCode => Object.hashAll([
+        errorBuilder,
+        loadingBuilder,
+        curve,
+        animationDuration,
+      ]);
 }

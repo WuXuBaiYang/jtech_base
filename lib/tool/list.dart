@@ -1,7 +1,7 @@
 // 扩展集合
 extension ListExtension<T> on List<T> {
-  // 重排序集合
-  List<T> reorder(int oldIndex, int newIndex) {
+  // 交换元素位置后重排序
+  List<T> swapReorder(int oldIndex, int newIndex) {
     if (oldIndex == newIndex) return this;
     newIndex = newIndex > oldIndex ? newIndex - 1 : newIndex;
     final T item = removeAt(oldIndex);
@@ -16,14 +16,5 @@ extension ListExtension<T> on List<T> {
       (map[key(element)] ??= []).add(element);
     }
     return map;
-  }
-
-  // 交换集合中两个位置的元素
-  List<T> swap(int oldIndex, int newIndex) {
-    if (oldIndex == newIndex) return this;
-    newIndex = newIndex > oldIndex ? newIndex - 1 : newIndex;
-    final T item = removeAt(oldIndex);
-    insert(newIndex, item);
-    return this;
   }
 }

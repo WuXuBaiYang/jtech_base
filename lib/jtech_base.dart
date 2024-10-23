@@ -10,7 +10,8 @@ export 'package:provider/single_child_widget.dart';
 export 'package:file_picker/file_picker.dart' show FileType;
 export 'package:permission_handler/permission_handler.dart';
 export 'package:image_picker/image_picker.dart' show CameraDevice;
-export 'package:path/path.dart' show join, joinAll, split, basename, separator;
+export 'package:path/path.dart'
+    show join, joinAll, split, basename, extension, separator;
 export 'package:flutter_cache_manager/flutter_cache_manager.dart'
     show BaseCacheManager;
 export 'package:easy_refresh/easy_refresh.dart'

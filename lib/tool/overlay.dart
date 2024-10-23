@@ -48,11 +48,10 @@ class CustomOverlay {
     token ??= CustomOverlayToken<T>();
     final overlayState = Overlay.of(context);
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
-    final theme = CustomTheme.of(context)?.customOverlayTheme;
-    animationDuration ??=
-        theme?.animationDuration ?? const Duration(milliseconds: 130);
-    final animation =
-        _OverlayAnimation(vsync: overlayState, duration: animationDuration);
+    final themeData = CustomOverlayThemeData.of(context);
+    final animation = _OverlayAnimation(
+        vsync: overlayState,
+        duration: animationDuration ?? themeData.animationDuration);
     final overlayPop = _OverlayPop<T>(context,
         canPop: true,
         overlayKey: key,
@@ -286,4 +285,40 @@ class CustomOverlayThemeData {
   const CustomOverlayThemeData({
     this.animationDuration = const Duration(milliseconds: 130),
   });
+
+  // 获取通知主题
+  static CustomOverlayThemeData of(BuildContext context) =>
+      maybeOf(context) ?? const CustomOverlayThemeData();
+
+  // 获取通知主题
+  static CustomOverlayThemeData? maybeOf(BuildContext context) =>
+      CustomTheme.maybeOf(context)?.customOverlayTheme;
+
+  CustomOverlayThemeData copyWith({
+    Duration? animationDuration,
+  }) {
+    return CustomOverlayThemeData(
+      animationDuration: animationDuration ?? this.animationDuration,
+    );
+  }
+
+  static CustomOverlayThemeData lerp(
+      CustomOverlayThemeData? a, CustomOverlayThemeData? b, double t) {
+    if (a == null && b == null) return CustomOverlayThemeData();
+    return CustomOverlayThemeData(
+      animationDuration:
+          (t >= 0.5 ? b?.animationDuration : a?.animationDuration) ??
+              const Duration(milliseconds: 130),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      other is CustomOverlayThemeData &&
+      other.animationDuration == animationDuration;
+
+  @override
+  int get hashCode => Object.hashAll([
+        animationDuration,
+      ]);
 }
