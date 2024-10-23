@@ -1,3 +1,18 @@
+import 'package:example/page/module/api/index.dart';
+import 'package:example/page/module/config/index.dart';
+import 'package:example/page/module/database/index.dart';
+import 'package:example/page/module/router/index.dart';
+import 'package:example/page/module/theme/index.dart';
+import 'package:example/page/tool/date/index.dart';
+import 'package:example/page/tool/debounce/index.dart';
+import 'package:example/page/tool/file/index.dart';
+import 'package:example/page/tool/log/index.dart';
+import 'package:example/page/tool/other/index.dart';
+import 'package:example/page/widget/load/index.dart';
+import 'package:example/page/widget/notice/index.dart';
+import 'package:example/page/widget/other/index.dart';
+import 'package:example/page/widget/refresh/index.dart';
+import 'package:flutter/material.dart';
 import 'package:jtech_base/jtech_base.dart';
 import 'package:example/page/home/index.dart';
 
@@ -19,7 +34,80 @@ class Router extends BaseRouter {
           path: '/',
           builder: (_, state) => HomePage(state: state),
           routes: [
-            /// TODO 在此处添加子路由
+            GoRoute(
+              path: '/module',
+              builder: (_, __) => SizedBox(),
+              routes: [
+                GoRoute(
+                  path: '/database',
+                  builder: (_, __) => ModuleDatabasePage(),
+                ),
+                GoRoute(
+                  path: '/api',
+                  builder: (_, __) => ModuleApiPage(),
+                ),
+                GoRoute(
+                  path: '/config',
+                  builder: (_, __) => ModuleConfigPage(),
+                ),
+                GoRoute(
+                  path: '/theme',
+                  builder: (_, __) => ModuleThemePage(),
+                ),
+                GoRoute(
+                  path: '/router',
+                  builder: (_, __) => ModuleRouterPage(),
+                ),
+              ],
+            ),
+            GoRoute(
+              path: '/widget',
+              builder: (_, __) => SizedBox(),
+              routes: [
+                GoRoute(
+                  path: '/refresh',
+                  builder: (_, __) => WidgetRefreshPage(),
+                ),
+                GoRoute(
+                  path: '/loadStatus',
+                  builder: (_, __) => WidgetLoadStatusPage(),
+                ),
+                GoRoute(
+                  path: '/notice',
+                  builder: (_, __) => WidgetNoticePage(),
+                ),
+                GoRoute(
+                  path: '/other',
+                  builder: (_, __) => WidgetOtherPage(),
+                ),
+              ],
+            ),
+            GoRoute(
+              path: '/tool',
+              builder: (_, __) => SizedBox(),
+              routes: [
+                GoRoute(
+                  path: '/date',
+                  builder: (_, __) => ToolDatePage(),
+                ),
+                GoRoute(
+                  path: '/debounce',
+                  builder: (_, __) => ToolDebouncePage(),
+                ),
+                GoRoute(
+                  path: '/log',
+                  builder: (_, __) => ToolLogPage(),
+                ),
+                GoRoute(
+                  path: '/file',
+                  builder: (_, __) => ToolFilePage(),
+                ),
+                GoRoute(
+                  path: '/other',
+                  builder: (_, __) => ToolOtherPage(),
+                ),
+              ],
+            ),
           ],
         ),
       ];
