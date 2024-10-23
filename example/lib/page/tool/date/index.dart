@@ -18,12 +18,11 @@ class ToolDatePage extends ProviderPage<ToolDateProvider> {
   Widget buildWidget(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('工具-日期'),
+        title: const Text('工具-日期时间'),
       ),
     );
   }
 }
-
 
 class ToolDateProvider extends PageProvider {
   ToolDateProvider(super.context, super.state);

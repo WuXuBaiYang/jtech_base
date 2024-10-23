@@ -7,12 +7,12 @@ import 'database/database.dart';
 import 'provider/config.dart';
 import 'provider/theme.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 初始化本地缓存
-  localCache.initialize();
+  await localCache.initialize();
   // 初始化数据库
-  database.initialize(Common.databaseName);
+  await database.initialize(Common.databaseName);
   // 启动应用
   runApp(MyApp());
 }
