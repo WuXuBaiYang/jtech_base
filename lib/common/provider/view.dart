@@ -58,6 +58,17 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
   @mustCallSuper
   Widget buildWidget(BuildContext context);
 
+  // 创建provider监听器
+  Widget createConsumer({
+    required ValueWidgetBuilder<T> builder,
+    Widget? child,
+  }) {
+    return Consumer<T>(
+      builder: builder,
+      child: child,
+    );
+  }
+
   // 创建本页面选择器
   Widget createSelector<S>({
     required ValueWidgetBuilder<S> builder,
@@ -65,6 +76,7 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
     ShouldRebuild<S>? shouldRebuild,
     Widget? child,
   }) {
+    Consumer;
     return Selector<T, S>(
       builder: builder,
       selector: selector,
