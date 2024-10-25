@@ -3,6 +3,25 @@ import 'package:jtech_base/common/provider/provider.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
+// 选择器
+typedef ProviderSelector<S, T> = S Function(BuildContext context, T provider);
+
+// 双参数构造器
+typedef SelectorBuilder2<S1, S2, T> = Widget Function(
+    BuildContext context, S1 value1, S2 value2, Widget? child);
+
+// 双参数选择器
+typedef ProviderSelector2<S1, S2, T> = (S1, S2) Function(
+    BuildContext context, T provider);
+
+// 三参数构造器
+typedef SelectorBuilder3<S1, S2, S3, T> = Widget Function(
+    BuildContext context, S1 value1, S2 value2, S3 value3, Widget? child);
+
+// 三参数选择器
+typedef ProviderSelector3<S1, S2, S3, T> = (S1, S2, S3) Function(
+    BuildContext context, T provider);
+
 /*
 * provider组件视图基类
 * @author wuxubaiyang
@@ -72,7 +91,7 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
   // 创建本页面选择器
   Widget createSelector<S>({
     required ValueWidgetBuilder<S> builder,
-    required S Function(BuildContext context, T) selector,
+    required ProviderSelector<S, T> selector,
     ShouldRebuild<S>? shouldRebuild,
     Widget? child,
   }) {
@@ -86,72 +105,34 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
 
   // 创建双元素选择器
   Widget createSelector2<S1, S2>({
-    required Widget Function(
-            BuildContext context, S1 value1, S2 value2, Widget? child)
-        builder,
-    required (S1, S2) Function(BuildContext context, T) selector,
+    required SelectorBuilder2<S1, S2, T> builder,
+    required ProviderSelector2<S1, S2, T> selector,
     ShouldRebuild<(S1, S2)>? shouldRebuild,
     Widget? child,
   }) {
     return Selector<T, (S1, S2)>(
       selector: selector,
       shouldRebuild: shouldRebuild,
-      builder: (context, values, child) =>
-          builder(context, values.$1, values.$2, child),
+      builder: (context, r, child) {
+        return builder(context, r.$1, r.$2, child);
+      },
       child: child,
     );
   }
 
-// 创建三元素选择器
+  // 创建三元素选择器
   Widget createSelector3<S1, S2, S3>({
-    required Widget Function(BuildContext context, S1 value1, S2 value2,
-            S3 value3, Widget? child)
-        builder,
-    required (S1, S2, S3) Function(BuildContext context, T) selector,
+    required SelectorBuilder3<S1, S2, S3, T> builder,
+    required ProviderSelector3<S1, S2, S3, T> selector,
     ShouldRebuild<(S1, S2, S3)>? shouldRebuild,
     Widget? child,
   }) {
     return Selector<T, (S1, S2, S3)>(
       selector: selector,
       shouldRebuild: shouldRebuild,
-      builder: (context, values, child) =>
-          builder(context, values.$1, values.$2, values.$3, child),
-      child: child,
-    );
-  }
-
-// 创建四元素选择器
-  Widget createSelector4<S1, S2, S3, S4>({
-    required Widget Function(BuildContext context, S1 value1, S2 value2,
-            S3 value3, S4 value4, Widget? child)
-        builder,
-    required (S1, S2, S3, S4) Function(BuildContext context, T) selector,
-    ShouldRebuild<(S1, S2, S3, S4)>? shouldRebuild,
-    Widget? child,
-  }) {
-    return Selector<T, (S1, S2, S3, S4)>(
-      selector: selector,
-      shouldRebuild: shouldRebuild,
-      builder: (context, values, child) =>
-          builder(context, values.$1, values.$2, values.$3, values.$4, child),
-      child: child,
-    );
-  }
-
-// 创建四元素选择器
-  Widget createSelector5<S1, S2, S3, S4, S5>({
-    required Widget Function(BuildContext context, S1 value1, S2 value2,
-            S3 value3, S4 value4, S5 value5, Widget? child)
-        builder,
-    required (S1, S2, S3, S4, S5) Function(BuildContext context, T) selector,
-    ShouldRebuild<(S1, S2, S3, S4, S5)>? shouldRebuild,
-    Widget? child,
-  }) {
-    return Selector<T, (S1, S2, S3, S4, S5)>(
-      selector: selector,
-      shouldRebuild: shouldRebuild,
-      builder: (context, values, child) => builder(context, values.$1,
-          values.$2, values.$3, values.$4, values.$5, child),
+      builder: (context, r, child) {
+        return builder(context, r.$1, r.$2, r.$3, child);
+      },
       child: child,
     );
   }
@@ -159,13 +140,13 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
 
 // 页面上下文管理
 class PageContext {
-// 页面上下文
+  // 页面上下文
   BuildContext? _context;
 
-// 更新
+  // 更新
   void update(BuildContext context) => _context = context;
 
-// 使用
+  // 使用
   BuildContext get context {
     assert(_context != null, '请在build方法之后使用context');
     return _context!;
