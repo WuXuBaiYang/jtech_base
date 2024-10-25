@@ -76,7 +76,6 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
     ShouldRebuild<S>? shouldRebuild,
     Widget? child,
   }) {
-    Consumer;
     return Selector<T, S>(
       builder: builder,
       selector: selector,
