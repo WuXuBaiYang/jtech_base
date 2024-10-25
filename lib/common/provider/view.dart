@@ -14,7 +14,7 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
 
   ProviderView({super.key});
 
-  List<SingleChildWidget> get providers {
+  List<SingleChildWidget> loadProviders(BuildContext context) {
     return [
       ChangeNotifierProvider<T?>(
         lazy: lazyLoadProvider,
@@ -46,7 +46,7 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: providers,
+      providers: loadProviders(context),
       builder: (context, _) {
         _pageContext.update(context);
         return buildWidget(context);
