@@ -3,20 +3,20 @@ import 'package:jtech_base/common/provider/provider.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/single_child_widget.dart';
 
-// 选择器
-typedef ProviderSelector<S, T> = S Function(BuildContext context, T provider);
-
 // 双参数构造器
 typedef SelectorBuilder2<S1, S2, T> = Widget Function(
     BuildContext context, S1 value1, S2 value2, Widget? child);
 
-// 双参数选择器
-typedef ProviderSelector2<S1, S2, T> = (S1, S2) Function(
-    BuildContext context, T provider);
-
 // 三参数构造器
 typedef SelectorBuilder3<S1, S2, S3, T> = Widget Function(
     BuildContext context, S1 value1, S2 value2, S3 value3, Widget? child);
+
+// 选择器
+typedef ProviderSelector<S, T> = S Function(BuildContext context, T provider);
+
+// 双参数选择器
+typedef ProviderSelector2<S1, S2, T> = (S1, S2) Function(
+    BuildContext context, T provider);
 
 // 三参数选择器
 typedef ProviderSelector3<S1, S2, S3, T> = (S1, S2, S3) Function(
