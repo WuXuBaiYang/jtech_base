@@ -38,7 +38,11 @@ abstract class PageProvider extends BaseProvider {
 
   // 从state中获取值
   String? find(String key) =>
-      state?.uri.queryParameters[key] ?? state?.pathParameters[key];
+      state?.uri.queryParameters[key] ??
+      state?.pathParameters[key] ??
+      (state?.extra is Map
+          ? (state?.extra as Map<String, dynamic>)[key]
+          : null);
 
   // 从state中获取整数
   int? findInt(String key) {
