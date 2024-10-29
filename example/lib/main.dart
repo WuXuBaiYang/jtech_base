@@ -7,7 +7,7 @@ import 'database/database.dart';
 import 'provider/config.dart';
 import 'provider/theme.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 初始化本地缓存
   await localCache.initialize();
@@ -21,7 +21,7 @@ class MyApp extends ProviderView {
   MyApp({super.key});
 
   @override
-  List<SingleChildWidget> get providers => [
+  List<SingleChildWidget> loadProviders(BuildContext context) => [
         ChangeNotifierProvider<ThemeProvider>(
             create: (context) => ThemeProvider(context)),
         ChangeNotifierProvider<ConfigProvider>(
