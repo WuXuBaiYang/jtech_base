@@ -130,14 +130,13 @@ class LocalCache {
   // 检查有效期
   bool _check(String key) {
     final expirationKey = _genExpirationKey(key);
-    if (sp.containsKey(expirationKey)) {
-      final expirationTime =
-          DateTime.fromMillisecondsSinceEpoch(sp.getInt(expirationKey) ?? 0);
-      if (expirationTime.isBefore(DateTime.now())) {
-        remove(expirationKey);
-        remove(key);
-        return false;
-      }
+    final expiration = sp.getInt(expirationKey);
+    if (expiration != null &&
+        expiration < DateTime.now().millisecondsSinceEpoch) {
+      sp
+        ..remove(key)
+        ..remove(expirationKey);
+      return false;
     }
     return true;
   }
