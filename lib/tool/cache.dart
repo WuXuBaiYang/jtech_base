@@ -143,7 +143,7 @@ class LocalCache {
 
   // 设置有效期
   Future<bool> _setExpiration(String key, [Duration? expiration]) async {
-    if (null == expiration) return true;
+    if (expiration == null) return true;
     final inTime = DateTime.now().add(expiration).millisecondsSinceEpoch;
     return sp.setInt(_genExpirationKey(key), inTime);
   }
