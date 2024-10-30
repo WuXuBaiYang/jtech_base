@@ -50,13 +50,13 @@ class SchemePickerDialog extends StatelessWidget {
     return Wrap(
       spacing: 14,
       runSpacing: 14,
-      children: themeSchemes
-          .map((item) => ThemeSchemeItem(
-                themeScheme: item,
-                isSelected: item.scheme == current?.scheme,
-                onPressed: () => Navigator.pop(context, item),
-              ))
-          .toList(),
+      children: themeSchemes.map((item) {
+        return ThemeSchemeItem(
+          themeScheme: item,
+          isSelected: item.scheme == current?.scheme,
+          onPressed: () => Navigator.pop(context, item),
+        );
+      }).toList(),
     );
   }
 }
