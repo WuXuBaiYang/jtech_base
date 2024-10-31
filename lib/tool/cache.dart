@@ -22,7 +22,7 @@ class LocalCache {
 
   // 获取sp对象
   SharedPreferences get sp {
-    assert(_sp != null, '请先先完成初始化 localCache.initialize();');
+    assert(_sp != null, 'need to call initialize() first');
     return _sp!;
   }
 
@@ -122,35 +122,35 @@ class LocalCache {
   }
 
   // 移除字段
-  Future<bool> remove(String key) async => sp.remove(key);
+  Future<bool> remove(String key) => sp.remove(key);
+
+  // 移除多个字段
+  Future<List<bool>> removeMany(List<String> keys) =>
+      Future.wait(keys.map((key) => remove(key)));
 
   // 清空缓存的所有字段
-  Future<bool> removeAll() async => sp.clear();
+  Future<bool> clear() => sp.clear();
 
   // 检查有效期
   bool _check(String key) {
     final expirationKey = _genExpirationKey(key);
     final expiration = sp.getInt(expirationKey);
-    if (expiration != null &&
-        expiration < DateTime.now().millisecondsSinceEpoch) {
-      sp
-        ..remove(key)
-        ..remove(expirationKey);
-      return false;
-    }
-    return true;
+    if (expiration == null ||
+        expiration > DateTime.now().millisecondsSinceEpoch) return true;
+    removeMany([key, expirationKey]);
+    return false;
   }
 
   // 设置有效期
   Future<bool> _setExpiration(String key, [Duration? expiration]) async {
     if (expiration == null) return true;
     final inTime = DateTime.now().add(expiration).millisecondsSinceEpoch;
-    return sp.setInt(_genExpirationKey(key), inTime);
+    return setInt(_genExpirationKey(key), inTime);
   }
 
   // 移除有效期key
   Future<bool> _removeExpiration(String key) async =>
-      sp.remove(_genExpirationKey(key));
+      remove(_genExpirationKey(key));
 
   // 生成有效期存储字段
   String _genExpirationKey(String key) => '${key}_$_expirationSuffix';

@@ -100,24 +100,6 @@ extension DurationExtension on Duration {
 
 // 日期格式化模型
 class DatePattern {
-  // 中文-完整日期/时间格式
-  static const String fullDateTimeZH = 'yyyy年MM月dd日 HH时mm分ss秒';
-
-  // 中文-简略日期/时间格式
-  static const String dateTimeZH = 'MM月dd日 HH时mm分';
-
-  // 中文-完整日期格式
-  static const String fullDateZH = 'yyyy年MM月dd日';
-
-  // 中文-简略日期格式
-  static const String dateZH = 'MM月dd日';
-
-  // 中文-完整时间格式
-  static const String fullTimeZH = 'HH时mm分ss秒';
-
-  // 中文-时间格式
-  static const String timeZH = 'HH时mm分';
-
   // 完整日期/时间格式
   static const String fullDateTime = 'yyyy-MM-dd HH:mm:ss';
 
@@ -171,17 +153,4 @@ Duration? tryParseDuration(String durationString) {
     if (minutes == null || seconds == null) return null;
   }
   return Duration(hours: hours, minutes: minutes, seconds: seconds);
-}
-
-// 获取零点时间
-DateTime getDayZero({int dayOffset = 0}) {
-  if (dayOffset < 0) return DateTime.now();
-  final now = DateTime.now();
-  return DateTime(now.year, now.month, now.day).add(Duration(days: dayOffset));
-}
-
-// 获取距离零点的duration
-Duration toDayZero({int dayOffset = 1}) {
-  if (dayOffset < 1) return Duration.zero;
-  return getDayZero(dayOffset: dayOffset).difference(DateTime.now());
 }

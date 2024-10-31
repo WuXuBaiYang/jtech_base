@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'package:crypto/crypto.dart' as crypto;
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'date.dart';
@@ -14,14 +13,6 @@ import 'date.dart';
 * @Time 2022/9/8 15:09
 */
 class Tool {
-  // 图片转base64
-  static String image2Base64(File image) =>
-      base64Encode(image.readAsBytesSync());
-
-  // 获取状态栏高度
-  static double getStatusBarHeight(BuildContext context) =>
-      MediaQuery.of(context).padding.top;
-
   // 获取版本号
   static Future<int> get buildNumber async {
     final packageInfo = await PackageInfo.fromPlatform();
@@ -56,6 +47,35 @@ class Tool {
   static void setStatusBarVisible(bool visible) =>
       SystemChrome.setEnabledSystemUIMode(
           visible ? SystemUiMode.edgeToEdge : SystemUiMode.immersiveSticky);
+
+  // 图片转base64
+  static String image2Base64(File image) =>
+      base64Encode(image.readAsBytesSync());
+
+  // 尝试解析色值
+  Color? tryParseColor(String colorString) {
+    if (colorString.isEmpty) return null;
+    // 解析16进制格式的色值 0xffffff
+    if (colorString.contains(RegExp(r'#|0x'))) {
+      String hexColor = colorString.replaceAll(RegExp(r'#|0x'), '');
+      if (hexColor.length == 6) hexColor = 'ff$hexColor';
+      final result = int.tryParse(hexColor, radix: 16);
+      if (result == null) return null;
+      return Color(result);
+    }
+    // 解析rgb格式的色值 rgb(0,0,0)
+    if (colorString.toLowerCase().contains(RegExp(r'rgb(.*)'))) {
+      String valuesString = colorString.substring(4, colorString.length - 1);
+      List<String> values = valuesString.split(',');
+      if (values.length != 3) return null;
+      final red = int.tryParse(values[0].trim());
+      final green = int.tryParse(values[1].trim());
+      final blue = int.tryParse(values[2].trim());
+      if (red == null || green == null || blue == null) return null;
+      return Color.fromARGB(255, red, green, blue);
+    }
+    return null;
+  }
 }
 
 // 生成id
@@ -72,39 +92,3 @@ String genMd5(String data) => crypto.md5.convert(utf8.encode(data)).toString();
 
 // 区间计算
 T range<T extends num>(T value, T begin, T end) => max(begin, min(end, value));
-
-// 尝试解析色值
-Color? tryParseColor(String colorString) {
-  if (colorString.isEmpty) return null;
-  // 解析16进制格式的色值 0xffffff
-  if (colorString.contains(RegExp(r'#|0x'))) {
-    String hexColor = colorString.replaceAll(RegExp(r'#|0x'), '');
-    if (hexColor.length == 6) hexColor = 'ff$hexColor';
-    final result = int.tryParse(hexColor, radix: 16);
-    if (result == null) return null;
-    return Color(result);
-  }
-  // 解析rgb格式的色值 rgb(0,0,0)
-  if (colorString.toLowerCase().contains(RegExp(r'rgb(.*)'))) {
-    String valuesString = colorString.substring(4, colorString.length - 1);
-    List<String> values = valuesString.split(',');
-    if (values.length != 3) return null;
-    final red = int.tryParse(values[0].trim());
-    final green = int.tryParse(values[1].trim());
-    final blue = int.tryParse(values[2].trim());
-    if (red == null || green == null || blue == null) return null;
-    return Color.fromARGB(255, red, green, blue);
-  }
-  return null;
-}
-
-// 扩展字符串
-extension StringExtension on String {
-  // 正则匹配第一个分组
-  String regFirstGroup(String source, [int index = 0, bool trim = true]) {
-    final match = RegExp(source).firstMatch(this);
-    final result = match?.group(index) ?? '';
-    if (!trim) return result;
-    return result.trim();
-  }
-}
