@@ -1,6 +1,6 @@
 name: jtech_base
 description: "jtech project base library"
-version: 0.3.7+8
+version: 0.3.8
 homepage: https://www.jtech.com
 
 environment:
