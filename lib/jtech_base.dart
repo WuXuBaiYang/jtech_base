@@ -39,6 +39,8 @@ export 'package:easy_refresh/easy_refresh.dart'
         SecondaryFooter,
         SecondaryBuilderHeader,
         SecondaryBuilderFooter;
+export 'package:flex_color_scheme/flex_color_scheme.dart'
+    show FlexScheme, FlexSchemeData;
 
 export 'common/api/request.dart';
 export 'common/api/response.dart';
