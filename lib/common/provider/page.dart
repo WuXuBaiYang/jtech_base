@@ -37,46 +37,48 @@ abstract class PageProvider extends BaseProvider {
   PageProvider(super.context, [this.state]);
 
   // 从state中获取值
-  String? find(String key) =>
-      state?.uri.queryParameters[key] ??
-      state?.pathParameters[key] ??
-      (state?.extra is Map
-          ? (state?.extra as Map<String, dynamic>)[key]
-          : null);
+  T? find<T>(String key) {
+    // 先检查query/path中是否包含目标值
+    final value = state?.uri.queryParameters[key] ?? state?.pathParameters[key];
+    if (value != null) return value as T?;
+    // 然后检查extra是否为map，且包含目标值
+    if (state?.extra is Map) {
+      final value = (state?.extra as Map<String, dynamic>)[key];
+      if (value != null) return value as T?;
+    }
+    return null;
+  }
 
   // 从state中获取整数
   int? findInt(String key) {
     final value = find(key);
-    if (value == null) return null;
-    return int.tryParse(value);
-  }
-
-  // 从state中获取布尔值
-  bool? findBool(String key) {
-    final value = find(key);
-    if (value == null) return null;
-    return bool.tryParse(value);
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    return null;
   }
 
   // 从state中获取浮点数
   double? findDouble(String key) {
     final value = find(key);
-    if (value == null) return null;
-    return double.tryParse(value);
+    if (value is double) return value;
+    if (value is String) return double.tryParse(value);
+    return null;
   }
 
-  // 从state中获取json
-  Map<String, dynamic>? findJson(String key) {
+  // 总state中获取num
+  num? findNum(String key) {
     final value = find(key);
-    if (value == null) return null;
-    return jsonDecode(value);
+    if (value is num) return value;
+    if (value is String) return num.tryParse(value);
+    return null;
   }
 
-  // 从state中获取json数组
-  List<T>? findJsonList<T>(String key) {
+  // 从state中获取布尔值
+  bool? findBool(String key) {
     final value = find(key);
-    if (value == null) return null;
-    return List<T>.from(jsonDecode(value));
+    if (value is bool) return value;
+    if (value is String) return bool.tryParse(value);
+    return null;
   }
 
   // 获取extra
