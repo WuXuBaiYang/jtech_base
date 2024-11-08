@@ -147,6 +147,15 @@ class CustomRefreshController<T>
   // 分页数据量
   final int pageSize;
 
+  // 是否存在刷新
+  bool get loading => isRefreshing || isLoadingMore;
+
+  // 是否正在下拉刷新
+  bool get isRefreshing => !_controller.controlFinishRefresh;
+
+  // 是否正在加载更多
+  bool get isLoadingMore => !_controller.controlFinishLoad;
+
   // 启动刷新
   void startRefresh([bool force = true]) =>
       _controller.callRefresh(force: force);
@@ -171,7 +180,9 @@ class CustomRefreshController<T>
   // 异常结束刷新/加载
   void finishWithError() {
     if (value.data.isNotEmpty) return;
-    return _update(loadStatus: LoadStatus.fail);
+    _update(loadStatus: LoadStatus.fail);
+    _controller.finishLoad(IndicatorResult.fail, true);
+    _controller.finishRefresh(IndicatorResult.fail, true);
   }
 
   // 更新条件对象
