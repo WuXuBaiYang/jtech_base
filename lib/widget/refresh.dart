@@ -67,7 +67,8 @@ class CustomRefreshView<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = CustomRefreshThemeData.of(context);
+    final themeData = CustomRefreshThemeData.of(context,
+        LoadingStatusStyle(onFileRetry: () => controller.startRefresh()));
     final footer = this.footer ?? themeData.footer;
     final header = this.header ?? themeData.header;
     final onLoad = enableLoad ? () => onRefreshLoad?.call(true) : null;
@@ -280,8 +281,9 @@ class CustomRefreshThemeData extends LoadingStatusThemeData {
   });
 
   // 获取通知主题
-  static CustomRefreshThemeData of(BuildContext context) =>
-      maybeOf(context) ?? const CustomRefreshThemeData();
+  static CustomRefreshThemeData of(BuildContext context,
+          [LoadingStatusStyle initialStyle = const LoadingStatusStyle()]) =>
+      maybeOf(context) ?? CustomRefreshThemeData(style: initialStyle);
 
   // 获取通知主题
   static CustomRefreshThemeData? maybeOf(BuildContext context) =>
