@@ -95,7 +95,9 @@ class CustomRefreshView<T> extends StatelessWidget {
           style: style ?? themeData.style,
           failBuilder: failBuilder ?? themeData.failBuilder,
           noDataBuilder: noDataBuilder ?? themeData.noDataBuilder,
-          loadingBuilder: loadingBuilder ?? themeData.loadingBuilder,
+          loadingBuilder: loadingBuilder ??
+              themeData.loadingBuilder ??
+              (_, __, ___) => const SizedBox(),
           builder: (_, __) => builder(context, value.data),
         );
       },
@@ -157,8 +159,22 @@ class CustomRefreshController<T>
   bool get isLoadingMore => !_controller.controlFinishLoad;
 
   // 启动刷新
-  void startRefresh([bool force = true]) =>
-      _controller.callRefresh(force: force);
+  void startRefresh({
+    bool force = true,
+    double? overOffset,
+    Duration? duration = const Duration(milliseconds: 200),
+    Curve curve = Curves.linear,
+    ScrollController? scrollController,
+  }) {
+    _controller.callRefresh(
+      force: force,
+      overOffset: overOffset,
+      duration: duration,
+      curve: curve,
+      scrollController: scrollController,
+    );
+    _update(loadStatus: LoadStatus.loading);
+  }
 
   // 结束刷新/加载
   void finish(List<T> data, [bool loadMore = true]) {
