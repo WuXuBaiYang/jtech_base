@@ -174,7 +174,6 @@ class CustomRefreshController<T>
       curve: curve,
       scrollController: scrollController,
     );
-    _update(loadStatus: LoadStatus.loading);
   }
 
   // 结束刷新/加载
