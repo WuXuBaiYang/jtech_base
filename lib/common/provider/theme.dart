@@ -70,7 +70,6 @@ abstract class BaseThemeProvider extends BaseProvider {
     _brightness = _mode2Brightness(
       _themeMode = themeMode,
     );
-    FlexColor.schemes;
     return _updateThemeData();
   }
 
