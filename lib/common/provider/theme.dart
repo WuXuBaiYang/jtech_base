@@ -65,8 +65,8 @@ abstract class BaseThemeProvider extends BaseProvider {
 
   // 切换主题模式
   Future<bool> changeThemeMode(ThemeMode? themeMode) async {
-    if (themeMode == null ||
-        !await localCache.setInt(themeModeKey, themeMode.index)) return false;
+    if (themeMode == null) return false;
+    if (!await localCache.setInt(themeModeKey, themeMode.index)) return false;
     _brightness = _mode2Brightness(
       _themeMode = themeMode,
     );
@@ -75,8 +75,8 @@ abstract class BaseThemeProvider extends BaseProvider {
 
   // 切换主题配色方案
   Future<bool> changeThemeScheme(FlexScheme? scheme) async {
-    if (scheme == null ||
-        !await localCache.setInt(themeSchemeKey, scheme.index)) return false;
+    if (scheme == null) return false;
+    if (!await localCache.setInt(themeSchemeKey, scheme.index)) return false;
     _scheme = scheme;
     return _updateThemeData();
   }

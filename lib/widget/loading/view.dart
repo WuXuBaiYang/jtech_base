@@ -34,7 +34,8 @@ class LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = this.color ?? Theme.of(context).primaryColor.withOpacity(0.6);
+    final color =
+        this.color ?? Theme.of(context).primaryColor.withValues(alpha: 0.6);
     return switch (index > 0 ? index : Random().nextInt(17)) {
       0 => LoadingAnimationWidget.waveDots(color: color, size: size),
       1 => LoadingAnimationWidget.inkDrop(color: color, size: size),
@@ -56,8 +57,8 @@ class LoadingView extends StatelessWidget {
       _ => LoadingAnimationWidget.discreteCircle(
           color: color,
           size: size,
-          secondRingColor: color.withOpacity(0.5),
-          thirdRingColor: color.withOpacity(0.25)),
+          secondRingColor: color.withValues(alpha: 0.5),
+          thirdRingColor: color.withValues(alpha: 0.25)),
     };
   }
 }

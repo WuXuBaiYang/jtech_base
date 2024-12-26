@@ -135,8 +135,8 @@ class LocalCache {
   bool _check(String key) {
     final expirationKey = _genExpirationKey(key);
     final expiration = sp.getInt(expirationKey);
-    if (expiration == null ||
-        expiration > DateTime.now().millisecondsSinceEpoch) return true;
+    if (expiration == null) return true;
+    if (expiration > DateTime.now().millisecondsSinceEpoch) return true;
     removeMany([key, expirationKey]);
     return false;
   }
