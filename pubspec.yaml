@@ -20,12 +20,12 @@ dependencies:
   objectbox: ^4.0.3
   go_router: ^14.6.2
   http_parser: ^4.1.1
-  file_picker: ^8.1.6
+  file_picker: ^8.1.7
   fluttertoast: ^8.2.10
   easy_refresh: ^3.4.0
   image_picker: ^1.1.2
   path_provider: ^2.1.5
-  flex_color_scheme: ^8.0.2
+  flex_color_scheme: ^8.1.0
   package_info_plus: ^8.1.2
   shared_preferences: ^2.3.4
   permission_handler: ^11.3.1
