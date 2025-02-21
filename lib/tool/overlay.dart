@@ -99,16 +99,17 @@ class CustomOverlay {
   }
 
   // 根据key取消弹层
-  bool cancel<T extends Object?>(String key, [T? result]) {
+  bool cancel<T extends Object?>(String key,
+      [T? result, bool withAnime = true]) {
     final token = _overlayTokens.remove(key);
     if (token == null) return false;
-    token.cancel(result);
+    token.cancel(result, withAnime);
     return true;
   }
 
   // 取消全部弹层
-  void cancelAll() {
-    _overlayTokens.forEach((_, v) => v.cancel());
+  void cancelAll([bool withAnime = true]) {
+    _overlayTokens.forEach((_, v) => v.cancel(withAnime));
     _overlayTokens.clear();
   }
 

@@ -25,6 +25,7 @@ class Loading {
     Alignment? alignment,
     Stream<double>? progressStream,
     LoadingOverlayStyle? style,
+    bool cancelWithAnime = false,
   }) async {
     _customOverlay.cancelAll();
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
@@ -56,12 +57,13 @@ class Loading {
     } catch (e) {
       rethrow;
     } finally {
-      _customOverlay.cancel(key);
+      _customOverlay.cancel(key, null, cancelWithAnime);
     }
   }
 
   // 取消加载弹窗
-  static void cancel() => _customOverlay.cancelAll();
+  static void cancel([bool withAnime = true]) =>
+      _customOverlay.cancelAll(withAnime);
 }
 
 // 扩展future方法实现loading
@@ -74,6 +76,7 @@ extension FutureLoading<T> on Future<T> {
     Curve? reverseCurve,
     Stream<double>? progressStream,
     LoadingOverlayStyle? style,
+    bool cancelWithAnime = false,
   }) =>
       Loading.show(
         context,
@@ -84,6 +87,7 @@ extension FutureLoading<T> on Future<T> {
         reverseCurve: reverseCurve,
         barrierColor: barrierColor,
         progressStream: progressStream,
+        cancelWithAnime: cancelWithAnime,
       );
 }
 
