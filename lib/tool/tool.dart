@@ -53,7 +53,7 @@ class Tool {
       base64Encode(image.readAsBytesSync());
 
   // 尝试解析色值
-  Color? tryParseColor(String colorString) {
+  static Color? tryParseColor(String colorString) {
     if (colorString.isEmpty) return null;
     // 解析16进制格式的色值 0xffffff
     if (colorString.contains(RegExp(r'#|0x'))) {
