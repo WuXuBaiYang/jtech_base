@@ -33,8 +33,7 @@ class CustomDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeData = CustomDialogThemeData.of(context);
-    final style = this.style ?? themeData.style;
+    final style = CustomDialogStyle.mergeOf(context, this.style);
     return AlertDialog(
       title: title,
       actions: actions,
@@ -59,6 +58,14 @@ class CustomDialogStyle {
 
   // 内容间距
   final EdgeInsetsGeometry contentPadding;
+
+  // 传入样式与当前主题合并
+  static CustomDialogStyle mergeOf(
+          BuildContext context, CustomDialogStyle? r) =>
+      CustomDialogThemeData.of(context).style.copyWith(
+            constraints: r?.constraints,
+            contentPadding: r?.contentPadding,
+          );
 
   const CustomDialogStyle({
     this.constraints = const BoxConstraints(maxWidth: 280),
