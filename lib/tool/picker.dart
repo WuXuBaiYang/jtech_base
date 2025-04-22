@@ -15,7 +15,6 @@ class Picker {
     bool allowMultiple = true,
     int compressionQuality = 30,
     FileType type = FileType.any,
-    bool allowCompression = true,
     bool lockParentWindow = false,
     List<String>? allowedExtensions,
   }) async {
@@ -24,7 +23,6 @@ class Picker {
       type: type,
       dialogTitle: dialogTitle,
       allowMultiple: allowMultiple,
-      allowCompression: allowCompression,
       lockParentWindow: lockParentWindow,
       initialDirectory: initialDirectory,
       allowedExtensions: allowedExtensions,
@@ -40,7 +38,6 @@ class Picker {
     String? initialDirectory,
     int compressionQuality = 30,
     FileType type = FileType.any,
-    bool allowCompression = true,
     bool lockParentWindow = false,
     List<String>? allowedExtensions,
   }) async {
@@ -50,7 +47,6 @@ class Picker {
       dialogTitle: dialogTitle,
       initialDirectory: initialDirectory,
       lockParentWindow: lockParentWindow,
-      allowCompression: allowCompression,
       allowedExtensions: allowedExtensions,
       compressionQuality: compressionQuality,
     );
@@ -62,14 +58,12 @@ class Picker {
     String? dialogTitle,
     String? initialDirectory,
     int compressionQuality = 30,
-    bool allowCompression = true,
     bool lockParentWindow = false,
   }) {
     return files(
       type: FileType.image,
       dialogTitle: dialogTitle,
       lockParentWindow: lockParentWindow,
-      allowCompression: allowCompression,
       initialDirectory: initialDirectory,
       compressionQuality: compressionQuality,
     );
@@ -80,14 +74,12 @@ class Picker {
     String? dialogTitle,
     String? initialDirectory,
     int compressionQuality = 30,
-    bool allowCompression = true,
     bool lockParentWindow = false,
   }) {
     return file(
       type: FileType.image,
       dialogTitle: dialogTitle,
       lockParentWindow: lockParentWindow,
-      allowCompression: allowCompression,
       initialDirectory: initialDirectory,
       compressionQuality: compressionQuality,
     );
