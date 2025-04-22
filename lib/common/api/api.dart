@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 import 'request.dart';
 import 'response.dart';
 
@@ -33,11 +34,22 @@ abstract class BaseAPI {
         )..interceptors.addAll([...interceptors]);
 
   // 更新基础地址
-  void updateBaseUrl(String baseUrl) => _dio.options.baseUrl = baseUrl;
+  set baseUrl(String baseUrl) => _dio.options.baseUrl = baseUrl;
 
   // 添加拦截器
   void addInterceptors(List<Interceptor> interceptors) =>
       _dio.interceptors.addAll(interceptors);
+
+  // 移除拦截器
+  void removeInterceptors(List<Interceptor> interceptors) => _dio.interceptors
+      .removeWhere((element) => interceptors.contains(element));
+
+  // 清空拦截器
+  void clearInterceptors() => _dio.interceptors.clear();
+
+  // 设置客户端适配器
+  set httpClientAdapter(IOHttpClientAdapter adapter) =>
+      _dio.httpClientAdapter = adapter;
 
   // 附件下载
   Future<Response> download(

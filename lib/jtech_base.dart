@@ -1,6 +1,7 @@
 library;
 
 export 'package:dio/dio.dart';
+export 'package:dio/io.dart' show IOHttpClientAdapter;
 export 'package:crypto/crypto.dart';
 export 'package:provider/provider.dart';
 export 'package:objectbox/objectbox.dart';
