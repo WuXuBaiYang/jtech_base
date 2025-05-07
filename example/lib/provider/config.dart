@@ -6,7 +6,8 @@ import 'package:jtech_base/jtech_base.dart';
 * @Time 2022/3/17 14:14
 */
 class ConfigProvider extends BaseConfigProvider<AppConfig> {
-  ConfigProvider(super.context) : super(creator: AppConfig.from);
+  ConfigProvider(super.context)
+      : super(creator: AppConfig.from, serializer: (c) => c.to());
 
   // 开关状态
   bool get switcher => config.switcher;
@@ -28,7 +29,7 @@ class ConfigProvider extends BaseConfigProvider<AppConfig> {
 * @author wuxubaiyang
 * @Time 2024/8/14 14:40
 */
-class AppConfig extends BaseConfig {
+class AppConfig {
   // 开关
   final bool switcher;
 
@@ -46,13 +47,11 @@ class AppConfig extends BaseConfig {
       : switcher = obj['switcher'] ?? false,
         progress = obj['progress'] ?? 0.5;
 
-  @override
   Map<String, dynamic> to() => {
         'switcher': switcher,
         'progress': progress,
       };
 
-  @override
   AppConfig copyWith({
     bool? switcher,
     double? progress,

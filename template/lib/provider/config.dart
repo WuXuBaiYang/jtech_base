@@ -6,7 +6,8 @@ import 'package:jtech_base/jtech_base.dart';
 * @Time 2022/3/17 14:14
 */
 class ConfigProvider extends BaseConfigProvider<AppConfig> {
-  ConfigProvider(super.context) : super(creator: AppConfig.from);
+  ConfigProvider(super.context)
+      : super(creator: AppConfig.from, serializer: (c) => c.to());
 
   /// 占位方法，使用时可以删除，在此处实现全局配置的操作方法，有需要可以通过selector监听
   String get placeholder => config.placeholder;
@@ -20,7 +21,7 @@ class ConfigProvider extends BaseConfigProvider<AppConfig> {
 * @author wuxubaiyang
 * @Time 2024/8/14 14:40
 */
-class AppConfig extends BaseConfig {
+class AppConfig {
   /// 占位字段，使用时可以删除，每新增一个字段都请按照如下结构填写
   final String placeholder;
 
@@ -30,12 +31,10 @@ class AppConfig extends BaseConfig {
 
   AppConfig.from(obj) : placeholder = obj['placeholder'] ?? '';
 
-  @override
   Map<String, dynamic> to() => {
         'placeholder': placeholder,
       };
 
-  @override
   AppConfig copyWith({
     String? placeholder,
   }) {

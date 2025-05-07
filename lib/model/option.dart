@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:jtech_base/common/model.dart';
 
 /*
 * 选项数据模型
 * @author wuxubaiyang
 * @Time 2024/8/16 17:08
 */
-class OptionItem<T> extends BaseModel {
+class OptionItem<T> {
   // 标签
   final String label;
 

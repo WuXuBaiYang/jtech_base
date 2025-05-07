@@ -49,7 +49,6 @@ export 'common/api/api.dart';
 
 export 'common/database.dart';
 export 'common/router.dart';
-export 'common/model.dart';
 export 'common/theme.dart';
 
 export 'common/provider/config.dart';
@@ -57,7 +56,6 @@ export 'common/provider/page.dart';
 export 'common/provider/provider.dart';
 export 'common/provider/theme.dart';
 export 'common/provider/view.dart';
-
 export 'model/option.dart';
 
 export 'tool/cache.dart';
