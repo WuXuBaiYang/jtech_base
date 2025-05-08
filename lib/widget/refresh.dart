@@ -5,7 +5,7 @@ import 'loading/status.dart';
 
 // 刷新控件构造器
 typedef CustomRefreshWidgetBuilder<T> = Widget Function(
-    BuildContext context, List<T> data);
+    BuildContext context, List<T> data, LoadStatus status);
 
 /*
 * 自定义刷新控件
@@ -37,18 +37,6 @@ class CustomRefreshView<T> extends StatelessWidget {
   // 子元素构建
   final CustomRefreshWidgetBuilder<T> builder;
 
-  // 报错状态构建
-  final ValueWidgetBuilder<LoadingStatusStyle>? failBuilder;
-
-  // 空数据状态构建
-  final ValueWidgetBuilder<LoadingStatusStyle>? noDataBuilder;
-
-  // 加载中状态构建
-  final ValueWidgetBuilder<LoadingStatusStyle>? loadingBuilder;
-
-  // 加载状态样式
-  final LoadingStatusStyle? style;
-
   const CustomRefreshView({
     super.key,
     required this.builder,
@@ -59,16 +47,11 @@ class CustomRefreshView<T> extends StatelessWidget {
     this.enableLoad = true,
     this.initRefresh = true,
     this.enableRefresh = true,
-    this.style,
-    this.failBuilder,
-    this.noDataBuilder,
-    this.loadingBuilder,
   });
 
   @override
   Widget build(BuildContext context) {
-    final themeData = CustomRefreshThemeData.of(context,
-        LoadingStatusStyle(onFileRetry: () => controller.startRefresh()));
+    final themeData = CustomRefreshThemeData.of(context);
     final footer = this.footer ?? themeData.footer;
     final header = this.header ?? themeData.header;
     final onLoad = enableLoad ? () => onRefreshLoad?.call(true) : null;
@@ -91,16 +74,7 @@ class CustomRefreshView<T> extends StatelessWidget {
     return ValueListenableBuilder<CustomRefreshControllerValue<T>>(
       valueListenable: controller,
       builder: (_, value, __) {
-        return LoadingStatusBuilder(
-          status: value.loadStatus,
-          style: style ?? themeData.style,
-          failBuilder: failBuilder ?? themeData.failBuilder,
-          noDataBuilder: noDataBuilder ?? themeData.noDataBuilder,
-          loadingBuilder: loadingBuilder ??
-              themeData.loadingBuilder ??
-              (_, __, ___) => const SizedBox(),
-          builder: (_, __) => builder(context, value.data),
-        );
+        return builder(context, value.data, value.loadStatus);
       },
     );
   }
@@ -263,7 +237,7 @@ class CustomRefreshController<T>
 * @author wuxubaiyang
 * @Time 2024/10/22 11:30
 */
-class CustomRefreshThemeData extends LoadingStatusThemeData {
+class CustomRefreshThemeData {
   // 头部
   final Header? header;
 
@@ -273,37 +247,23 @@ class CustomRefreshThemeData extends LoadingStatusThemeData {
   const CustomRefreshThemeData({
     this.header,
     this.footer,
-    super.style,
-    super.failBuilder,
-    super.noDataBuilder,
-    super.loadingBuilder,
   });
 
   // 获取通知主题
-  static CustomRefreshThemeData of(BuildContext context,
-          [LoadingStatusStyle initialStyle = const LoadingStatusStyle()]) =>
-      maybeOf(context) ?? CustomRefreshThemeData(style: initialStyle);
+  static CustomRefreshThemeData of(BuildContext context) =>
+      maybeOf(context) ?? CustomRefreshThemeData();
 
   // 获取通知主题
   static CustomRefreshThemeData? maybeOf(BuildContext context) =>
       CustomTheme.maybeOf(context)?.customRefreshTheme;
 
-  @override
   CustomRefreshThemeData copyWith({
     Header? header,
     Footer? footer,
-    LoadingStatusStyle? style,
-    ValueWidgetBuilder<LoadingStatusStyle>? failBuilder,
-    ValueWidgetBuilder<LoadingStatusStyle>? noDataBuilder,
-    ValueWidgetBuilder<LoadingStatusStyle>? loadingBuilder,
   }) {
     return CustomRefreshThemeData(
       header: header ?? this.header,
       footer: footer ?? this.footer,
-      style: style ?? this.style,
-      failBuilder: failBuilder ?? this.failBuilder,
-      noDataBuilder: noDataBuilder ?? this.noDataBuilder,
-      loadingBuilder: loadingBuilder ?? this.loadingBuilder,
     );
   }
 
@@ -313,10 +273,6 @@ class CustomRefreshThemeData extends LoadingStatusThemeData {
     return CustomRefreshThemeData(
       header: b?.header,
       footer: b?.footer,
-      style: LoadingStatusStyle.lerp(a?.style, b?.style, t),
-      failBuilder: t < 0.5 ? a?.failBuilder : b?.failBuilder,
-      noDataBuilder: t < 0.5 ? a?.noDataBuilder : b?.noDataBuilder,
-      loadingBuilder: t < 0.5 ? a?.loadingBuilder : b?.loadingBuilder,
     );
   }
 
@@ -324,19 +280,11 @@ class CustomRefreshThemeData extends LoadingStatusThemeData {
   bool operator ==(Object other) =>
       other is CustomRefreshThemeData &&
       other.header == header &&
-      other.footer == footer &&
-      other.style == style &&
-      other.failBuilder == failBuilder &&
-      other.noDataBuilder == noDataBuilder &&
-      other.loadingBuilder == loadingBuilder;
+      other.footer == footer;
 
   @override
   int get hashCode => Object.hashAll([
         header,
         footer,
-        style,
-        failBuilder,
-        noDataBuilder,
-        loadingBuilder,
       ]);
 }
