@@ -12,7 +12,7 @@ class ThemeProvider extends BaseThemeProvider {
   @override
   ThemeData createTheme(ThemeData themeData, Brightness brightness) {
     return themeData.copyWith(
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 4,
         color: brightness == Brightness.light
             ? Colors.white
