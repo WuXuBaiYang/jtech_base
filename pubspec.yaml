@@ -4,8 +4,7 @@ version: 0.6.4+4
 homepage: https://www.jtech.com
 
 environment:
-  sdk: ^3.5.0
-  flutter: ">=1.17.0"
+  sdk: ^3.8.0
 
 dependencies:
   flutter:

@@ -60,7 +60,7 @@ class _CustomOverlayViewState extends State<CustomOverlayView>
       child: animation != null
           ? AnimatedBuilder(
               animation: animation,
-              builder: (_, __) {
+              builder: (_, _) {
                 return FadeTransition(
                   opacity: animation,
                   child: Container(color: widget.barrierColor),

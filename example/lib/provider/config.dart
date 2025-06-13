@@ -41,7 +41,7 @@ class AppConfig {
     required this.progress,
   });
 
-  AppConfig.from(obj)
+  AppConfig.from(dynamic obj)
 
       /// 可以在这里设置默认值
       : switcher = obj['switcher'] ?? false,

@@ -45,7 +45,7 @@ class Notice {
       interceptPop: false,
       alignment: Alignment.topCenter,
       animationDuration: animeDuration ?? themeData.animeDuration,
-      builder: (_, animation, __) {
+      builder: (_, animation, _) {
         return SafeArea(
           child: Dismissible(
             direction: DismissDirection.up,

@@ -4,8 +4,8 @@ import 'package:jtech_base/common/theme.dart';
 import 'loading/status.dart';
 
 // 刷新控件构造器
-typedef CustomRefreshWidgetBuilder<T> = Widget Function(
-    BuildContext context, List<T> data, LoadStatus status);
+typedef CustomRefreshWidgetBuilder<T> =
+    Widget Function(BuildContext context, List<T> data, LoadStatus status);
 
 /*
 * 自定义刷新控件
@@ -73,7 +73,7 @@ class CustomRefreshView<T> extends StatelessWidget {
   Widget _buildContent(BuildContext context, CustomRefreshThemeData themeData) {
     return ValueListenableBuilder<CustomRefreshControllerValue<T>>(
       valueListenable: controller,
-      builder: (_, value, __) {
+      builder: (_, value, _) {
         return builder(context, value.data, value.loadStatus);
       },
     );
@@ -83,7 +83,7 @@ class CustomRefreshView<T> extends StatelessWidget {
 // 自定义刷新控件控制器值类型元组
 typedef CustomRefreshControllerValue<T> = ({
   List<T> data,
-  LoadStatus loadStatus
+  LoadStatus loadStatus,
 });
 
 /*
@@ -95,22 +95,24 @@ class CustomRefreshController<T>
     extends ValueNotifier<CustomRefreshControllerValue<T>> {
   // 刷新控制器
   final _controller = EasyRefreshController(
-      controlFinishLoad: true, controlFinishRefresh: true);
+    controlFinishLoad: true,
+    controlFinishRefresh: true,
+  );
 
   CustomRefreshController(
     List<T> data, {
     this.pageSize = 25,
     int initialPageIndex = 1,
     LoadStatus initialLoadStatus = LoadStatus.success,
-  })  : _pageIndex = initialPageIndex,
-        super((data: data, loadStatus: initialLoadStatus));
+  }) : _pageIndex = initialPageIndex,
+       super((data: data, loadStatus: initialLoadStatus));
 
   CustomRefreshController.empty({
     this.pageSize = 25,
     int initialPageIndex = 1,
     LoadStatus initialLoadStatus = LoadStatus.success,
-  })  : _pageIndex = initialPageIndex,
-        super((data: <T>[], loadStatus: initialLoadStatus));
+  }) : _pageIndex = initialPageIndex,
+       super((data: <T>[], loadStatus: initialLoadStatus));
 
   // 分页下标
   int _pageIndex = 1;
@@ -244,10 +246,7 @@ class CustomRefreshThemeData {
   // 足部
   final Footer? footer;
 
-  const CustomRefreshThemeData({
-    this.header,
-    this.footer,
-  });
+  const CustomRefreshThemeData({this.header, this.footer});
 
   // 获取通知主题
   static CustomRefreshThemeData of(BuildContext context) =>
@@ -257,10 +256,7 @@ class CustomRefreshThemeData {
   static CustomRefreshThemeData? maybeOf(BuildContext context) =>
       CustomTheme.maybeOf(context)?.customRefreshTheme;
 
-  CustomRefreshThemeData copyWith({
-    Header? header,
-    Footer? footer,
-  }) {
+  CustomRefreshThemeData copyWith({Header? header, Footer? footer}) {
     return CustomRefreshThemeData(
       header: header ?? this.header,
       footer: footer ?? this.footer,
@@ -268,12 +264,12 @@ class CustomRefreshThemeData {
   }
 
   static CustomRefreshThemeData lerp(
-      CustomRefreshThemeData? a, CustomRefreshThemeData? b, double t) {
+    CustomRefreshThemeData? a,
+    CustomRefreshThemeData? b,
+    double t,
+  ) {
     if (a == null && b == null) return CustomRefreshThemeData();
-    return CustomRefreshThemeData(
-      header: b?.header,
-      footer: b?.footer,
-    );
+    return CustomRefreshThemeData(header: b?.header, footer: b?.footer);
   }
 
   @override
@@ -283,8 +279,5 @@ class CustomRefreshThemeData {
       other.footer == footer;
 
   @override
-  int get hashCode => Object.hashAll([
-        header,
-        footer,
-      ]);
+  int get hashCode => Object.hashAll([header, footer]);
 }

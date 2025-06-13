@@ -29,7 +29,7 @@ class AppConfig {
     this.placeholder = '',
   });
 
-  AppConfig.from(obj) : placeholder = obj['placeholder'] ?? '';
+  AppConfig.from(dynamic obj) : placeholder = obj['placeholder'] ?? '';
 
   Map<String, dynamic> to() => {
         'placeholder': placeholder,

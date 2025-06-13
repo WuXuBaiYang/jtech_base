@@ -12,8 +12,9 @@ class HomePage extends ProviderPage<HomePageProvider> {
 
   @override
   HomePageProvider createPageProvider(
-          BuildContext context, GoRouterState? state) =>
-      HomePageProvider(context, state);
+    BuildContext context,
+    GoRouterState? state,
+  ) => HomePageProvider(context, state);
 
   @override
   Widget buildWidget(BuildContext context) {
@@ -30,11 +31,8 @@ class HomePage extends ProviderPage<HomePageProvider> {
     // ProviderPage与ProviderView皆可以使用createSelector方法
     return createSelector<int>(
       selector: (_, provider) => provider.currentIndex,
-      builder: (_, currentIndex, __) {
-        return IndexedStack(
-          index: currentIndex,
-          children: children,
-        );
+      builder: (_, currentIndex, _) {
+        return IndexedStack(index: currentIndex, children: children);
       },
     );
   }
@@ -46,7 +44,7 @@ class HomePage extends ProviderPage<HomePageProvider> {
     }).toList();
     return createSelector<int>(
       selector: (_, provider) => provider.currentIndex,
-      builder: (_, currentIndex, __) {
+      builder: (_, currentIndex, _) {
         return NavigationBar(
           destinations: destinations,
           selectedIndex: currentIndex,

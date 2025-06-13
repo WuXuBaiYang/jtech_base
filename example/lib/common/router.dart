@@ -36,75 +36,75 @@ class Router extends BaseRouter {
           routes: [
             GoRoute(
               path: '/module',
-              builder: (_, __) => SizedBox(),
+              builder: (_, _) => SizedBox(),
               routes: [
                 GoRoute(
                   path: '/database',
-                  builder: (_, __) => ModuleDatabasePage(),
+                  builder: (_, _) => ModuleDatabasePage(),
                 ),
                 GoRoute(
                   path: '/api',
-                  builder: (_, __) => ModuleApiPage(),
+                  builder: (_, _) => ModuleApiPage(),
                 ),
                 GoRoute(
                   path: '/config',
-                  builder: (_, __) => ModuleConfigPage(),
+                  builder: (_, _) => ModuleConfigPage(),
                 ),
                 GoRoute(
                   path: '/theme',
-                  builder: (_, __) => ModuleThemePage(),
+                  builder: (_, _) => ModuleThemePage(),
                 ),
                 GoRoute(
                   path: '/router',
-                  builder: (_, __) => ModuleRouterPage(),
+                  builder: (_, _) => ModuleRouterPage(),
                 ),
               ],
             ),
             GoRoute(
               path: '/widget',
-              builder: (_, __) => SizedBox(),
+              builder: (_, _) => SizedBox(),
               routes: [
                 GoRoute(
                   path: '/refresh',
-                  builder: (_, __) => WidgetRefreshPage(),
+                  builder: (_, _) => WidgetRefreshPage(),
                 ),
                 GoRoute(
                   path: '/loadStatus',
-                  builder: (_, __) => WidgetLoadStatusPage(),
+                  builder: (_, _) => WidgetLoadStatusPage(),
                 ),
                 GoRoute(
                   path: '/notice',
-                  builder: (_, __) => WidgetNoticePage(),
+                  builder: (_, _) => WidgetNoticePage(),
                 ),
                 GoRoute(
                   path: '/other',
-                  builder: (_, __) => WidgetOtherPage(),
+                  builder: (_, _) => WidgetOtherPage(),
                 ),
               ],
             ),
             GoRoute(
               path: '/tool',
-              builder: (_, __) => SizedBox(),
+              builder: (_, _) => SizedBox(),
               routes: [
                 GoRoute(
                   path: '/date',
-                  builder: (_, __) => ToolDatePage(),
+                  builder: (_, _) => ToolDatePage(),
                 ),
                 GoRoute(
                   path: '/debounce',
-                  builder: (_, __) => ToolDebouncePage(),
+                  builder: (_, _) => ToolDebouncePage(),
                 ),
                 GoRoute(
                   path: '/log',
-                  builder: (_, __) => ToolLogPage(),
+                  builder: (_, _) => ToolLogPage(),
                 ),
                 GoRoute(
                   path: '/file',
-                  builder: (_, __) => ToolFilePage(),
+                  builder: (_, _) => ToolFilePage(),
                 ),
                 GoRoute(
                   path: '/other',
-                  builder: (_, __) => ToolOtherPage(),
+                  builder: (_, _) => ToolOtherPage(),
                 ),
               ],
             ),

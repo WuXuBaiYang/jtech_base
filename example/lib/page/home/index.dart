@@ -31,7 +31,7 @@ class HomePage extends ProviderPage<HomePageProvider> {
     // ProviderPage与ProviderView皆可以使用createSelector方法
     return createSelector<int>(
       selector: (_, provider) => provider.currentIndex,
-      builder: (_, currentIndex, __) {
+      builder: (_, currentIndex, _) {
         return IndexedStack(
           index: currentIndex,
           children: children,
@@ -47,7 +47,7 @@ class HomePage extends ProviderPage<HomePageProvider> {
     }).toList();
     return createSelector<int>(
       selector: (_, provider) => provider.currentIndex,
-      builder: (_, currentIndex, __) {
+      builder: (_, currentIndex, _) {
         return NavigationBar(
           destinations: destinations,
           selectedIndex: currentIndex,

@@ -64,5 +64,5 @@ mixin ExampleAPI on CustomAPI {
 * @Time 2024/10/23 10:15
 */
 class ExampleModel {
-  ExampleModel.from(obj);
+  ExampleModel.from(dynamic obj);
 }

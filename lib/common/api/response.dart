@@ -14,7 +14,7 @@ class ResponseModel<T> {
     required this.data,
   });
 
-  ResponseModel.from(obj)
+  ResponseModel.from(dynamic obj)
       : code = obj['code'] ?? 0,
         message = obj['message'] ?? '',
         data = obj['data'] as T;
