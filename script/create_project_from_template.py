@@ -93,10 +93,12 @@ def parse_arguments():
     arguments['prod_url'] = args.prod_url or args.dev_url
     arguments['description'] = args.description
     arguments['target_dir'] = args.target_dir
-    arguments['open_when_finish'] = args.open_when_finish
+    arguments['open_when_finish'] = args.open_when_finish or True
     # 处理平台配置
     if args.platforms:
         selected_platforms = [p.strip() for p in args.platforms.split(',')]
+        if len(selected_platforms) > 0:
+            arguments['platforms'] = {}
         for platform_name in selected_platforms:
             if platform_name == 'android' and args.android_package:
                 arguments['platforms'][platform_name] = {
@@ -459,9 +461,11 @@ def main():
             print("\n*fst:平台配置过程中出现错误，请检查以上输出。")
 
         # 询问是否打开项目目录，除非通过命令行指定不打开
-        if not arguments.get('open_when_finish'):
-            print("\n*st:打开项目目录")
-            open_directory(arguments.get('project_dir'))
+        open_dir = arguments.get('open_when_finish')
+        if open_dir is not None:
+            if open_dir:
+                print("\n*st:打开项目目录")
+                open_directory(arguments.get('project_dir'))
         else:
             open_dir = input("\n是否打开项目目录？(y/n): ").strip().lower()
             if open_dir == 'y':
