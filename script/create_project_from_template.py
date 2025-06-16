@@ -6,6 +6,10 @@ import sys
 import platform
 import argparse
 import ipaddress
+import threading
+
+# 全局变量存储用户输入
+arguments = {}
 
 
 def validate_project_name(name):
@@ -32,7 +36,7 @@ def validate_api_url(url):
         pass
 
     # 检查是否为有效的URL (http:// 或 https:// 开头)
-    if re.match(r'^https?://[^\s/$.?#].[^\s]*$', url):
+    if re.match(r'^https?://[^\s/$.?#].\S*$', url):
         return url
 
     raise argparse.ArgumentTypeError("API地址必须是有效的IP地址或URL (http:// 或 https:// 开头)")
@@ -48,10 +52,71 @@ def validate_target_dir(directory):
     return directory
 
 
-def get_user_input():
-    """收集用户输入的项目信息"""
-    inputs = {}
+def parse_arguments():
+    """解析命令行参数"""
+    parser = argparse.ArgumentParser(description="Flutter项目模板复制与配置工具")
 
+    # 环境配置
+    parser.add_argument("--flutter-bin",
+                        help="Flutter SDK路径（可选，如果未设置则使用系统环境变量）")
+    parser.add_argument("--project-name", required=True, type=validate_project_name,
+                        help="项目名称（必填，英文数字下划线）")
+    parser.add_argument("--dev-url", required=True, type=validate_api_url,
+                        help="开发接口地址（必填）")
+    parser.add_argument("--target-dir", required=True, type=validate_target_dir,
+                        help="目标目录路径（必填）")
+    parser.add_argument("--app-name",
+                        help="应用名称（非必填，不填则与项目名一致）")
+    parser.add_argument("--db-name", type=validate_db_name,
+                        help="数据库名称（非必填，不填则与项目名一致）")
+    parser.add_argument("--prod-url", type=validate_api_url,
+                        help="生产接口地址（非必填，不填的话跟开发接口保持一致）")
+    parser.add_argument("--description", default="",
+                        help="项目描述（非必填，不填为空字符串）")
+    parser.add_argument("--platforms",
+                        help="要创建的平台，以逗号分隔 (例如: android,ios,web)")
+    parser.add_argument("--android-package",
+                        help="Android 包名 (例如: com.example.app)")
+    parser.add_argument("--ios-bundle-id",
+                        help="iOS Bundle ID (例如: com.example.app)")
+    parser.add_argument("--macos-bundle-id",
+                        help="MacOS Bundle ID (例如: com.example.app)")
+    parser.add_argument("--open-when-finish", action="store_true",
+                        help="完成后打开项目目录")
+
+    args = parser.parse_args()
+    arguments['flutter_bin'] = args.flutter_bin
+    arguments['project_name'] = args.project_name
+    arguments['app_name'] = args.app_name or args.project_name
+    arguments['db_name'] = args.db_name or args.project_name
+    arguments['dev_url'] = args.dev_url
+    arguments['prod_url'] = args.prod_url or args.dev_url
+    arguments['description'] = args.description
+    arguments['target_dir'] = args.target_dir
+    arguments['open_when_finish'] = args.open_when_finish
+    # 处理平台配置
+    if args.platforms:
+        selected_platforms = [p.strip() for p in args.platforms.split(',')]
+        for platform_name in selected_platforms:
+            if platform_name == 'android' and args.android_package:
+                arguments['platforms'][platform_name] = {
+                    'package_name': args.android_package or f"com.{args.project_name.lower()}.app",
+                }
+            elif platform_name == 'ios' and args.ios_bundle_id:
+                arguments['platforms'][platform_name] = {
+                    'bundle_id': args.ios_bundle_id or f"com.{args.project_name.lower()}.app",
+                }
+            elif platform_name == 'macos' and args.macos_bundle_id:
+                arguments['platforms'][platform_name] = {
+                    'bundle_id': args.macos_bundle_id or f"com.{args.project_name.lower()}.app",
+                }
+            else:
+                # 只添加平台但不配置特定参数
+                arguments['platforms'][platform_name] = {}
+
+
+def parse_user_input():
+    """收集用户输入的项目信息"""
     # 收集项目名称（必填）
     while True:
         project_name = input("请输入项目名称（必填，英文数字下划线）: ").strip()
@@ -61,12 +126,12 @@ def get_user_input():
         if not validate_project_name(project_name):
             print("项目名称只能包含英文、数字和下划线！")
             continue
-        inputs['project_name'] = project_name
+        arguments['project_name'] = project_name
         break
 
     # 收集应用名称（非必填，默认与项目名相同）
     app_name = input(f"请输入应用名称（非必填，默认为'{project_name}'）: ").strip()
-    inputs['app_name'] = app_name if app_name else project_name
+    arguments['app_name'] = app_name if app_name else project_name
 
     # 收集数据库名称（非必填，默认与项目名相同）
     while True:
@@ -75,7 +140,7 @@ def get_user_input():
         if not validate_db_name(db_name):
             print("数据库名称只能包含英文、数字和下划线！")
             continue
-        inputs['db_name'] = db_name
+        arguments['db_name'] = db_name
         break
 
     # 收集开发接口地址（必填）
@@ -86,7 +151,7 @@ def get_user_input():
             continue
         try:
             validate_api_url(dev_url)
-            inputs['dev_url'] = dev_url
+            arguments['dev_url'] = dev_url
             break
         except argparse.ArgumentTypeError as e:
             print(e)
@@ -96,18 +161,18 @@ def get_user_input():
         prod_url = input(f"请输入生产接口地址（非必填，默认为'{dev_url}'）: ").strip()
         if not prod_url:
             prod_url = dev_url
-            inputs['prod_url'] = prod_url
+            arguments['prod_url'] = prod_url
             break
         try:
             validate_api_url(prod_url)
-            inputs['prod_url'] = prod_url
+            arguments['prod_url'] = prod_url
             break
         except argparse.ArgumentTypeError as e:
             print(e)
 
     # 收集项目描述（非必填）
     description = input("请输入项目描述（非必填）: ").strip()
-    inputs['description'] = description
+    arguments['description'] = description
 
     # 收集目标目录
     while True:
@@ -121,16 +186,12 @@ def get_user_input():
             except Exception as e:
                 print(f"无法创建目录 '{target_dir}': {e}")
                 continue
-        inputs['target_dir'] = target_dir
+        arguments['target_dir'] = target_dir
         break
 
-    return inputs
 
-
-def get_platform_config():
+def parse_user_input_platform_config():
     """收集平台配置信息"""
-    platforms = {}
-
     print("\n请选择要创建的平台:")
     print("1. Android")
     print("2. iOS")
@@ -161,10 +222,11 @@ def get_platform_config():
         if selected_platforms:
             break
 
+    if len(selected_platforms) > 0:
+        arguments['platforms'] = {}
+
     # 收集每个平台的配置
     for platform_name in selected_platforms:
-        platform_config = {}
-
         if platform_name == 'android':
             print(f"\n配置 {platform_name} 平台:")
             package_name = input("请输入包名 (例如: com.example.app): ").strip()
@@ -172,36 +234,79 @@ def get_platform_config():
                 print("包名格式不正确，请使用类似 com.example.app 的格式")
                 package_name = input("请输入包名 (例如: com.example.app): ").strip()
 
-            platform_config['package_name'] = package_name
+            arguments['platforms'][platform_name] = {
+                'package_name': package_name
+            }
 
-        elif platform_name == 'ios':
+        elif platform_name == 'ios' or platform_name == 'macos':
             print(f"\n配置 {platform_name} 平台:")
             bundle_id = input("请输入 Bundle ID (例如: com.example.app): ").strip()
             while not re.match(r'^[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z][a-zA-Z0-9_]*)*$', bundle_id):
                 print("Bundle ID 格式不正确，请使用类似 com.example.app 的格式")
                 bundle_id = input("请输入 Bundle ID (例如: com.example.app): ").strip()
 
-            platform_config['bundle_id'] = bundle_id
+            arguments['platforms'][platform_name] = {
+                'bundle_id': bundle_id
+            }
+        else:
+            # 其他平台可以根据需要添加配置选项
+            arguments['platforms'][platform_name] = {}
 
-        elif platform_name == 'web':
-            print(f"\n配置 {platform_name} 平台:")
-            web_renderer = input("请选择 Web 渲染器 (1: HTML, 2: CanvasKit): ").strip()
-            while web_renderer not in ['1', '2']:
-                print("无效的选择，请输入 1 或 2")
-                web_renderer = input("请选择 Web 渲染器 (1: HTML, 2: CanvasKit): ").strip()
 
-            platform_config['web_renderer'] = 'html' if web_renderer == '1' else 'canvaskit'
+def read_stream(stream, _):
+    for line in stream:
+        print(f"{line.decode().strip()}")
 
-        # 其他平台可以根据需要添加配置选项
 
-        platforms[platform_name] = platform_config
+def execute_command(command):
+    """执行命令（在项目下）"""
+    print(f"\n执行命令: {' '.join(command)}")
+    try:
+        process = subprocess.Popen(command, cwd=arguments.get('project_dir'),
+                                   shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=-1)
+        # 创建两个线程分别处理标准输出和标准错误
+        stdout_thread = threading.Thread(target=read_stream, args=(process.stdout, "stdout"))
+        stderr_thread = threading.Thread(target=read_stream, args=(process.stderr, "stderr"))
+        # 设置为守护线程，主程序退出时自动终止
+        stdout_thread.daemon = True
+        stderr_thread.daemon = True
+        # 启动线程
+        stdout_thread.start()
+        stderr_thread.start()
+        # 等待进程结束
+        process.wait()
+        # 等待所有线程完成
+        stdout_thread.join()
+        stderr_thread.join()
+        # 检查返回码
+        if process.returncode != 0:
+            raise subprocess.CalledProcessError(process.returncode, command)
+    except subprocess.CalledProcessError as e:
+        print(f"命令执行失败: {e}")
+        print(e.stderr)
+        return False
 
-    return platforms
+    return True
+
+
+def execute_flutter_command(command):
+    """执行flutter命令"""
+    flutter_bin = arguments.get('flutter_bin')
+    command.insert(0, os.path.join(flutter_bin, 'flutter') if flutter_bin else "flutter")
+    return execute_command(command)
+
+
+def execute_dart_command(command):
+    """执行dart命令"""
+    flutter_bin = arguments.get('flutter_bin')
+    command.insert(0, os.path.join(flutter_bin, 'dart') if flutter_bin else "dart")
+    return execute_command(command)
 
 
 def replace_placeholders_in_file(file_path, replacements):
     """替换文件中的占位符"""
     try:
+        content = ""
         with open(file_path, 'r', encoding='utf-8') as file:
             content = file.read()
 
@@ -215,160 +320,73 @@ def replace_placeholders_in_file(file_path, replacements):
         print(f"处理文件 '{file_path}' 时出错: {e}")
 
 
-def process_directory(directory, replacements):
-    """处理目录中的所有文件，替换占位符"""
-    for root, dirs, files in os.walk(directory):
+def replace_placeholders():
+    """替换项目模板中的占位符"""
+    replacements = {
+        "${jtech_base_project_name}$": arguments.get('project_name'),
+        "${jtech_base_app_name}$": arguments.get('app_name'),
+        "${jtech_base_db_name}$": arguments.get('db_name'),
+        "${jtech_base_dev_url}$": arguments.get('dev_url'),
+        "${jtech_base_prod_url}$": arguments.get('prod_url'),
+        "${jtech_base_description}$": arguments.get('description')
+    }
+    # 处理目录中的所有文件，替换占位符
+    for root, dirs, files in os.walk(arguments.get('project_dir')):
         for file in files:
             file_path = os.path.join(root, file)
             replace_placeholders_in_file(file_path, replacements)
 
 
-def execute_commands(project_dir):
-    """执行必要的命令"""
-    commands = [
-        ["flutter", "pub", "get"],
-        ["flutter", "pub", "add", "jtech_base"],
-        ["dart", "run", "build_runner", "build"]
-    ]
-
-    for cmd in commands:
-        print(f"\n执行命令: {' '.join(cmd)}")
-        try:
-            result = subprocess.run(cmd, cwd=project_dir, check=True, text=True, capture_output=True, shell=True)
-            print(result.stdout)
-        except subprocess.CalledProcessError as e:
-            print(f"命令执行失败: {e}")
-            print(e.stderr)
-            return False
-
-    return True
+def execute_init_commands():
+    """执行初始化命令"""
+    return all([
+        execute_flutter_command(["pub", "get"]),
+        execute_flutter_command(["pub", "add", "jtech_base"]),
+        execute_dart_command(["run", "build_runner", "build"])
+    ])
 
 
-def configure_platforms(project_dir, platforms):
-    """配置选定的平台"""
-    if not platforms:
+def configure_platforms():
+    """配置平台"""
+    if not arguments.get('platforms'):
         print("\n没有选择任何平台，跳过平台配置")
         return True
 
-    print("\n开始配置平台...")
-
-    for platform_name, config in platforms.items():
-        print(f"\n配置 {platform_name} 平台...")
-
+    project_dir = arguments.get('project_dir')
+    for platform_name, config in arguments.get('platforms').items():
+        print(f"\n*st:配置 {platform_name} 平台...")
         if platform_name == 'android':
             # 配置 Android 平台
             android_dir = os.path.join(project_dir, 'android')
             if not os.path.exists(android_dir):
-                print(f"创建 {platform_name} 平台...")
-                subprocess.run(
-                    ["flutter", "create", "--platforms=android", "--org", config['package_name'].rsplit('.', 1)[0],
-                     "."], cwd=project_dir, check=True, text=True, capture_output=True, shell=True)
-
-            # 修改 AndroidManifest.xml 中的 package
-            manifest_path = os.path.join(android_dir, 'app', 'src', 'main', 'AndroidManifest.xml')
-            if os.path.exists(manifest_path):
-                with open(manifest_path, 'r', encoding='utf-8') as file:
-                    content = file.read()
-
-                # 替换 package 属性
-                content = re.sub(r'package="[^"]+"', f'package="{config["package_name"]}"', content)
-
-                with open(manifest_path, 'w', encoding='utf-8') as file:
-                    file.write(content)
-
+                if not execute_flutter_command(
+                        ["create", "--platforms=android", "--org", config.get('package_name'), "."]):
+                    print(f"*fst:创建 {platform_name} 平台失败")
+                    continue
         elif platform_name == 'ios':
             # 配置 iOS 平台
             ios_dir = os.path.join(project_dir, 'ios')
             if not os.path.exists(ios_dir):
                 print(f"创建 {platform_name} 平台...")
-                subprocess.run(["flutter", "create", "--platforms=ios", "."], cwd=project_dir, check=True, text=True,
-                               capture_output=True, shell=True)
-
-            # 修改 Info.plist 中的 CFBundleIdentifier
-            info_plist_path = os.path.join(ios_dir, 'Runner', 'Info.plist')
-            if os.path.exists(info_plist_path):
-                with open(info_plist_path, 'r', encoding='utf-8') as file:
-                    content = file.read()
-
-                # 替换 CFBundleIdentifier
-                content = re.sub(r'<key>CFBundleIdentifier</key>\s*<string>[^<]+</string>',
-                                 f'<key>CFBundleIdentifier</key>\n\t<string>{config["bundle_id"]}</string>', content)
-
-                with open(info_plist_path, 'w', encoding='utf-8') as file:
-                    file.write(content)
-
-        elif platform_name == 'web':
-            # 配置 Web 平台
-            web_dir = os.path.join(project_dir, 'web')
-            if not os.path.exists(web_dir):
-                print(f"创建 {platform_name} 平台...")
-                subprocess.run(["flutter", "create", "--platforms=web", "."], cwd=project_dir, check=True, text=True,
-                               capture_output=True, shell=True)
-
-            # 修改 web/index.html 中的 title
-            index_path = os.path.join(web_dir, 'index.html')
-            if os.path.exists(index_path):
-                with open(index_path, 'r', encoding='utf-8') as file:
-                    content = file.read()
-
-                # 替换 title
-                content = re.sub(r'<title>[^<]+</title>', f'<title>{config.get("title", "Flutter App")}</title>',
-                                 content)
-
-                with open(index_path, 'w', encoding='utf-8') as file:
-                    file.write(content)
-
-            # 根据选择的渲染器更新项目
-            print(f"Web 平台使用 {config['web_renderer']} 渲染器")
-
-        elif platform_name == 'windows':
-            # 配置 Windows 平台
-            windows_dir = os.path.join(project_dir, 'windows')
-            if not os.path.exists(windows_dir):
-                print(f"创建 {platform_name} 平台...")
-                subprocess.run(["flutter", "create", "--platforms=windows", "."], cwd=project_dir, check=True,
-                               text=True,
-                               capture_output=True, shell=True)
-
-            # 配置 Windows 特定设置
-            print(f"Windows 平台配置完成")
-
+                if not execute_flutter_command(
+                        ["create", "--platforms=ios", "--org", config.get('bundle_id'), "."]):
+                    print(f"*fst:创建 {platform_name} 平台失败")
+                    continue
         elif platform_name == 'macos':
             # 配置 macOS 平台
             macos_dir = os.path.join(project_dir, 'macos')
             if not os.path.exists(macos_dir):
-                print(f"创建 {platform_name} 平台...")
-                subprocess.run(["flutter", "create", "--platforms=macos", "."], cwd=project_dir, check=True, text=True,
-                               capture_output=True, shell=True)
-
-            # 修改 Info.plist 中的 CFBundleIdentifier
-            info_plist_path = os.path.join(macos_dir, 'Runner', 'Info.plist')
-            if os.path.exists(info_plist_path):
-                with open(info_plist_path, 'r', encoding='utf-8') as file:
-                    content = file.read()
-
-                # 替换 CFBundleIdentifier
-                content = re.sub(r'<key>CFBundleIdentifier</key>\s*<string>[^<]+</string>',
-                                 f'<key>CFBundleIdentifier</key>\n\t<string>{config.get("bundle_id", "Flutter App")}</string>',
-                                 content)
-
-                with open(info_plist_path, 'w', encoding='utf-8') as file:
-                    file.write(content)
-
-            # 配置 macOS 特定设置
-            print(f"macOS 平台配置完成")
-
-        elif platform_name == 'linux':
-            # 配置 Linux 平台
-            linux_dir = os.path.join(project_dir, 'linux')
-            if not os.path.exists(linux_dir):
-                print(f"创建 {platform_name} 平台...")
-                subprocess.run(["flutter", "create", "--platforms=linux", "."], cwd=project_dir, check=True, text=True,
-                               capture_output=True, shell=True)
-
-            # 配置 Linux 特定设置
-            print(f"Linux 平台配置完成")
-
+                if not execute_flutter_command(
+                        ["create", "--platforms=macos", "--org", config.get('bundle_id'), "."]):
+                    print(f"*fst:创建 {platform_name} 平台失败")
+                    continue
+        else:
+            platform_dir = os.path.join(project_dir, platform_name)
+            if not os.path.exists(platform_dir):
+                if not execute_flutter_command(["create", "--platforms=" + platform_name, "."]):
+                    print(f"*fst:创建 {platform_name} 平台失败")
+                    continue
+        print(f"{platform_name} 平台配置完成！")
     return True
 
 
@@ -387,174 +405,73 @@ def open_directory(directory):
         return False
 
 
-def parse_arguments():
-    """解析命令行参数"""
-    parser = argparse.ArgumentParser(description="Flutter项目模板复制与配置工具")
-
-    # 必需参数
-    parser.add_argument("--project-name", required=True, type=validate_project_name,
-                        help="项目名称（必填，英文数字下划线）")
-    parser.add_argument("--dev-url", required=True, type=validate_api_url,
-                        help="开发接口地址（必填）")
-    parser.add_argument("--target-dir", required=True, type=validate_target_dir,
-                        help="目标目录路径（必填）")
-
-    # 可选参数
-    parser.add_argument("--app-name",
-                        help="应用名称（非必填，不填则与项目名一致）")
-    parser.add_argument("--db-name", type=validate_db_name,
-                        help="数据库名称（非必填，不填则与项目名一致）")
-    parser.add_argument("--prod-url", type=validate_api_url,
-                        help="生产接口地址（非必填，不填的话跟开发接口保持一致）")
-    parser.add_argument("--description", default="",
-                        help="项目描述（非必填，不填为空字符串）")
-    parser.add_argument("--platforms",
-                        help="要创建的平台，以逗号分隔 (例如: android,ios,web)")
-    parser.add_argument("--android-package",
-                        help="Android 包名 (例如: com.example.app)")
-    parser.add_argument("--android-language", choices=['kotlin', 'java'],
-                        help="Android 开发语言 (kotlin 或 java)")
-    parser.add_argument("--ios-bundle-id",
-                        help="iOS Bundle ID (例如: com.example.app)")
-    parser.add_argument("--ios-language", choices=['swift', 'objective-c'],
-                        help="iOS 开发语言 (swift 或 objective-c)")
-    parser.add_argument("--web-renderer", choices=['html', 'canvaskit'],
-                        help="Web 渲染器 (html 或 canvaskit)")
-    parser.add_argument("--no-open", action="store_true",
-                        help="完成后不打开项目目录")
-
-    return parser.parse_args()
-
-
 def main():
     """主函数"""
     print("=" * 50)
     print("Flutter项目模板复制与配置工具")
     print("=" * 50)
 
-    # 尝试解析命令行参数
     try:
-        args = parse_arguments()
-        # 如果提供了命令行参数，使用这些参数而不是用户输入
-        use_args = True
+        # 尝试解析命令行参数
+        parse_arguments()
     except SystemExit:
         # 如果参数解析失败，使用交互式输入
-        use_args = False
-
-    if use_args:
-        # 使用命令行参数
-        inputs = {
-            'project_name': args.project_name,
-            'app_name': args.app_name or args.project_name,
-            'db_name': args.db_name or args.project_name,
-            'dev_url': args.dev_url,
-            'prod_url': args.prod_url or args.dev_url,
-            'description': args.description,
-            'target_dir': args.target_dir,
-            'no_open': args.no_open
-        }
-
-        # 处理平台配置
-        platforms = {}
-        if args.platforms:
-            selected_platforms = [p.strip() for p in args.platforms.split(',')]
-
-            for platform_name in selected_platforms:
-                if platform_name == 'android' and (args.android_package or args.android_language):
-                    platforms['android'] = {
-                        'package_name': args.android_package or f"com.{args.project_name.lower()}.app",
-                        'language': args.android_language or 'kotlin'
-                    }
-                elif platform_name == 'ios' and (args.ios_bundle_id or args.ios_language):
-                    platforms['ios'] = {
-                        'bundle_id': args.ios_bundle_id or f"com.{args.project_name.lower()}.app",
-                        'language': args.ios_language or 'swift'
-                    }
-                elif platform_name == 'web' and args.web_renderer:
-                    platforms['web'] = {
-                        'web_renderer': args.web_renderer
-                    }
-                else:
-                    # 只添加平台但不配置特定参数
-                    platforms[platform_name] = {}
-
-        print("\n使用以下参数:")
-        for key, value in inputs.items():
-            if key != 'no_open':
-                print(f"{key}: {value}")
-
-        if platforms:
-            print("\n配置平台:")
-            for platform_name, config in platforms.items():
-                print(f"- {platform_name}: {config}")
-    else:
-        # 收集用户输入
-        inputs = get_user_input()
-        platforms = None
-
-    # 设置替换映射
-    replacements = {
-        "${jtech_base_project_name}$": inputs['project_name'],
-        "${jtech_base_app_name}$": inputs['app_name'],
-        "${jtech_base_db_name}$": inputs['db_name'],
-        "${jtech_base_dev_url}$": inputs['dev_url'],
-        "${jtech_base_prod_url}$": inputs['prod_url'],
-        "${jtech_base_description}$": inputs['description']
-    }
+        parse_user_input()
 
     # 模板源目录
-    current_dir = os.path.basename(os.getcwd())
-    if current_dir.lower() == "script":
-        template_dir = os.path.join(os.getcwd(), "..", ".template")
+    cwd = os.getcwd()
+    if os.path.basename(cwd).lower() == "script":
+        arguments["template_dir"] = os.path.join(cwd, "..", ".template")
+    elif os.path.basename(cwd).lower() == "dist":
+        arguments["template_dir"] = os.path.join(cwd, "..", "..", ".template")
     else:
-        template_dir = os.path.join(os.getcwd(), ".template")
+        arguments["template_dir"] = os.path.join(cwd, ".template")
 
     # 目标项目目录
-    target_project_dir = os.path.join(inputs['target_dir'], inputs['project_name'])
-
-    print(f"\n正在复制模板到 {target_project_dir}...")
+    arguments["project_dir"] = os.path.join(arguments.get('target_dir'), arguments.get('project_name'))
 
     try:
         # 复制模板目录到目标位置
-        shutil.copytree(template_dir, target_project_dir)
+        print(f"\n*st:正在复制模板到 {arguments.get('project_dir')}...")
+        shutil.copytree(arguments.get('template_dir'), arguments.get('project_dir'), dirs_exist_ok=True)
 
         # 替换文件中的占位符
-        print("\n正在替换文件中的占位符...")
-        process_directory(target_project_dir, replacements)
+        print("\n*st:正在替换文件中的占位符...")
+        replace_placeholders()
 
         # 执行必要的命令
-        print("\n正在执行初始化命令...")
-        if execute_commands(target_project_dir):
+        print("\n*st:正在执行初始化命令...")
+        if execute_init_commands():
             print("\n项目初始化完成！")
         else:
-            print("\n项目初始化过程中出现错误，请检查以上输出。")
+            print("\n*fst:项目初始化过程中出现错误，请检查以上输出。")
 
         # 收集平台配置信息（如果尚未收集）
-        if not platforms:
+        if not arguments.get('platforms'):
             print("\n接下来配置平台...")
-            platforms = get_platform_config()
+            parse_user_input_platform_config()
 
         # 配置平台
-        if platforms:
-            if configure_platforms(target_project_dir, platforms):
-                print("\n平台配置完成！")
-            else:
-                print("\n平台配置过程中出现错误，请检查以上输出。")
+        print("\n*st:开始配置平台信息")
+        if configure_platforms():
+            print("\n平台配置完成！")
+        else:
+            print("\n*fst:平台配置过程中出现错误，请检查以上输出。")
 
         # 询问是否打开项目目录，除非通过命令行指定不打开
-        if not use_args or not inputs.get('no_open', False):
+        if not arguments.get('open_when_finish'):
+            print("\n*st:打开项目目录")
+            open_directory(arguments.get('project_dir'))
+        else:
             open_dir = input("\n是否打开项目目录？(y/n): ").strip().lower()
             if open_dir == 'y':
-                open_directory(target_project_dir)
-                print(f"已打开项目目录: {target_project_dir}")
-        elif use_args and not inputs.get('no_open', False):
-            open_directory(target_project_dir)
-            print(f"已打开项目目录: {target_project_dir}")
+                open_directory(arguments.get('project_dir'))
+                print(f"已打开项目目录: {arguments.get('project_dir')}")
 
-        print("\n感谢使用！")
+        print("\n创建完成！")
 
     except Exception as e:
-        print(f"发生错误: {e}")
+        print(f"*fst:发生错误: {e}")
         sys.exit(1)
 
 
