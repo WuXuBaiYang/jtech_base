@@ -93,7 +93,7 @@ def parse_arguments():
     arguments['prod_url'] = args.prod_url or args.dev_url
     arguments['description'] = args.description
     arguments['target_dir'] = args.target_dir
-    arguments['open_when_finish'] = args.open_when_finish or True
+    arguments['open_when_finish'] = args.open_when_finish
     # 处理平台配置
     if args.platforms:
         selected_platforms = [p.strip() for p in args.platforms.split(',')]
