@@ -1,3 +1,4 @@
+import io
 import os
 import re
 import shutil
@@ -408,6 +409,7 @@ def open_directory(directory):
 
 
 def main():
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
     """主函数"""
     print("=" * 50)
     print("Flutter项目模板复制与配置工具")
