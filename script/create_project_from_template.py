@@ -194,7 +194,7 @@ def parse_user_input():
 
 def parse_user_input_platform_config():
     """收集平台配置信息"""
-    print("\n请选择要创建的平台:")
+    print("请选择要创建的平台:")
     print("1. Android")
     print("2. iOS")
     print("3. Web")
@@ -230,7 +230,7 @@ def parse_user_input_platform_config():
     # 收集每个平台的配置
     for platform_name in selected_platforms:
         if platform_name == 'android':
-            print(f"\n配置 {platform_name} 平台:")
+            print(f"配置 {platform_name} 平台:")
             package_name = input("请输入包名 (例如: com.example.app): ").strip()
             while not re.match(r'^[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z][a-zA-Z0-9_]*)*$', package_name):
                 print("包名格式不正确，请使用类似 com.example.app 的格式")
@@ -241,7 +241,7 @@ def parse_user_input_platform_config():
             }
 
         elif platform_name == 'ios' or platform_name == 'macos':
-            print(f"\n配置 {platform_name} 平台:")
+            print(f"配置 {platform_name} 平台:")
             bundle_id = input("请输入 Bundle ID (例如: com.example.app): ").strip()
             while not re.match(r'^[a-zA-Z][a-zA-Z0-9_]*(?:\.[a-zA-Z][a-zA-Z0-9_]*)*$', bundle_id):
                 print("Bundle ID 格式不正确，请使用类似 com.example.app 的格式")
@@ -262,7 +262,7 @@ def read_stream(stream, _):
 
 def execute_command(command):
     """执行命令（在项目下）"""
-    print(f"\n执行命令: {' '.join(command)}")
+    print(f"执行命令: {' '.join(command)}")
     try:
         process = subprocess.Popen(command, cwd=arguments.get('project_dir'),
                                    shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=-1)
@@ -351,12 +351,12 @@ def execute_init_commands():
 def configure_platforms():
     """配置平台"""
     if not arguments.get('platforms'):
-        print("\n没有选择任何平台，跳过平台配置")
+        print("没有选择任何平台，跳过平台配置")
         return True
 
     project_dir = arguments.get('project_dir')
     for platform_name, config in arguments.get('platforms').items():
-        print(f"\n*st:配置 {platform_name} 平台...")
+        print(f"*st:配置 {platform_name} 平台...")
         if platform_name == 'android':
             # 配置 Android 平台
             android_dir = os.path.join(project_dir, 'android')
@@ -432,45 +432,45 @@ def main():
 
     try:
         # 复制模板目录到目标位置
-        print(f"\n*st:正在复制模板到 {arguments.get('project_dir')}...")
+        print(f"*st:正在复制模板到 {arguments.get('project_dir')}...")
         shutil.copytree(arguments.get('template_dir'), arguments.get('project_dir'), dirs_exist_ok=True)
 
         # 替换文件中的占位符
-        print("\n*st:正在替换文件中的占位符...")
+        print("*st:正在替换文件中的占位符...")
         replace_placeholders()
 
         # 执行必要的命令
-        print("\n*st:正在执行初始化命令...")
+        print("*st:正在执行初始化命令...")
         if execute_init_commands():
-            print("\n项目初始化完成！")
+            print("项目初始化完成！")
         else:
-            print("\n*fst:项目初始化过程中出现错误，请检查以上输出。")
+            print("*fst:项目初始化过程中出现错误，请检查以上输出。")
 
         # 收集平台配置信息（如果尚未收集）
         if not arguments.get('platforms'):
-            print("\n接下来配置平台...")
+            print("接下来配置平台...")
             parse_user_input_platform_config()
 
         # 配置平台
-        print("\n*st:开始配置平台信息")
+        print("*st:开始配置平台信息")
         if configure_platforms():
-            print("\n平台配置完成！")
+            print("平台配置完成！")
         else:
-            print("\n*fst:平台配置过程中出现错误，请检查以上输出。")
+            print("*fst:平台配置过程中出现错误，请检查以上输出。")
 
         # 询问是否打开项目目录，除非通过命令行指定不打开
         open_dir = arguments.get('open_when_finish')
         if open_dir is not None:
             if open_dir:
-                print("\n*st:打开项目目录")
+                print("*st:打开项目目录")
                 open_directory(arguments.get('project_dir'))
         else:
-            open_dir = input("\n是否打开项目目录？(y/n): ").strip().lower()
+            open_dir = input("是否打开项目目录？(y/n): ").strip().lower()
             if open_dir == 'y':
                 open_directory(arguments.get('project_dir'))
                 print(f"已打开项目目录: {arguments.get('project_dir')}")
 
-        print("\n创建完成！")
+        print("创建完成！")
 
     except Exception as e:
         print(f"*fst:发生错误: {e}")
