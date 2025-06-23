@@ -13,12 +13,16 @@ class LoadingOverlay extends StatelessWidget {
   // 进度流
   final Stream<double>? progressStream;
 
+  // 提示文本流
+  final Stream<String>? hintStream;
+
   // 样式
   final LoadingOverlayStyle? style;
 
   const LoadingOverlay({
     super.key,
     this.style,
+    this.hintStream,
     this.progressStream,
   });
 
@@ -33,7 +37,14 @@ class LoadingOverlay extends StatelessWidget {
       decoration: boxDecoration,
       alignment: Alignment.center,
       constraints: style.constraints,
-      child: _buildLoading(context, style),
+      child: Column(
+        spacing: style.space,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildLoading(context, style),
+          if (hintStream != null) _buildHint(context, style),
+        ],
+      ),
     );
   }
 
@@ -57,6 +68,22 @@ class LoadingOverlay extends StatelessWidget {
             color: style.loadingColor,
           ),
         );
+      },
+    );
+  }
+
+  // 构建加载提示
+  Widget _buildHint(BuildContext context, LoadingOverlayStyle style) {
+    final hintStyle =
+        style.hintStyle ??
+        Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        );
+    return StreamBuilder<String>(
+      stream: hintStream,
+      builder: (_, snap) {
+        final hint = snap.data ?? '';
+        return Text(hint, style: hintStyle, textAlign: TextAlign.center);
       },
     );
   }
@@ -86,7 +113,15 @@ class LoadingOverlayStyle {
   // 圆角
   final BorderRadius borderRadius;
 
+  // 提示文本样式
+  final TextStyle? hintStyle;
+
+  // 与加载元素间距
+  final double space;
+
   const LoadingOverlayStyle({
+    this.hintStyle,
+    this.space = 14,
     this.loadingColor,
     this.backgroundColor,
     this.loadingSize = 48,
@@ -102,6 +137,8 @@ class LoadingOverlayStyle {
     int? loadingIndex,
     BorderRadius? borderRadius,
     BoxConstraints? constraints,
+    TextStyle? hintStyle,
+    double? space,
   }) {
     return LoadingOverlayStyle(
       loadingColor: loadingColor ?? this.loadingColor,
@@ -110,21 +147,30 @@ class LoadingOverlayStyle {
       loadingIndex: loadingIndex ?? this.loadingIndex,
       borderRadius: borderRadius ?? this.borderRadius,
       constraints: constraints ?? this.constraints,
+      hintStyle: hintStyle ?? this.hintStyle,
+      space: space ?? this.space,
     );
   }
 
   static LoadingOverlayStyle lerp(
-      LoadingOverlayStyle? a, LoadingOverlayStyle? b, double t) {
+    LoadingOverlayStyle? a,
+    LoadingOverlayStyle? b,
+    double t,
+  ) {
     if (a == null && b == null) return LoadingOverlayStyle();
     return LoadingOverlayStyle(
       loadingColor: Color.lerp(a?.loadingColor, b?.loadingColor, t),
       backgroundColor: Color.lerp(a?.backgroundColor, b?.backgroundColor, t),
       loadingSize: lerpDouble(a?.loadingSize, b?.loadingSize, t) ?? 48,
       loadingIndex: t < 0.5 ? a?.loadingIndex ?? -1 : b?.loadingIndex ?? -1,
-      borderRadius: BorderRadius.lerp(a?.borderRadius, b?.borderRadius, t) ??
+      borderRadius:
+          BorderRadius.lerp(a?.borderRadius, b?.borderRadius, t) ??
           const BorderRadius.all(Radius.circular(14)),
-      constraints: BoxConstraints.lerp(a?.constraints, b?.constraints, t) ??
+      constraints:
+          BoxConstraints.lerp(a?.constraints, b?.constraints, t) ??
           const BoxConstraints.tightFor(width: 80, height: 80),
+      hintStyle: TextStyle.lerp(a?.hintStyle, b?.hintStyle, t),
+      space: lerpDouble(a?.space, b?.space, t) ?? 14,
     );
   }
 
@@ -138,15 +184,19 @@ class LoadingOverlayStyle {
           loadingSize == other.loadingSize &&
           loadingIndex == other.loadingIndex &&
           borderRadius == other.borderRadius &&
-          constraints == other.constraints;
+          constraints == other.constraints &&
+          hintStyle == other.hintStyle &&
+          space == other.space;
 
   @override
   int get hashCode => Object.hashAll([
-        loadingColor,
-        backgroundColor,
-        loadingSize,
-        loadingIndex,
-        borderRadius,
-        constraints,
-      ]);
+    loadingColor,
+    backgroundColor,
+    loadingSize,
+    loadingIndex,
+    borderRadius,
+    constraints,
+    hintStyle,
+    space,
+  ]);
 }

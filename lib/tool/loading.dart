@@ -23,9 +23,10 @@ class Loading {
     Color? barrierColor,
     Curve? reverseCurve,
     Alignment? alignment,
-    Stream<double>? progressStream,
+    Stream<String>? hintStream,
     LoadingOverlayStyle? style,
     bool cancelWithAnime = false,
+    Stream<double>? progressStream,
   }) async {
     _customOverlay.cancelAll();
     key ??= DateTime.now().microsecondsSinceEpoch.toString();
@@ -49,6 +50,7 @@ class Loading {
           );
         },
         child: LoadingOverlay(
+          hintStream: hintStream,
           progressStream: progressStream,
           style: style ?? themeData.style,
         ),
@@ -74,21 +76,22 @@ extension FutureLoading<T> on Future<T> {
     bool? dismissible,
     Color? barrierColor,
     Curve? reverseCurve,
-    Stream<double>? progressStream,
+    Stream<String>? hintStream,
     LoadingOverlayStyle? style,
+    Stream<double>? progressStream,
     bool cancelWithAnime = false,
-  }) =>
-      Loading.show(
-        context,
-        curve: curve,
-        loadFuture: this,
-        style: style,
-        dismissible: dismissible,
-        reverseCurve: reverseCurve,
-        barrierColor: barrierColor,
-        progressStream: progressStream,
-        cancelWithAnime: cancelWithAnime,
-      );
+  }) => Loading.show(
+    context,
+    curve: curve,
+    loadFuture: this,
+    style: style,
+    hintStream: hintStream,
+    dismissible: dismissible,
+    reverseCurve: reverseCurve,
+    barrierColor: barrierColor,
+    progressStream: progressStream,
+    cancelWithAnime: cancelWithAnime,
+  );
 }
 
 /*
@@ -139,18 +142,20 @@ class LoadingThemeData {
     Curve? curve,
     Curve? reverseCurve,
     LoadingOverlayStyle? style,
-  }) =>
-      LoadingThemeData(
-        dismissible: dismissible ?? this.dismissible,
-        barrierColor: barrierColor ?? this.barrierColor,
-        alignment: alignment ?? this.alignment,
-        curve: curve ?? this.curve,
-        reverseCurve: reverseCurve ?? this.reverseCurve,
-        style: style ?? this.style,
-      );
+  }) => LoadingThemeData(
+    dismissible: dismissible ?? this.dismissible,
+    barrierColor: barrierColor ?? this.barrierColor,
+    alignment: alignment ?? this.alignment,
+    curve: curve ?? this.curve,
+    reverseCurve: reverseCurve ?? this.reverseCurve,
+    style: style ?? this.style,
+  );
 
   static LoadingThemeData lerp(
-      LoadingThemeData? a, LoadingThemeData? b, double t) {
+    LoadingThemeData? a,
+    LoadingThemeData? b,
+    double t,
+  ) {
     if (a == null && b == null) return LoadingThemeData();
     return LoadingThemeData(
       dismissible: t < 0.5 ? a?.dismissible ?? true : b?.dismissible ?? true,
@@ -158,8 +163,9 @@ class LoadingThemeData {
           Color.lerp(a?.barrierColor, b?.barrierColor, t) ?? Colors.black38,
       alignment:
           Alignment.lerp(a?.alignment, b?.alignment, t) ?? Alignment.center,
-      curve:
-          t < 0.5 ? a?.curve ?? Curves.easeInOut : b?.curve ?? Curves.easeInOut,
+      curve: t < 0.5
+          ? a?.curve ?? Curves.easeInOut
+          : b?.curve ?? Curves.easeInOut,
       reverseCurve: t < 0.5
           ? a?.reverseCurve ?? Curves.easeInOutBack
           : b?.reverseCurve ?? Curves.easeInOutBack,
@@ -179,11 +185,11 @@ class LoadingThemeData {
 
   @override
   int get hashCode => Object.hashAll([
-        style,
-        dismissible,
-        barrierColor,
-        alignment,
-        curve,
-        reverseCurve,
-      ]);
+    style,
+    dismissible,
+    barrierColor,
+    alignment,
+    curve,
+    reverseCurve,
+  ]);
 }
