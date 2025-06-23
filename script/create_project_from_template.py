@@ -1,4 +1,3 @@
-import io
 import os
 import re
 import shutil
@@ -409,11 +408,8 @@ def open_directory(directory):
 
 
 def main():
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
     """主函数"""
-    print("=" * 50)
     print("Flutter项目模板复制与配置工具")
-    print("=" * 50)
 
     try:
         # 尝试解析命令行参数
@@ -482,4 +478,5 @@ def main():
 
 
 if __name__ == "__main__":
+    sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', buffering=1)
     main()
