@@ -83,7 +83,14 @@ class LoadingOverlay extends StatelessWidget {
       stream: hintStream,
       builder: (_, snap) {
         final hint = snap.data ?? '';
-        return Text(hint, style: hintStyle, textAlign: TextAlign.center);
+        return Text(
+          hint,
+          softWrap: true,
+          style: hintStyle,
+          textAlign: TextAlign.center,
+          maxLines: style.hintMaxLines,
+          overflow: TextOverflow.ellipsis,
+        );
       },
     );
   }
@@ -119,11 +126,15 @@ class LoadingOverlayStyle {
   // 与加载元素间距
   final double space;
 
+  // 提示文本最大行数
+  final int hintMaxLines;
+
   const LoadingOverlayStyle({
     this.hintStyle,
     this.space = 14,
     this.loadingColor,
     this.backgroundColor,
+    this.hintMaxLines = 1,
     this.loadingSize = 48,
     this.loadingIndex = -1,
     this.borderRadius = const BorderRadius.all(Radius.circular(14)),
@@ -139,6 +150,7 @@ class LoadingOverlayStyle {
     BoxConstraints? constraints,
     TextStyle? hintStyle,
     double? space,
+    int? hintMaxLines,
   }) {
     return LoadingOverlayStyle(
       loadingColor: loadingColor ?? this.loadingColor,
@@ -149,6 +161,7 @@ class LoadingOverlayStyle {
       constraints: constraints ?? this.constraints,
       hintStyle: hintStyle ?? this.hintStyle,
       space: space ?? this.space,
+      hintMaxLines: hintMaxLines ?? this.hintMaxLines,
     );
   }
 
@@ -171,6 +184,7 @@ class LoadingOverlayStyle {
           const BoxConstraints.tightFor(width: 80, height: 80),
       hintStyle: TextStyle.lerp(a?.hintStyle, b?.hintStyle, t),
       space: lerpDouble(a?.space, b?.space, t) ?? 14,
+      hintMaxLines: b?.hintMaxLines ?? 1,
     );
   }
 
@@ -186,7 +200,8 @@ class LoadingOverlayStyle {
           borderRadius == other.borderRadius &&
           constraints == other.constraints &&
           hintStyle == other.hintStyle &&
-          space == other.space;
+          space == other.space &&
+          hintMaxLines == other.hintMaxLines;
 
   @override
   int get hashCode => Object.hashAll([
@@ -198,5 +213,6 @@ class LoadingOverlayStyle {
     constraints,
     hintStyle,
     space,
+    hintMaxLines,
   ]);
 }
