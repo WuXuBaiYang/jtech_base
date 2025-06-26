@@ -90,8 +90,8 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
 
   // 创建本页面选择器
   Widget createSelector<S>({
-    required ValueWidgetBuilder<S> builder,
     required ProviderSelector<S, T> selector,
+    required ValueWidgetBuilder<S> builder,
     ShouldRebuild<S>? shouldRebuild,
     Widget? child,
   }) {
@@ -105,8 +105,8 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
 
   // 创建双元素选择器
   Widget createSelector2<S1, S2>({
-    required SelectorBuilder2<S1, S2, T> builder,
     required ProviderSelector2<S1, S2, T> selector,
+    required SelectorBuilder2<S1, S2, T> builder,
     ShouldRebuild<(S1, S2)>? shouldRebuild,
     Widget? child,
   }) {
@@ -122,8 +122,8 @@ abstract class ProviderView<T extends BaseProvider> extends StatelessWidget {
 
   // 创建三元素选择器
   Widget createSelector3<S1, S2, S3>({
-    required SelectorBuilder3<S1, S2, S3, T> builder,
     required ProviderSelector3<S1, S2, S3, T> selector,
+    required SelectorBuilder3<S1, S2, S3, T> builder,
     ShouldRebuild<(S1, S2, S3)>? shouldRebuild,
     Widget? child,
   }) {
