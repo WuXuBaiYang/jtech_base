@@ -24,12 +24,12 @@ abstract class BaseAPI {
   }) : _dio = Dio(
           BaseOptions(
             baseUrl: baseUrl,
-            queryParameters: parameters,
             headers: headers,
-            connectTimeout: connectTimeout,
-            receiveTimeout: receiveTimeout,
             sendTimeout: sendTimeout,
             maxRedirects: maxRedirects,
+            queryParameters: parameters,
+            connectTimeout: connectTimeout,
+            receiveTimeout: receiveTimeout,
           ),
         )..interceptors.addAll([...interceptors]);
 
