@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /*
@@ -73,7 +74,9 @@ class LocalCache {
       if (!_check(key)) return null;
       final json = sp.getString(key);
       if (json != null) return jsonDecode(json) as T;
-    } catch (_) {}
+    } catch (e) {
+      if (kDebugMode) print('getJson $key error:${e.toString()}');
+    }
     return null;
   }
 
@@ -84,8 +87,11 @@ class LocalCache {
   }
 
   // 设置double类型
-  Future<bool> setDouble(String key, double value,
-      {Duration? expiration}) async {
+  Future<bool> setDouble(
+    String key,
+    double value, {
+    Duration? expiration,
+  }) async {
     if (!await _setExpiration(key, expiration)) return false;
     return sp.setDouble(key, value);
   }
@@ -97,15 +103,21 @@ class LocalCache {
   }
 
   // 设置string类型
-  Future<bool> setString(String key, String value,
-      {Duration? expiration}) async {
+  Future<bool> setString(
+    String key,
+    String value, {
+    Duration? expiration,
+  }) async {
     if (!await _setExpiration(key, expiration)) return false;
     return sp.setString(key, value);
   }
 
   // 设置List<string>类型
-  Future<bool> setStringList(String key, List<String> value,
-      {Duration? expiration}) async {
+  Future<bool> setStringList(
+    String key,
+    List<String> value, {
+    Duration? expiration,
+  }) async {
     if (!await _setExpiration(key, expiration)) return false;
     return sp.setStringList(key, value);
   }
@@ -115,8 +127,9 @@ class LocalCache {
     try {
       if (!await _setExpiration(key, expiration)) return false;
       return sp.setString(key, jsonEncode(json));
-    } catch (_) {
+    } catch (e) {
       await _removeExpiration(key);
+      if (kDebugMode) print('setJson $key error:${e.toString()}');
     }
     return false;
   }
