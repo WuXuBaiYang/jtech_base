@@ -1,6 +1,6 @@
 name: jtech_base
 description: "jtech project base library"
-version: 0.6.6+6
+version: 0.6.7+7
 homepage: https://www.jtech.com
 
 environment:
@@ -10,14 +10,14 @@ dependencies:
   flutter:
     sdk: flutter
 
-  dio: ^5.8.0+1
   path: ^1.9.1
+  dio: ^5.8.0+1
   intl: ^0.20.2
-  logger: ^2.5.0
+  logger: ^2.6.0
   crypto: ^3.0.6
   provider: ^6.1.5
   objectbox: ^4.3.0
-  go_router: ^15.2.3
+  go_router: ^16.0.0
   http_parser: ^4.1.2
   file_picker: ^10.2.0
   easy_refresh: ^3.4.0
@@ -27,8 +27,8 @@ dependencies:
   flex_color_scheme: ^8.2.0
   package_info_plus: ^8.3.0
   shared_preferences: ^2.5.3
+  permission_handler: ^12.0.1
   cached_network_image: ^3.4.1
-  permission_handler: ^12.0.0+1
   flutter_cache_manager: ^3.4.1
   objectbox_flutter_libs: ^4.3.0
   loading_animation_widget: ^1.3.0
