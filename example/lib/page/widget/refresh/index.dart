@@ -11,20 +11,37 @@ class WidgetRefreshPage extends ProviderPage<WidgetRefreshProvider> {
 
   @override
   WidgetRefreshProvider createPageProvider(
-          BuildContext context, GoRouterState? state) =>
-      WidgetRefreshProvider(context, state);
+    BuildContext context,
+    GoRouterState? state,
+  ) => WidgetRefreshProvider(context, state);
 
   @override
   Widget buildWidget(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('组件-列表刷新'),
+      appBar: AppBar(title: const Text('组件-列表刷新')),
+      body: CustomRefreshView(
+        controller: provider.controller,
+        onRefreshLoad: provider.loadMore,
+        builder: (_, data, _) {
+          return ListView.builder(
+            itemCount: data.length,
+            itemBuilder: (_, index) =>
+                ListTile(title: Text('数据${data[index]}')),
+          );
+        },
       ),
     );
   }
 }
 
-
 class WidgetRefreshProvider extends PageProvider {
+  // 控制器
+  final controller = CustomRefreshController.empty();
+
   WidgetRefreshProvider(super.context, super.state);
+
+  void loadMore(bool loadMore) async {
+    await Future.delayed(const Duration(seconds: 1));
+    controller.finish(List.generate(40, (i) => i), loadMore);
+  }
 }

@@ -52,8 +52,12 @@ class CustomRefreshView<T> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeData = CustomRefreshThemeData.of(context);
-    final footer = this.footer ?? themeData.footer;
-    final header = this.header ?? themeData.header;
+    // 获取当前区域
+    final local = Localizations.localeOf(context);
+    final footer =
+        this.footer ?? themeData.footer ?? _createDefaultFooter(local);
+    final header =
+        this.header ?? themeData.header ?? _createDefaultHeader(local);
     final onLoad = enableLoad ? () => onRefreshLoad?.call(true) : null;
     final onRefresh = enableRefresh ? () => onRefreshLoad?.call(false) : null;
     return EasyRefresh(
@@ -280,4 +284,34 @@ class CustomRefreshThemeData {
 
   @override
   int get hashCode => Object.hashAll([header, footer]);
+}
+
+// 默认刷新头
+Header _createDefaultHeader(Locale local) {
+  if (local.languageCode != 'zh') return ClassicHeader();
+  return ClassicHeader(
+    dragText: '下拉刷新',
+    armedText: '松开刷新',
+    readyText: '刷新中...',
+    processingText: '刷新中...',
+    processedText: '刷新成功',
+    noMoreText: '没有更多数据',
+    failedText: '刷新失败',
+    messageText: '最后更新时间 %T',
+  );
+}
+
+// 默认刷新脚
+Footer _createDefaultFooter(Locale local) {
+  if (local.languageCode != 'zh') return ClassicFooter();
+  return ClassicFooter(
+    dragText: '上拉加载',
+    armedText: '松开加载',
+    readyText: '加载中...',
+    processingText: '加载中...',
+    processedText: '加载成功',
+    noMoreText: '没有更多数据',
+    failedText: '加载失败',
+    messageText: '最后更新时间 %T',
+  );
 }
