@@ -1,6 +1,6 @@
 name: jtech_base
 description: "jtech project base library"
-version: 0.6.9+9
+version: 0.7.0+0
 homepage: https://www.jtech.com
 
 environment:
@@ -13,7 +13,7 @@ dependencies:
   path: ^1.9.1
   dio: ^5.8.0+1
   intl: ^0.20.2
-  logger: ^2.6.0
+  logger: ^2.6.1
   crypto: ^3.0.6
   provider: ^6.1.5
   objectbox: ^4.3.0

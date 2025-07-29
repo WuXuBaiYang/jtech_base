@@ -164,12 +164,10 @@ class CustomRefreshController<T>
     final loadStatus = loadMore || (!loadMore && data.isNotEmpty)
         ? LoadStatus.success
         : LoadStatus.noData;
-    if (loadMore) {
-      _controller.finishLoad(indicatorResult, true);
-      return _update(data: value.data + data, loadStatus: loadStatus);
-    }
-    _controller.finishRefresh(indicatorResult, true);
-    return _update(data: data, loadStatus: loadStatus);
+    if (!loadMore) _controller.finishRefresh(indicatorResult, true);
+    _controller.finishLoad(indicatorResult, true);
+    return _update(
+        data: loadMore ? value.data + data : data, loadStatus: loadStatus);
   }
 
   // 异常结束刷新/加载
