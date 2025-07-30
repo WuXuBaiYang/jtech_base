@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:example/common/router.dart';
 import 'package:example/page/home/view.dart';
 import 'package:flutter/material.dart';
@@ -24,27 +22,6 @@ class HomePage extends ProviderPage<HomePageProvider> {
     return Scaffold(
       body: _buildContent(context),
       bottomNavigationBar: _buildNavigationBar(context),
-      floatingActionButton: FloatingActionButton(
-        child: Text('Test'),
-        onPressed: () {
-          final c = StreamController<String>.broadcast();
-          Timer.periodic(Duration(milliseconds: 500), (t) {
-            if (t.tick >= 100) return t.cancel();
-            c.add('测试消息------------------${t.tick}');
-          });
-          Future.delayed(Duration(seconds: 50)).loading(
-            context,
-            hintStream: c.stream,
-            style: LoadingOverlayStyle(
-              constraints: BoxConstraints(
-                minWidth: 80,
-                maxWidth: 180,
-                maxHeight: 120,
-              ),
-            ),
-          );
-        },
-      ),
     );
   }
 

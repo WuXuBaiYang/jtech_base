@@ -64,9 +64,9 @@ class CustomRefreshView<T> extends StatelessWidget {
       header: header,
       footer: footer,
       onRefresh: onRefresh,
-      canLoadAfterNoMore: true,
-      canRefreshAfterNoMore: true,
+      // canLoadAfterNoMore: false,
       refreshOnStart: initRefresh,
+      canRefreshAfterNoMore: true,
       controller: controller._controller,
       child: _buildContent(context, themeData),
     );
@@ -164,18 +164,25 @@ class CustomRefreshController<T>
     final loadStatus = loadMore || (!loadMore && data.isNotEmpty)
         ? LoadStatus.success
         : LoadStatus.noData;
-    if (!loadMore) _controller.finishRefresh(indicatorResult, true);
-    _controller.finishLoad(indicatorResult, true);
+    _finish(indicatorResult);
     return _update(
-        data: loadMore ? value.data + data : data, loadStatus: loadStatus);
+      data: loadMore ? value.data + data : data,
+      loadStatus: loadStatus,
+    );
   }
 
   // 异常结束刷新/加载
   void finishWithError() {
-    if (value.data.isNotEmpty) return;
+    _finish(IndicatorResult.fail);
     _update(loadStatus: LoadStatus.fail);
-    _controller.finishLoad(IndicatorResult.fail, true);
-    _controller.finishRefresh(IndicatorResult.fail, true);
+  }
+
+  // 结束刷新
+  void _finish(IndicatorResult indicatorResult) {
+    _controller.finishRefresh(indicatorResult);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _controller.finishLoad(indicatorResult);
+    });
   }
 
   // 更新条件对象

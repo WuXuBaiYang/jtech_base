@@ -116,46 +116,46 @@ class Router extends BaseRouter {
   void goHome() => go('/');
 
   // 跳转模块-数据库操作
-  void goModuleDatabase() => go('/module/database');
+  void goModuleDatabase() => push('/module/database');
 
   // 跳转模块-网络请求
-  void goModuleApi() => go('/module/api');
+  void goModuleApi() => push('/module/api');
 
   // 跳转模块-应用配置/缓存
-  void goModuleConfig() => go('/module/config');
+  void goModuleConfig() => push('/module/config');
 
   // 跳转模块-主题样式
-  void goModuleTheme() => go('/module/theme');
+  void goModuleTheme() => push('/module/theme');
 
   // 跳转模块-路由管理
-  void goModuleRouter() => go('/module/router');
+  void goModuleRouter() => push('/module/router');
 
   // 跳转组件-列表刷新组件
-  void goWidgetRefresh() => go('/widget/refresh');
+  void goWidgetRefresh() => push('/widget/refresh');
 
   // 跳转组件-状态/异步状态构造器
-  void goWidgetLoadStatus() => go('/widget/loadStatus');
+  void goWidgetLoadStatus() => push('/widget/loadStatus');
 
   // 跳转组件-异步加载弹层、消息提示
-  void goWidgetNotice() => go('/widget/notice');
+  void goWidgetNotice() => push('/widget/notice');
 
   // 跳转组件-其他组件
-  void goWidgetOther() => go('/widget/other');
+  void goWidgetOther() => push('/widget/other');
 
   // 跳转工具-日期时间工具
-  void goToolDate() => go('/tool/date');
+  void goToolDate() => push('/tool/date');
 
   // 跳转工具-防抖、节流
-  void goToolDebounce() => go('/tool/debounce');
+  void goToolDebounce() => push('/tool/debounce');
 
   // 跳转工具-日志工具
-  void goToolLog() => go('/tool/log');
+  void goToolLog() => push('/tool/log');
 
   // 跳转工具-文件管理工具、文件选择、路径选择
-  void goToolFile() => go('/tool/file');
+  void goToolFile() => push('/tool/file');
 
   // 跳转工具-其他
-  void goToolOther() => go('/tool/other');
+  void goToolOther() => push('/tool/other');
 }
 
 // 全局单例

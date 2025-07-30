@@ -42,6 +42,6 @@ class WidgetRefreshProvider extends PageProvider {
 
   void loadMore(bool loadMore) async {
     await Future.delayed(const Duration(seconds: 1));
-    controller.finish(List.generate(40, (i) => i), loadMore);
+    controller.finish(List.generate(!loadMore ? 30 : 10, (i) => i), loadMore);
   }
 }

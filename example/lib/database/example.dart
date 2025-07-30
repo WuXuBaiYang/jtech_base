@@ -1,6 +1,6 @@
 import 'dart:async';
-import 'package:jtech_base/jtech_base.dart';
 import 'package:example/objectbox.g.dart';
+import 'package:jtech_base/jtech_base.dart';
 import 'model/example.dart';
 
 /// 数据库操作用例（可以按业务分成多个文件，添加到 Database 中）
