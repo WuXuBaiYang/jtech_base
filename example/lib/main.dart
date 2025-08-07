@@ -39,6 +39,11 @@ class MyApp extends ProviderView {
           darkTheme: theme.darkThemeData,
           debugShowCheckedModeBanner: false,
           routerConfig: router.createRouter(),
+          locale: const Locale('zh', 'CN'),
+          supportedLocales: const [
+            Locale('zh', 'CN'),
+            Locale('en', 'US'),
+          ],
           localizationsDelegates: const [
             GlobalWidgetsLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,

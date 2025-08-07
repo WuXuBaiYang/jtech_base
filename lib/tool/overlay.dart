@@ -18,14 +18,14 @@ class CustomOverlay {
 
   CustomOverlay({
     int maxCount = 999,
-  })  : assert(maxCount >= 1, 'maxCount must be greater than 0'),
+  })
+      : assert(maxCount >= 1, 'maxCount must be greater than 0'),
         _maxCount = maxCount;
 
   CustomOverlay.single() : _maxCount = 1;
 
   // 插入弹层
-  Future<T?> insert<T>(
-    BuildContext context, {
+  Future<T?> insert<T>(BuildContext context, {
     required AnimatedTransitionBuilder builder,
     String? key,
     Widget? child,
@@ -47,7 +47,10 @@ class CustomOverlay {
     OverlayEntry? overlayEntry;
     token ??= CustomOverlayToken<T>();
     final overlayState = Overlay.of(context);
-    key ??= DateTime.now().microsecondsSinceEpoch.toString();
+    key ??= DateTime
+        .now()
+        .microsecondsSinceEpoch
+        .toString();
     final themeData = CustomOverlayThemeData.of(context);
     final animation = _OverlayAnimation(
         vsync: overlayState,
@@ -117,7 +120,7 @@ class CustomOverlay {
   bool _checkOverlayCount(bool replace) {
     if (_overlayTokens.length >= _maxCount) {
       if (!replace) return false;
-      cancel(_overlayTokens.keys.first);
+      cancel(_overlayTokens.keys.first, null, false);
     }
     return true;
   }
@@ -143,11 +146,12 @@ class _OverlayAnimation {
     double end = 1,
     double begin = 0,
     Duration duration = const Duration(milliseconds: 130),
-  })  : tween = Tween<double>(begin: begin, end: end),
+  })
+      : tween = Tween<double>(begin: begin, end: end),
         _barrierController =
-            AnimationController(vsync: vsync, duration: duration),
+        AnimationController(vsync: vsync, duration: duration),
         _overlayController =
-            AnimationController(vsync: vsync, duration: duration);
+        AnimationController(vsync: vsync, duration: duration);
 
   // 获取遮罩动画
   Animation<double> get barrier => tween.animate(_barrierController);
@@ -212,8 +216,7 @@ class _OverlayPop<T> implements PopEntry<T> {
   // 是否自动注册
   final bool autoRegister;
 
-  _OverlayPop(
-    this.context, {
+  _OverlayPop(this.context, {
     required this.overlayKey,
     this.onPop,
     this.onDidPop,
@@ -293,7 +296,9 @@ class CustomOverlayThemeData {
 
   // 获取通知主题
   static CustomOverlayThemeData? maybeOf(BuildContext context) =>
-      CustomTheme.maybeOf(context)?.customOverlayTheme;
+      CustomTheme
+          .maybeOf(context)
+          ?.customOverlayTheme;
 
   CustomOverlayThemeData copyWith({
     Duration? animationDuration,
@@ -303,23 +308,24 @@ class CustomOverlayThemeData {
     );
   }
 
-  static CustomOverlayThemeData lerp(
-      CustomOverlayThemeData? a, CustomOverlayThemeData? b, double t) {
+  static CustomOverlayThemeData lerp(CustomOverlayThemeData? a,
+      CustomOverlayThemeData? b, double t) {
     if (a == null && b == null) return CustomOverlayThemeData();
     return CustomOverlayThemeData(
       animationDuration:
-          (t >= 0.5 ? b?.animationDuration : a?.animationDuration) ??
-              const Duration(milliseconds: 130),
+      (t >= 0.5 ? b?.animationDuration : a?.animationDuration) ??
+          const Duration(milliseconds: 130),
     );
   }
 
   @override
   bool operator ==(Object other) =>
       other is CustomOverlayThemeData &&
-      other.animationDuration == animationDuration;
+          other.animationDuration == animationDuration;
 
   @override
-  int get hashCode => Object.hashAll([
+  int get hashCode =>
+      Object.hashAll([
         animationDuration,
       ]);
 }
