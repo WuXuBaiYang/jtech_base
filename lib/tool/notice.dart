@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:jtech_base/common/provider/provider.dart';
 import 'package:jtech_base/common/theme.dart';
 import 'package:jtech_base/widget/notice.dart';
 import 'overlay.dart';
@@ -12,7 +13,7 @@ import 'overlay.dart';
 */
 class Notice {
   // 弹层管理
-  static final _customOverlay = CustomOverlay();
+  static final _customOverlay = CustomOverlay.single();
 
   // 显示提示信息
   static Future<T?> show<T>(
@@ -33,10 +34,11 @@ class Notice {
     token ??= CustomOverlayToken<T>();
     final themeData = NoticeThemeData.of(context);
     final noticeTimer = _NoticeTimer(
-        autoStart: true,
-        func: token.cancel,
-        duration: duration ?? themeData.duration,
-        isEffective: !(onGoing ?? themeData.onGoing));
+      autoStart: true,
+      func: token.cancel,
+      duration: duration ?? themeData.duration,
+      isEffective: !(onGoing ?? themeData.onGoing),
+    );
     return _customOverlay.insert<T>(
       context,
       key: key,
@@ -54,14 +56,17 @@ class Notice {
                 noticeTimer.pauseOrResume(details.progress > 0),
             key: ValueKey(DateTime.now().microsecondsSinceEpoch),
             child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, -1),
-                end: const Offset(0, 0),
-              ).animate(CurvedAnimation(
-                parent: animation,
-                curve: curve ?? themeData.curve,
-                reverseCurve: reverseCurve ?? themeData.reverseCurve,
-              )),
+              position:
+                  Tween<Offset>(
+                    begin: const Offset(0, -1),
+                    end: const Offset(0, 0),
+                  ).animate(
+                    CurvedAnimation(
+                      parent: animation,
+                      curve: curve ?? themeData.curve,
+                      reverseCurve: reverseCurve ?? themeData.reverseCurve,
+                    ),
+                  ),
               child: NoticeView(
                 title: title,
                 status: status,
@@ -234,12 +239,7 @@ class _NoticeTimer {
 }
 
 // 消息状态枚举
-enum NoticeStatus {
-  success,
-  error,
-  warning,
-  info,
-}
+enum NoticeStatus { success, error, warning, info }
 
 /*
 * 通知配置
@@ -301,7 +301,10 @@ class NoticeThemeData {
   }
 
   static NoticeThemeData lerp(
-      NoticeThemeData? a, NoticeThemeData? b, double t) {
+    NoticeThemeData? a,
+    NoticeThemeData? b,
+    double t,
+  ) {
     if (a == null && b == null) return NoticeThemeData();
     return NoticeThemeData(
       style: NoticeStyle.lerp(a?.style, b?.style, t),
@@ -312,9 +315,11 @@ class NoticeThemeData {
       reverseCurve: t < 0.5
           ? a?.reverseCurve ?? Curves.easeInOutBack
           : b?.reverseCurve ?? Curves.easeInOutBack,
-      duration: (t < 0.5 ? a?.duration : b?.duration) ??
+      duration:
+          (t < 0.5 ? a?.duration : b?.duration) ??
           const Duration(milliseconds: 1800),
-      animeDuration: (t < 0.5 ? a?.animeDuration : b?.animeDuration) ??
+      animeDuration:
+          (t < 0.5 ? a?.animeDuration : b?.animeDuration) ??
           const Duration(milliseconds: 240),
     );
   }
@@ -333,11 +338,126 @@ class NoticeThemeData {
 
   @override
   int get hashCode => Object.hashAll([
-        style,
-        onGoing,
-        curve,
-        reverseCurve,
-        duration,
-        animeDuration,
-      ]);
+    style,
+    onGoing,
+    curve,
+    reverseCurve,
+    duration,
+    animeDuration,
+  ]);
+}
+
+// 扩展baseProvider到消息通知
+extension NoticeExtension on BaseProvider {
+  // 展示notice
+  Future<T?> showNoticeInfo<T>(
+    String message, {
+    String? key,
+    Curve? curve,
+    bool? onGoing,
+    String? title,
+    Curve? reverseCurve,
+    NoticeStyle? style,
+    CustomOverlayToken<T>? token,
+    List<Widget> actions = const [],
+  }) async {
+    if (!context.mounted) return null;
+    token ??= CustomOverlayToken<T>();
+    return Notice.showInfo<T>(
+      context,
+      key: key,
+      curve: curve,
+      title: title,
+      token: token,
+      message: message,
+      onGoing: onGoing,
+      actions: actions,
+      style: style,
+      reverseCurve: reverseCurve,
+    );
+  }
+
+  // 展示notice
+  Future<T?> showNoticeError<T>(
+    String message, {
+    String? key,
+    Curve? curve,
+    bool? onGoing,
+    String? title,
+    Curve? reverseCurve,
+    NoticeStyle? style,
+    CustomOverlayToken<T>? token,
+    List<Widget> actions = const [],
+  }) async {
+    if (!context.mounted) return null;
+    token ??= CustomOverlayToken<T>();
+    return Notice.showError<T>(
+      context,
+      key: key,
+      curve: curve,
+      title: title,
+      token: token,
+      message: message,
+      onGoing: onGoing,
+      actions: actions,
+      style: style,
+      reverseCurve: reverseCurve,
+    );
+  }
+
+  // 展示notice
+  Future<T?> showNoticeWarning<T>(
+    String message, {
+    String? key,
+    Curve? curve,
+    bool? onGoing,
+    String? title,
+    Curve? reverseCurve,
+    NoticeStyle? style,
+    CustomOverlayToken<T>? token,
+    List<Widget> actions = const [],
+  }) async {
+    if (!context.mounted) return null;
+    token ??= CustomOverlayToken<T>();
+    return Notice.showWarning(
+      context,
+      key: key,
+      curve: curve,
+      title: title,
+      token: token,
+      message: message,
+      onGoing: onGoing,
+      actions: actions,
+      style: style,
+      reverseCurve: reverseCurve,
+    );
+  }
+
+  // 展示notice
+  Future<T?> showNoticeSuccess<T>(
+    String message, {
+    String? key,
+    Curve? curve,
+    bool? onGoing,
+    String? title,
+    Curve? reverseCurve,
+    NoticeStyle? style,
+    CustomOverlayToken<T>? token,
+    List<Widget> actions = const [],
+  }) async {
+    if (!context.mounted) return null;
+    token ??= CustomOverlayToken<T>();
+    return Notice.showSuccess<T>(
+      context,
+      key: key,
+      curve: curve,
+      title: title,
+      token: token,
+      message: message,
+      onGoing: onGoing,
+      actions: actions,
+      style: style,
+      reverseCurve: reverseCurve,
+    );
+  }
 }
