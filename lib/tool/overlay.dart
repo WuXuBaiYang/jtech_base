@@ -16,16 +16,15 @@ class CustomOverlay {
   // 最大弹层数
   final int _maxCount;
 
-  CustomOverlay({
-    int maxCount = 999,
-  })
-      : assert(maxCount >= 1, 'maxCount must be greater than 0'),
-        _maxCount = maxCount;
+  CustomOverlay({int maxCount = 999})
+    : assert(maxCount >= 1, 'maxCount must be greater than 0'),
+      _maxCount = maxCount;
 
   CustomOverlay.single() : _maxCount = 1;
 
   // 插入弹层
-  Future<T?> insert<T>(BuildContext context, {
+  Future<T?> insert<T>(
+    BuildContext context, {
     required AnimatedTransitionBuilder builder,
     String? key,
     Widget? child,
@@ -47,45 +46,49 @@ class CustomOverlay {
     OverlayEntry? overlayEntry;
     token ??= CustomOverlayToken<T>();
     final overlayState = Overlay.of(context);
-    key ??= DateTime
-        .now()
-        .microsecondsSinceEpoch
-        .toString();
+    key ??= DateTime.now().microsecondsSinceEpoch.toString();
     final themeData = CustomOverlayThemeData.of(context);
     final animation = _OverlayAnimation(
-        vsync: overlayState,
-        duration: animationDuration ?? themeData.animationDuration);
-    final overlayPop = _OverlayPop<T>(context,
-        canPop: true,
-        overlayKey: key,
-        autoRegister: interceptPop,
-        onPop: (v) => cancel(key!, v),
-        onDidPop: () => animation.dispose());
+      vsync: overlayState,
+      duration: animationDuration ?? themeData.animationDuration,
+    );
+    final overlayPop = _OverlayPop<T>(
+      context,
+      canPop: true,
+      overlayKey: key,
+      autoRegister: interceptPop,
+      onPop: (v) => cancel(key!, v),
+      onDidPop: () => animation.dispose(),
+    );
     try {
       // 插入覆盖层
-      overlayState.insert(overlayEntry = OverlayEntry(
-        opaque: opaque,
-        maintainState: maintainState,
-        canSizeOverlay: canSizeOverlay,
-        builder: (context) {
-          WidgetsBinding.instance
-              .addPostFrameCallback((_) => animation.forward());
-          return CustomOverlayView(
-            alignment: alignment,
-            barrierColor: barrierColor,
-            barrierAnimation: animation.barrier,
-            overlayAnimation: animation.overlay,
-            onOutsideTap: () {
-              if (onOutsideTap != null) return onOutsideTap();
-              if (dismissible) cancel(key!);
-            },
-            builder: (_, child) {
-              return builder(context, animation.overlay, child);
-            },
-            child: child,
-          );
-        },
-      ));
+      overlayState.insert(
+        overlayEntry = OverlayEntry(
+          opaque: opaque,
+          maintainState: maintainState,
+          canSizeOverlay: canSizeOverlay,
+          builder: (context) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => animation.forward(),
+            );
+            return CustomOverlayView(
+              alignment: alignment,
+              barrierColor: barrierColor,
+              barrierAnimation: animation.barrier,
+              overlayAnimation: animation.overlay,
+              onOutsideTap: () {
+                if (onOutsideTap != null) return onOutsideTap();
+                if (dismissible) cancel(key!);
+              },
+              builder: (_, child) {
+                return builder(context, animation.overlay, child);
+              },
+              child: child,
+            );
+          },
+        ),
+      );
+      token._setOverlayEntry(overlayEntry);
       // 处理弹层后续事件
       final result = await (_overlayTokens[key] = token).whenCancel;
       if (token.withAnime) await animation.reverse();
@@ -94,7 +97,6 @@ class CustomOverlay {
       if (kDebugMode) print('弹窗异常：${e.toString()}');
     } finally {
       animation.dispose();
-      overlayEntry?.remove();
       overlayPop.unregister();
       _overlayTokens.remove(key);
     }
@@ -102,8 +104,11 @@ class CustomOverlay {
   }
 
   // 根据key取消弹层
-  bool cancel<T extends Object?>(String key,
-      [T? result, bool withAnime = true]) {
+  bool cancel<T extends Object?>(
+    String key, [
+    T? result,
+    bool withAnime = true,
+  ]) {
     final token = _overlayTokens.remove(key);
     if (token == null) return false;
     token.cancel(result, withAnime);
@@ -146,12 +151,15 @@ class _OverlayAnimation {
     double end = 1,
     double begin = 0,
     Duration duration = const Duration(milliseconds: 130),
-  })
-      : tween = Tween<double>(begin: begin, end: end),
-        _barrierController =
-        AnimationController(vsync: vsync, duration: duration),
-        _overlayController =
-        AnimationController(vsync: vsync, duration: duration);
+  }) : tween = Tween<double>(begin: begin, end: end),
+       _barrierController = AnimationController(
+         vsync: vsync,
+         duration: duration,
+       ),
+       _overlayController = AnimationController(
+         vsync: vsync,
+         duration: duration,
+       );
 
   // 获取遮罩动画
   Animation<double> get barrier => tween.animate(_barrierController);
@@ -216,7 +224,8 @@ class _OverlayPop<T> implements PopEntry<T> {
   // 是否自动注册
   final bool autoRegister;
 
-  _OverlayPop(this.context, {
+  _OverlayPop(
+    this.context, {
     required this.overlayKey,
     this.onPop,
     this.onDidPop,
@@ -256,6 +265,13 @@ class _OverlayPop<T> implements PopEntry<T> {
 class CustomOverlayToken<T> {
   final _completer = Completer<T?>();
 
+  // 自定义覆盖物凭证
+  OverlayEntry? _overlayEntry;
+
+  // 设置自定义覆盖物凭证
+  void _setOverlayEntry(OverlayEntry? overlayEntry) =>
+      _overlayEntry = overlayEntry;
+
   CustomOverlayToken();
 
   T? _data;
@@ -272,6 +288,7 @@ class CustomOverlayToken<T> {
 
   void cancel([T? data, bool withAnime = true]) {
     _withAnime = withAnime;
+    _overlayEntry?.remove();
     if (!_completer.isCompleted) _completer.complete(data);
     _data = data;
   }
@@ -296,24 +313,23 @@ class CustomOverlayThemeData {
 
   // 获取通知主题
   static CustomOverlayThemeData? maybeOf(BuildContext context) =>
-      CustomTheme
-          .maybeOf(context)
-          ?.customOverlayTheme;
+      CustomTheme.maybeOf(context)?.customOverlayTheme;
 
-  CustomOverlayThemeData copyWith({
-    Duration? animationDuration,
-  }) {
+  CustomOverlayThemeData copyWith({Duration? animationDuration}) {
     return CustomOverlayThemeData(
       animationDuration: animationDuration ?? this.animationDuration,
     );
   }
 
-  static CustomOverlayThemeData lerp(CustomOverlayThemeData? a,
-      CustomOverlayThemeData? b, double t) {
+  static CustomOverlayThemeData lerp(
+    CustomOverlayThemeData? a,
+    CustomOverlayThemeData? b,
+    double t,
+  ) {
     if (a == null && b == null) return CustomOverlayThemeData();
     return CustomOverlayThemeData(
       animationDuration:
-      (t >= 0.5 ? b?.animationDuration : a?.animationDuration) ??
+          (t >= 0.5 ? b?.animationDuration : a?.animationDuration) ??
           const Duration(milliseconds: 130),
     );
   }
@@ -321,11 +337,8 @@ class CustomOverlayThemeData {
   @override
   bool operator ==(Object other) =>
       other is CustomOverlayThemeData &&
-          other.animationDuration == animationDuration;
+      other.animationDuration == animationDuration;
 
   @override
-  int get hashCode =>
-      Object.hashAll([
-        animationDuration,
-      ]);
+  int get hashCode => Object.hashAll([animationDuration]);
 }

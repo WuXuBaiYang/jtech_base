@@ -8,7 +8,7 @@ extension DatetimeExtension on DateTime {
 
 // 时长格式化替换表
 final Map<String, String Function(DateTime date, Duration dur)>
-    _durationFormatRegMap = {
+_durationFormatRegMap = {
   'xxx': (date, _) => '${date.millisecond}'.padLeft(3, '0'),
   'dd': (_, dur) => '${dur.inDays}'.padLeft(2, '0'),
   'HH': (_, dur) => '${dur.inHours}'.padLeft(2, '0'),
@@ -120,6 +120,9 @@ class DatePattern {
 
   // 日期签名格式
   static const String dateSign = 'yyyyMMddHHmmssSSS';
+
+  // 无秒展示格式
+  static const String fullDateTimeNoSecond = 'yyyy-MM-dd HH:mm';
 }
 
 // 时长格式化模型

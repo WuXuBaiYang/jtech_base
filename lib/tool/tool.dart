@@ -36,8 +36,10 @@ class Tool {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   // 设置屏幕横向
-  static void setScreenLandscape() => SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
+  static void setScreenLandscape() => SystemChrome.setPreferredOrientations([
+    DeviceOrientation.landscapeLeft,
+    DeviceOrientation.landscapeRight,
+  ]);
 
   // 设置屏幕方向
   static void setPreferredOrientations(List<DeviceOrientation> orientations) =>
@@ -46,7 +48,8 @@ class Tool {
   // 设置状态栏显示隐藏
   static void setStatusBarVisible(bool visible) =>
       SystemChrome.setEnabledSystemUIMode(
-          visible ? SystemUiMode.edgeToEdge : SystemUiMode.immersiveSticky);
+        visible ? SystemUiMode.edgeToEdge : SystemUiMode.immersiveSticky,
+      );
 
   // 图片转base64
   static String image2Base64(File image) =>
