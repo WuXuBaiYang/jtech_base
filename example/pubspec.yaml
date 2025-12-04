@@ -53,11 +53,11 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   freezed: ^3.2.3
-  build_runner: ^2.7.1
+  build_runner: ^2.10.4
   flutter_lints: ^6.0.0
-  json_serializable: ^6.11.1
+  json_serializable: ^6.11.2
   flutter_gen_runner: ^5.12.0
-  objectbox_generator: ^5.0.1
+  objectbox_generator: ^5.0.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
