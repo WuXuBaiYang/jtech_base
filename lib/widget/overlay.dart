@@ -53,18 +53,12 @@ class _CustomOverlayViewState extends State<CustomOverlayView>
     return Stack(
       children: [
         Positioned.fill(child: _buildOutside(context)),
-        TapRegion(
-          onTapOutside: (_) => widget.onOutsideTap?.call(),
-          child: widget.position != null
-              ? Positioned.fromRect(
-                  rect: widget.position!,
-                  child: _buildOverlay(context),
-                )
-              : Align(
-                  alignment: widget.alignment,
-                  child: _buildOverlay(context),
-                ),
-        ),
+        widget.position != null
+            ? Positioned.fromRect(
+                rect: widget.position!,
+                child: _buildOverlay(context),
+              )
+            : Align(alignment: widget.alignment, child: _buildOverlay(context)),
       ],
     );
   }
@@ -88,15 +82,18 @@ class _CustomOverlayViewState extends State<CustomOverlayView>
   // 构建遮罩层
   Widget _buildOverlay(BuildContext context) {
     final animation = widget.overlayAnimation;
-    return GestureDetector(
-      onTap: () {},
-      child: animation != null
-          ? AnimatedBuilder(
-              builder: widget.builder,
-              animation: animation,
-              child: widget.child,
-            )
-          : widget.builder(context, widget.child),
+    return TapRegion(
+      onTapOutside: (_) => widget.onOutsideTap?.call(),
+      child: GestureDetector(
+        onTap: () {},
+        child: animation != null
+            ? AnimatedBuilder(
+                builder: widget.builder,
+                animation: animation,
+                child: widget.child,
+              )
+            : widget.builder(context, widget.child),
+      ),
     );
   }
 }

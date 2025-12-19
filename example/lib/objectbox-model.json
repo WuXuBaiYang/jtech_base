@@ -37,9 +37,9 @@
         {
           "id": "6:3165473666446276118",
           "name": "dbFieldExample2Id",
+          "indexId": "2:4591678135678443160",
           "type": 11,
           "flags": 520,
-          "indexId": "2:4591678135678443160",
           "relationTarget": "DBExampleEntity2"
         },
         {
