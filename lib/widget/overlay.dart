@@ -24,6 +24,9 @@ class CustomOverlayView extends StatefulWidget {
   // 对齐方式
   final AlignmentGeometry alignment;
 
+  // 坐标
+  final Rect? position;
+
   // 背景色
   final Color? barrierColor;
 
@@ -31,6 +34,7 @@ class CustomOverlayView extends StatefulWidget {
     super.key,
     required this.builder,
     this.child,
+    this.position,
     this.onOutsideTap,
     this.barrierColor,
     this.barrierAnimation,
@@ -46,29 +50,39 @@ class _CustomOverlayViewState extends State<CustomOverlayView>
     with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Positioned.fill(child: _buildOutside(context)),
-      Align(alignment: widget.alignment, child: _buildOverlay(context)),
-    ]);
+    return Stack(
+      children: [
+        Positioned.fill(child: _buildOutside(context)),
+        TapRegion(
+          onTapOutside: (_) => widget.onOutsideTap?.call(),
+          child: widget.position != null
+              ? Positioned.fromRect(
+                  rect: widget.position!,
+                  child: _buildOverlay(context),
+                )
+              : Align(
+                  alignment: widget.alignment,
+                  child: _buildOverlay(context),
+                ),
+        ),
+      ],
+    );
   }
 
   // 构建元素外部容器
   Widget _buildOutside(BuildContext context) {
     final animation = widget.barrierAnimation;
-    return GestureDetector(
-      onTap: widget.onOutsideTap,
-      child: animation != null
-          ? AnimatedBuilder(
-              animation: animation,
-              builder: (_, _) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: Container(color: widget.barrierColor),
-                );
-              },
-            )
-          : Container(color: Colors.transparent),
-    );
+    return animation != null
+        ? AnimatedBuilder(
+            animation: animation,
+            builder: (_, _) {
+              return FadeTransition(
+                opacity: animation,
+                child: Container(color: widget.barrierColor),
+              );
+            },
+          )
+        : Container(color: Colors.transparent);
   }
 
   // 构建遮罩层
