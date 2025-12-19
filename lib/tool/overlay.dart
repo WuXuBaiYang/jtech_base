@@ -28,6 +28,7 @@ class CustomOverlay {
     required AnimatedTransitionBuilder builder,
     String? key,
     Widget? child,
+    Rect? position,
     bool opaque = false,
     bool replace = true, // 如果数量超过限制，是否替换最早的弹层,false则不弹出
     Color? barrierColor,
@@ -72,6 +73,7 @@ class CustomOverlay {
               (_) => animation.forward(),
             );
             return CustomOverlayView(
+              position: position,
               alignment: alignment,
               barrierColor: barrierColor,
               barrierAnimation: animation.barrier,
