@@ -13,11 +13,7 @@ class HomeSubView extends ProviderView<HomeSubViewProvider> {
   // 配置集合
   final List<OptionItem> options;
 
-  HomeSubView({
-    super.key,
-    required this.title,
-    required this.options,
-  });
+  HomeSubView({super.key, required this.title, required this.options});
 
   @override
   HomeSubViewProvider? createProvider(BuildContext context) =>
@@ -26,9 +22,7 @@ class HomeSubView extends ProviderView<HomeSubViewProvider> {
   @override
   Widget buildWidget(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: ListView.builder(
         itemCount: options.length,
         itemBuilder: (_, i) {
