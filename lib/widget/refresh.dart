@@ -37,6 +37,9 @@ class CustomRefreshView<T> extends StatelessWidget {
   // 子元素构建
   final CustomRefreshWidgetBuilder<T> builder;
 
+  // 偏移量
+  final double callOverOffset;
+
   const CustomRefreshView({
     super.key,
     required this.builder,
@@ -46,6 +49,7 @@ class CustomRefreshView<T> extends StatelessWidget {
     this.onRefreshLoad,
     this.enableLoad = true,
     this.initRefresh = true,
+    this.callOverOffset = 15,
     this.enableRefresh = true,
   });
 
@@ -64,16 +68,17 @@ class CustomRefreshView<T> extends StatelessWidget {
       header: header,
       footer: footer,
       onRefresh: onRefresh,
-      // canLoadAfterNoMore: false,
       refreshOnStart: initRefresh,
       canRefreshAfterNoMore: true,
       controller: controller._controller,
-      child: _buildContent(context, themeData),
+      callLoadOverOffset: callOverOffset,
+      callRefreshOverOffset: callOverOffset,
+      child: _buildContent(context),
     );
   }
 
   // 构建内容
-  Widget _buildContent(BuildContext context, CustomRefreshThemeData themeData) {
+  Widget _buildContent(BuildContext context) {
     return ValueListenableBuilder<CustomRefreshControllerValue<T>>(
       valueListenable: controller,
       builder: (_, value, _) {
@@ -102,20 +107,13 @@ class CustomRefreshController<T>
     controlFinishRefresh: true,
   );
 
-  CustomRefreshController(
-    List<T> data, {
+  CustomRefreshController({
     this.pageSize = 25,
+    List<T> data = const [],
     int initialPageIndex = 1,
     LoadStatus initialLoadStatus = LoadStatus.success,
   }) : _pageIndex = initialPageIndex,
        super((data: data, loadStatus: initialLoadStatus));
-
-  CustomRefreshController.empty({
-    this.pageSize = 25,
-    int initialPageIndex = 1,
-    LoadStatus initialLoadStatus = LoadStatus.success,
-  }) : _pageIndex = initialPageIndex,
-       super((data: <T>[], loadStatus: initialLoadStatus));
 
   // 分页下标
   int _pageIndex = 1;
@@ -123,11 +121,11 @@ class CustomRefreshController<T>
   // 获取当前分页下标
   int get currentPageIndex => _pageIndex;
 
-  // 根据加载状态获取分页下标
-  int getPage(bool loadMore) => loadMore ? _pageIndex + 1 : 1;
-
   // 分页数据量
   final int pageSize;
+
+  // 根据加载状态获取分页下标
+  int getPage(bool loadMore) => loadMore ? _pageIndex + 1 : 1;
 
   // 是否存在刷新
   bool get loading => isRefreshing || isLoadingMore;
@@ -138,13 +136,19 @@ class CustomRefreshController<T>
   // 是否正在加载更多
   bool get isLoadingMore => !_controller.controlFinishLoad;
 
+  // 获取当前数据
+  List<T> get data => value.data;
+
+  // 获取当前状态
+  LoadStatus get loadStatus => value.loadStatus;
+
   // 启动刷新
   void startRefresh({
     bool force = true,
     double? overOffset,
-    Duration? duration = const Duration(milliseconds: 200),
     Curve curve = Curves.linear,
     ScrollController? scrollController,
+    Duration? duration = const Duration(milliseconds: 200),
   }) {
     _controller.callRefresh(
       force: force,
@@ -185,16 +189,6 @@ class CustomRefreshController<T>
     });
   }
 
-  // 更新条件对象
-  void updateWhere(T? Function(T) update) {
-    final list = List<T>.from(value.data);
-    for (var i = 0; i < list.length; i++) {
-      final result = update(list[i]);
-      if (result != null) list[i] = result;
-    }
-    _update(data: list, loadStatus: LoadStatus.success);
-  }
-
   // 设置数据
   void setData(List<T> data) =>
       _update(data: data, loadStatus: LoadStatus.success);
@@ -205,6 +199,15 @@ class CustomRefreshController<T>
   // 添加数据
   void addAll(List<T> data) =>
       _update(data: value.data + data, loadStatus: LoadStatus.success);
+
+  // 插入一条数据
+  void insert(int index, T data) => insertAll(index, [data]);
+
+  // 插入数据
+  void insertAll(int index, List<T> data) => _update(
+    data: value.data..insertAll(index, data),
+    loadStatus: LoadStatus.success,
+  );
 
   // 移除一条数据
   void remove(T data) => removeAll([data]);
@@ -221,6 +224,16 @@ class CustomRefreshController<T>
     final list = List<T>.from(value.data)..removeWhere(test);
     final loadState = list.isNotEmpty ? LoadStatus.success : LoadStatus.noData;
     _update(data: list, loadStatus: loadState);
+  }
+
+  // 更新条件对象
+  void updateWhere(T? Function(T) update) {
+    final list = List<T>.from(value.data);
+    for (var i = 0; i < list.length; i++) {
+      final result = update(list[i]);
+      if (result != null) list[i] = result;
+    }
+    _update(data: list, loadStatus: LoadStatus.success);
   }
 
   // 清空所有数据
@@ -295,6 +308,8 @@ Header _createDefaultHeader(BuildContext context) {
   final local = Localizations.localeOf(context);
   if (local.languageCode != 'zh') return ClassicHeader();
   return ClassicHeader(
+    triggerOffset: 50,
+    maxOverOffset: 80,
     dragText: '下拉刷新',
     armedText: '松开刷新',
     readyText: '刷新中...',
@@ -313,6 +328,8 @@ Footer _createDefaultFooter(BuildContext context) {
   final local = Localizations.localeOf(context);
   if (local.languageCode != 'zh') return ClassicFooter();
   return ClassicFooter(
+    triggerOffset: 50,
+    maxOverOffset: 100,
     dragText: '上拉加载',
     armedText: '松开加载',
     readyText: '加载中...',

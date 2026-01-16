@@ -36,7 +36,7 @@ class WidgetRefreshPage extends ProviderPage<WidgetRefreshProvider> {
 
 class WidgetRefreshProvider extends PageProvider {
   // 控制器
-  final controller = CustomRefreshController.empty();
+  final controller = CustomRefreshController();
 
   WidgetRefreshProvider(super.context, super.state);
 
