@@ -308,7 +308,8 @@ Header _createDefaultHeader(BuildContext context) {
   final local = Localizations.localeOf(context);
   if (local.languageCode != 'zh') return ClassicHeader();
   return ClassicHeader(
-    triggerOffset: 50,
+    safeArea: false,
+    triggerOffset: 55,
     maxOverOffset: 80,
     dragText: '下拉刷新',
     armedText: '松开刷新',
@@ -328,7 +329,8 @@ Footer _createDefaultFooter(BuildContext context) {
   final local = Localizations.localeOf(context);
   if (local.languageCode != 'zh') return ClassicFooter();
   return ClassicFooter(
-    triggerOffset: 50,
+    safeArea: false,
+    triggerOffset: 55,
     maxOverOffset: 100,
     dragText: '上拉加载',
     armedText: '松开加载',
