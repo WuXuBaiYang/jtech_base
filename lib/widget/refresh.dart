@@ -318,8 +318,8 @@ Header _createDefaultHeader(BuildContext context) {
     noMoreText: '没有更多数据',
     failedText: '刷新失败',
     messageText: '最后更新时间 %T',
-    textStyle: TextTheme.of(context).bodyLarge,
-    messageStyle: TextTheme.of(context).bodySmall,
+    textStyle: TextTheme.of(context).bodyMedium,
+    messageStyle: TextTheme.of(context).labelSmall,
   );
 }
 
@@ -338,7 +338,7 @@ Footer _createDefaultFooter(BuildContext context) {
     noMoreText: '没有更多数据',
     failedText: '加载失败',
     messageText: '最后更新时间 %T',
-    textStyle: TextTheme.of(context).bodyLarge,
-    messageStyle: TextTheme.of(context).bodySmall,
+    textStyle: TextTheme.of(context).bodyMedium,
+    messageStyle: TextTheme.of(context).labelSmall,
   );
 }
