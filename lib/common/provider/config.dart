@@ -14,10 +14,13 @@ typedef ConfigSerializer<T> = dynamic Function(T config);
 */
 abstract class BaseConfigProvider<T> extends BaseProvider {
   // 配置信息
-  late T _config;
+  T? _config;
 
   // 获取配置信息
-  T get config => _config;
+  T get config => _config ??= _creator(localCache.getJson(configCacheKey));
+
+  // 创建序列化
+  final ConfigCreator<T> _creator;
 
   // 序列化回调
   final ConfigSerializer<T> _serializer;
@@ -25,12 +28,12 @@ abstract class BaseConfigProvider<T> extends BaseProvider {
   // 配置缓存key
   String get configCacheKey => 'app_config_cache_key';
 
-  BaseConfigProvider(super.context,
-      {required ConfigCreator<T> creator,
-      required ConfigSerializer<T> serializer})
-      : _serializer = serializer {
-    _config = creator(localCache.getJson(configCacheKey));
-  }
+  BaseConfigProvider(
+    super.context, {
+    required ConfigCreator<T> creator,
+    required ConfigSerializer<T> serializer,
+  }) : _creator = creator,
+       _serializer = serializer;
 
   // 保存配置信息
   Future<bool> updateConfig(T config) async {
