@@ -6,34 +6,87 @@ extension DatetimeExtension on DateTime {
   String format(String pattern) => DateFormat(pattern).format(this);
 }
 
-// 时长格式化替换表
-final Map<String, String Function(DateTime date, Duration dur)>
-_durationFormatRegMap = {
-  'xxx': (date, _) => '${date.millisecond}'.padLeft(3, '0'),
-  'dd': (_, dur) => '${dur.inDays}'.padLeft(2, '0'),
-  'HH': (_, dur) => '${dur.inHours}'.padLeft(2, '0'),
-  'mm': (date, _) => '${date.minute}'.padLeft(2, '0'),
-  'ss': (date, _) => '${date.second}'.padLeft(2, '0'),
-  'xx': (date, _) => '${date.millisecond}'.padLeft(2, '0'),
-  'd': (_, dur) => '${dur.inDays}',
-  'h': (_, dur) => '${dur.inHours}',
-  'm': (date, _) => '${date.minute}',
-  's': (date, _) => '${date.second}',
-  'x': (date, _) => '${date.millisecond}',
-};
-
 // duration方法扩展
 extension DurationExtension on Duration {
-  // 时长格式化
-  String format(String pattern) {
-    DateTime date = DateTime(0).add(this);
-    _durationFormatRegMap.forEach((key, fun) {
-      if (pattern.contains(key)) {
-        final value = fun(date, this);
-        pattern = pattern.replaceAll(key, value);
+  // 格式化
+  String format(String format) {
+    // 处理负数
+    final isNegative = inMicroseconds < 0;
+    final absDuration = abs();
+
+    // 1. 提取格式字符串中的所有时间单位（d/h/m/s/f），并确定最左侧的单位
+    final units = _extractUnits(format);
+    final String? primaryUnit = units.isNotEmpty ? units.first : null;
+
+    // 2. 计算各单位的数值（区分累加值/周期值）
+    final values = _calculateValues(absDuration, primaryUnit);
+
+    // 3. 替换格式字符串中的占位符
+    String result = format;
+    result = _replacePlaceholder(result, 'd', values['d']!);
+    result = _replacePlaceholder(result, 'h', values['h']!);
+    result = _replacePlaceholder(result, 'm', values['m']!);
+    result = _replacePlaceholder(result, 's', values['s']!);
+    result = _replacePlaceholder(result, 'f', values['f']!);
+
+    // 添加负号
+    return isNegative ? '-$result' : result;
+  }
+
+  // 提取格式字符串中的时间单位（去重，按出现顺序）
+  List<String> _extractUnits(String format) {
+    final unitRegex = RegExp(r'[dhmsf]');
+    final matches = unitRegex.allMatches(format);
+    final units = <String>[];
+    for (final match in matches) {
+      final unit = match.group(0)!;
+      if (!units.contains(unit)) {
+        units.add(unit);
       }
+    }
+    return units;
+  }
+
+  /// 根据最左侧单位，计算各单位的数值（累加值/周期值）
+  Map<String, int> _calculateValues(Duration duration, String? primaryUnit) {
+    final values = <String, int>{};
+    // 基础周期值（所有单位默认取周期值）
+    values['d'] = duration.inDays; // 天的周期值=总天数（无周期，本身就是累加）
+    values['h'] = duration.inHours.remainder(24); // 小时周期值（0-23）
+    values['m'] = duration.inMinutes.remainder(60); // 分钟周期值（0-59）
+    values['s'] = duration.inSeconds.remainder(60); // 秒周期值（0-59）
+    values['f'] = duration.inMilliseconds.remainder(1000); // 毫秒周期值（0-999）
+    // 最左侧单位替换为累加值
+    if (primaryUnit != null) {
+      switch (primaryUnit) {
+        case 'd':
+          values['d'] = duration.inDays; // 天本身就是累加值，无需调整
+          break;
+        case 'h':
+          values['h'] = duration.inHours; // 小时累加值（总小时数，不÷24）
+          break;
+        case 'm':
+          values['m'] = duration.inMinutes; // 分钟累加值（总分钟数，不÷60）
+          break;
+        case 's':
+          values['s'] = duration.inSeconds; // 秒累加值（总秒数，不÷60）
+          break;
+        case 'f':
+          values['f'] = duration.inMilliseconds; // 毫秒累加值（总毫秒数，不÷1000）
+          break;
+      }
+    }
+    return values;
+  }
+
+  // 替换单个占位符（补零逻辑）
+  String _replacePlaceholder(String format, String unit, int value) {
+    final regex = RegExp('($unit)+');
+    return format.replaceAllMapped(regex, (match) {
+      final placeholder = match.group(0)!;
+      final length = placeholder.length;
+      return value.toString().padLeft(length, '0');
     });
-    return pattern;
   }
 
   // duration相减
@@ -138,22 +191,4 @@ class DurationPattern {
 
   // 简略分秒格式
   static const String minuteSecond = 'mm:ss';
-}
-
-// 尝试解析duration
-Duration? tryParseDuration(String durationString) {
-  if (durationString.isEmpty) return null;
-  final parts = durationString.split(':');
-  int? hours = 0, minutes = 0, seconds = 0;
-  if (parts.length == 3) {
-    hours = int.tryParse(parts[0]);
-    minutes = int.tryParse(parts[1]);
-    seconds = int.tryParse(parts[2]);
-    if (hours == null || minutes == null || seconds == null) return null;
-  } else if (parts.length == 2) {
-    minutes = int.tryParse(parts[0]);
-    seconds = int.tryParse(parts[1]);
-    if (minutes == null || seconds == null) return null;
-  }
-  return Duration(hours: hours, minutes: minutes, seconds: seconds);
 }
