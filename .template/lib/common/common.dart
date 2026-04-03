@@ -6,6 +6,9 @@ import 'package:flutter/foundation.dart';
 * @Time 2022/9/8 14:54
 */
 class Common {
+  // 应用名
+  static const String appName = '${jtech_base_app_name}$';
+
   // 数据库名称
   static const String databaseName = '${jtech_base_db_name}$.db';
 

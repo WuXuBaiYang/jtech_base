@@ -35,12 +35,17 @@ class MyApp extends ProviderView {
     return Consumer<ThemeProvider>(
       builder: (_, theme, _) {
         return MaterialApp.router(
-          title: '${jtech_base_app_name}$',
+          title: Common.appName,
           theme: theme.themeData,
           themeMode: theme.themeMode,
           darkTheme: theme.darkThemeData,
           debugShowCheckedModeBanner: false,
           routerConfig: router.createRouter(),
+          supportedLocales: [
+            const Locale('zh', 'CN'),
+            const Locale('en', 'US'),
+          ],
+          locale: const Locale('zh', 'CN'),
           localizationsDelegates: const [
             GlobalWidgetsLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
