@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /*
@@ -8,6 +9,9 @@ import 'package:go_router/go_router.dart';
 * @Time 2024/8/14 13:23
 */
 abstract class BaseRouter {
+  // 根导航
+  final rootNavigatorKey = GlobalKey<NavigatorState>();
+
   // 路由配置
   GoRouter? _routerConfig;
 
@@ -27,11 +31,11 @@ abstract class BaseRouter {
   GoRouter createRouter({
     List<RouteBase> extensions = const [],
     String initialLocation = '/',
-  }) =>
-      _routerConfig ??= GoRouter(
-        routes: routes + extensions,
-        initialLocation: initialLocation,
-      );
+  }) => _routerConfig ??= GoRouter(
+    routes: routes + extensions,
+    navigatorKey: rootNavigatorKey,
+    initialLocation: initialLocation,
+  );
 
   // 推送
   Future<T?> push<T extends Object?>(String location, {Object? extra}) =>
@@ -53,9 +57,10 @@ abstract class BaseRouter {
   }
 
   // 推送
-  Future<T?> pushReplacement<T extends Object?>(String location,
-          {Object? extra}) =>
-      routerConfig.pushReplacement(location, extra: extra);
+  Future<T?> pushReplacement<T extends Object?>(
+    String location, {
+    Object? extra,
+  }) => routerConfig.pushReplacement(location, extra: extra);
 
   // 推送
   Future<T?> pushReplacementNamed<T extends Object?>(
