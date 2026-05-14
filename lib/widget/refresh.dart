@@ -160,7 +160,7 @@ class CustomRefreshController<T>
   }
 
   // 结束刷新/加载
-  void finish(List<T> data, [bool loadMore = true]) {
+  void finish(List<T> data, [bool loadMore = true, bool force = false]) {
     _pageIndex = getPage(loadMore);
     final indicatorResult = data.length < pageSize
         ? IndicatorResult.noMore
@@ -168,7 +168,7 @@ class CustomRefreshController<T>
     final loadStatus = loadMore || (!loadMore && data.isNotEmpty)
         ? LoadStatus.success
         : LoadStatus.noData;
-    _finish(indicatorResult);
+    _finish(indicatorResult, force);
     return _update(
       data: loadMore ? value.data + data : data,
       loadStatus: loadStatus,
@@ -176,16 +176,16 @@ class CustomRefreshController<T>
   }
 
   // 异常结束刷新/加载
-  void finishWithError() {
-    _finish(IndicatorResult.fail);
+  void finishWithError([bool force = false]) {
+    _finish(IndicatorResult.fail, force);
     _update(loadStatus: LoadStatus.fail);
   }
 
   // 结束刷新
-  void _finish(IndicatorResult indicatorResult) {
-    _controller.finishRefresh(indicatorResult);
+  void _finish(IndicatorResult indicatorResult, [bool force = false]) {
+    _controller.finishRefresh(indicatorResult, force);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _controller.finishLoad(indicatorResult);
+      _controller.finishLoad(indicatorResult, force);
     });
   }
 
